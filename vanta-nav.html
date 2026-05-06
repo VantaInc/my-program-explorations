@@ -770,31 +770,30 @@ function tableView(title, breadcrumb, cols, rows, actions='') {
 const VIEWS = {
 
   'home-page': () => {
-    // ── sparkline helper ──
-    const spark = (pts, color, w=88, h=32) => {
+    // ── full-width sparkline helper (Origin style) ──
+    const spark = (pts, color) => {
+      const w=200, h=52
       const min = Math.min(...pts), max = Math.max(...pts)
       const rng = max - min || 1
       const xs = pts.map((_,i) => (i/(pts.length-1))*w)
-      const ys = pts.map(p => h - ((p-min)/rng)*(h*0.72) - h*0.14)
+      const ys = pts.map(p => h - ((p-min)/rng)*(h*0.75) - h*0.08)
       const path = xs.map((x,i) => `${i?'L':'M'}${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(' ')
       const areaPath = path + ` L${w} ${h} L0 ${h} Z`
       const lx = xs[xs.length-1].toFixed(1), ly = ys[ys.length-1].toFixed(1)
-      const gradId = `g${Math.round(Math.random()*9999)}`
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible;display:block">
-        <defs><linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.15"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+      const gradId = `gs${Math.round(Math.random()*99999)}`
+      return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block;overflow:visible">
+        <defs><linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </linearGradient></defs>
         <path d="${areaPath}" fill="url(#${gradId})"/>
-        <path d="${path}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${lx}" cy="${ly}" r="3" fill="${color}"/>
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${lx}" cy="${ly}" r="4" fill="${color}" filter="drop-shadow(0 0 4px ${color}55)"/>
       </svg>`
     }
-    // ── score block helper (replaces donut ring) ──
+    // ── score number (big, no bar — bar lives in card footer) ──
     const ring = (health, color) => {
-      return `<div style="flex-shrink:0;min-width:52px;text-align:center">
-        <div style="font-family:var(--font-display);font-size:30px;font-weight:300;color:${color};letter-spacing:-0.02em;line-height:1">${health}</div>
-        <div style="height:3px;background:#F0EEF8;border-radius:2px;margin-top:6px;overflow:hidden">
-          <div style="height:100%;width:${health}%;background:${color};border-radius:2px"></div>
-        </div>
-      </div>`
+      return `<div style="font-family:var(--font-display);font-size:52px;font-weight:300;color:${color};letter-spacing:-0.03em;line-height:1">${health}</div>`
     }
     // ── data ──
     const progs = [
@@ -853,29 +852,33 @@ const VIEWS = {
         ${progs.map(p=>`
           <div data-view="${p.slug}" style="background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);border-radius:18px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s" onmouseenter="this.style.boxShadow='0 12px 40px rgba(109,40,217,0.1)';this.style.borderColor='${p.color}33'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.95)'">
 
-            <!-- Card header -->
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
-              <div>
-                <div style="font-family:var(--font-display);font-size:19px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.02em;line-height:1.2">${p.name}</div>
-                <div style="display:flex;gap:4px;flex-wrap:wrap">
-                  ${p.fw.map(f=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
-                </div>
-              </div>
+            <!-- Card header: name + status badge -->
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+              <div style="font-family:var(--font-display);font-size:20px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.2">${p.name}</div>
               <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:${p.sBg};color:${p.sColor};white-space:nowrap;margin-top:3px;letter-spacing:0.01em">${p.status}</span>
             </div>
 
-            <!-- Score + sparkline -->
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">
-              ${ring(p.health, p.color)}
-              <div style="flex:1;min-width:0">
-                <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">8-week trend</div>
-                ${spark(p.trend, p.color)}
-                <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:6px">${p.deadline}</div>
-              </div>
+            <!-- Framework badge -->
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:20px">
+              ${p.fw.map(f=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
             </div>
 
-            <!-- Control themes -->
-            <div style="border-top:1px solid rgba(0,0,0,0.05);padding-top:18px;display:flex;flex-direction:column;gap:10px">
+            <!-- Big score number -->
+            <div style="margin-bottom:4px">
+              ${ring(p.health, p.color)}
+            </div>
+            <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px">Health score</div>
+
+            <!-- Full-width sparkline — Origin style -->
+            <div style="margin-bottom:10px;margin-left:-24px;margin-right:-24px">
+              ${spark(p.trend, p.color)}
+            </div>
+
+            <!-- Deadline below chart -->
+            <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-bottom:22px;padding:0 0">${p.deadline}</div>
+
+            <!-- Control themes footer -->
+            <div style="border-top:1px solid rgba(0,0,0,0.05);padding-top:16px;display:flex;flex-direction:column;gap:10px">
               <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px">Control themes</div>
               ${p.themes.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
                 <span style="font-family:var(--font-body);font-size:12px;color:#374151;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.n}</span>
