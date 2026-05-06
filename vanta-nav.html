@@ -619,63 +619,126 @@ const ic = {
 // ─── VIEW TEMPLATES ──────────────────────────────────────────────────────────
 
 function programView(slug, name, health, color, frameworks, stats, themes, activity) {
+  const statusLabel = health>=85?'On track':health>=75?'Needs attention':'At risk'
+  const statusBg    = health>=85?'#D1FAE5':health>=75?'#FEF3C7':'#FEE2E2'
+  const statusColor = health>=85?'#065F46':health>=75?'#92400E':'#991B1B'
+
+  // Sparkline for health trend (last 8 weeks, derived from health score)
+  const trendPts = Array.from({length:8},(_,i)=>{
+    const delta = health>=85 ? i*0.4 : health>=75 ? -i*0.5 : -i*1.4
+    return Math.min(99,Math.max(40, health - (7-i)*(health>=85?0.4:health>=75?0.5:1.4)))
+  })
+  const w=160,h=44,min=Math.min(...trendPts),max=Math.max(...trendPts),rng=max-min||1
+  const xs=trendPts.map((_,i)=>(i/(trendPts.length-1))*w)
+  const ys=trendPts.map(p=>h-((p-min)/rng)*(h*0.7)-h*0.15)
+  const linePath=xs.map((x,i)=>`${i?'L':'M'}${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(' ')
+  const areaPath=linePath+` L${w} ${h} L0 ${h} Z`
+  const gid=`pg${slug}`
+
   return `<div class="page">
     <div class="page-hero">
-      <div class="page-header">
-        <div class="page-breadcrumb">Programs</div>
-        <div class="page-heading">
-          <div class="page-title-block">
-            <h1 class="page-title">${name}</h1>
-            <p class="page-sub">${frameworks.join(' &nbsp;·&nbsp; ')}</p>
+
+      <!-- Breadcrumb -->
+      <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Programs &nbsp;›&nbsp; ${name}</div>
+
+      <!-- Hero: big number + trend side by side like Origin -->
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px">
+        <div>
+          <!-- Big health score — Origin dollar-amount treatment -->
+          <div style="font-family:var(--font-display);font-size:72px;font-weight:300;color:${color};letter-spacing:-0.04em;line-height:1;margin-bottom:10px">${health}</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:${color}">${statusLabel}</span>
+            <span style="font-family:var(--font-ui);font-size:12px;color:#9CA3AF">Health score</span>
+            <div style="height:3px;width:80px;background:#F0EEF8;border-radius:2px;overflow:hidden;margin-left:4px">
+              <div style="height:100%;width:${health}%;background:${color};border-radius:2px"></div>
+            </div>
           </div>
-          <div class="page-actions">
+          <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">
+            ${frameworks.map(f=>`<span style="font-family:var(--font-ui);font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${statusBg};color:${statusColor}">${statusLabel}</span>
+          </div>
+        </div>
+
+        <!-- Trend sparkline + actions -->
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:18px">
+          <div>
+            <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;text-align:right">8-week trend</div>
+            <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible;display:block">
+              <defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.12"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+              <path d="${areaPath}" fill="url(#${gid})"/>
+              <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="${xs[xs.length-1].toFixed(1)}" cy="${ys[ys.length-1].toFixed(1)}" r="3.5" fill="${color}"/>
+            </svg>
+          </div>
+          <div style="display:flex;gap:8px">
             <button class="btn">View controls</button>
             <button class="btn primary">Generate report</button>
           </div>
         </div>
       </div>
-      <div class="health-header" style="background:rgba(255,255,255,0.75);backdrop-filter:blur(8px)">
-      <div class="health-score-block">
-        <div class="health-score-num" style="color:${color}">${health}</div>
-        <div class="health-score-pct">Health score</div>
-        <div class="health-score-bar"><div class="health-score-fill" style="width:${health}%;background:${color}"></div></div>
-      </div>
-      <div style="width:1px;background:#F0EEF8;align-self:stretch;flex-shrink:0"></div>
-      <div class="health-meta">
-        <div class="health-program-name">${name}</div>
-        <div class="health-badges">
-          ${frameworks.map(f=>`<span class="badge framework">${f}</span>`).join('')}
-          <span class="badge ${health>=85?'status-ok':health>=75?'status-warn':'status-risk'}">${health>=85?'On track':health>=75?'Needs attention':'At risk'}</span>
+
+      <!-- Stat row — Origin widget treatment -->
+      <div style="display:flex;gap:14px">
+        ${stats.map(s=>`
+          <div style="flex:1;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:24px 28px;display:flex;align-items:center;gap:20px">
+            <div style="font-family:var(--font-display);font-size:44px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1;flex-shrink:0">${s.v}</div>
+            <div>
+              <div style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.07em;text-transform:uppercase">${s.l}</div>
+            </div>
+          </div>
+        `).join('')}
+        <div style="flex:1;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:24px 28px;display:flex;align-items:center;gap:20px">
+          <div style="font-family:var(--font-display);font-size:44px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1;flex-shrink:0">${themes.length}</div>
+          <div>
+            <div style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.07em;text-transform:uppercase">Control themes</div>
+          </div>
         </div>
       </div>
-      <div style="margin-left:auto;display:flex;gap:32px;flex-shrink:0">
-        ${stats.map(s=>`<div style="text-align:right"><div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1">${s.v}</div><div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:5px;letter-spacing:0.07em;text-transform:uppercase">${s.l}</div></div>`).join('')}
-      </div>
-    </div>
+
     </div><!-- /page-hero -->
-    <div class="two-col">
-      <div class="col">
-        <div class="section-card">
-          <div class="section-card-header"><span class="section-card-title">Control themes</span></div>
-          <div class="section-card-body">
-            ${themes.map(t=>`<div class="theme-row">
-              <div class="theme-name">${t.name}</div>
-              <div class="theme-bar-wrap"><div class="theme-bar"><div class="theme-fill" style="width:${t.pct}%;background:${t.color}"></div></div></div>
-              <div class="theme-count">${t.pass}/${t.total}</div>
-              <span class="status-pill ${t.pill}">${t.label}</span>
-            </div>`).join('')}
+
+    <!-- Control themes section -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Control themes &nbsp;›</span>
+      <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">${themes.length} areas</span>
+    </div>
+
+    <div style="display:flex;gap:16px;margin-bottom:32px;align-items:flex-start">
+      <!-- Theme list -->
+      <div style="flex:1;background:#fff;border:1px solid #E9E9E7;border-radius:16px;overflow:hidden">
+        ${themes.map((t,i)=>`
+          <div style="display:flex;align-items:center;gap:0;border-bottom:${i<themes.length-1?'1px solid rgba(0,0,0,0.04)':'none'};transition:background 0.1s;cursor:pointer" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="width:3px;background:${t.color};flex-shrink:0;align-self:stretch"></div>
+            <div style="flex:1;padding:22px 28px;display:flex;align-items:center;gap:20px;min-width:0">
+              <div style="font-family:var(--font-body);font-size:14px;color:#111827;min-width:180px;flex-shrink:0">${t.name}</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+                <div style="height:4px;background:#F3F3F1;border-radius:4px;overflow:hidden">
+                  <div style="height:100%;width:${t.pct}%;background:${t.color};border-radius:4px;transition:width 0.4s ease"></div>
+                </div>
+              </div>
+              <div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em;flex-shrink:0;min-width:56px;text-align:right">${t.pct}%</div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;flex-shrink:0;min-width:52px;text-align:right">${t.pass}/${t.total}</div>
+              <span class="status-pill ${t.pill}" style="flex-shrink:0">${t.label}</span>
+            </div>
           </div>
-        </div>
+        `).join('')}
       </div>
-      <div class="col-narrow">
-        <div class="section-card">
-          <div class="section-card-header"><span class="section-card-title">Recent activity</span></div>
-          <div class="section-card-body">
-            ${activity.map(a=>`<div class="activity-item">
-              <div class="activity-dot" style="background:${a.color}"></div>
-              <div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>
-            </div>`).join('')}
-          </div>
+
+      <!-- Activity feed -->
+      <div style="width:320px;flex-shrink:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+          <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Activity &nbsp;›</span>
+        </div>
+        <div style="background:#fff;border:1px solid #E9E9E7;border-radius:16px;overflow:hidden">
+          ${activity.map((a,i)=>`
+            <div style="display:flex;gap:14px;padding:20px 22px;border-bottom:${i<activity.length-1?'1px solid rgba(0,0,0,0.04)':'none'}">
+              <div style="width:6px;height:6px;border-radius:50%;background:${a.color};flex-shrink:0;margin-top:5px"></div>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.55;margin-bottom:5px">${a.text}</div>
+                <div style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">${a.time}</div>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
     </div>
