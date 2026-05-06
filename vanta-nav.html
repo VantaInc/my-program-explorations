@@ -183,8 +183,8 @@
   /* Bleeds edge-to-edge by inverting page padding, creating a full-width
      lavender gradient stage behind every page header */
   .page-hero {
-    margin: -52px -68px 44px;
-    padding: 52px 68px 44px;
+    margin: -48px -64px 44px;
+    padding: 48px 64px 44px;
     background: linear-gradient(168deg,
       #DDD6FF 0%,
       #E8E2FF 18%,
@@ -196,7 +196,7 @@
   #content::-webkit-scrollbar { width: 5px; }
   #content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
 
-  .page { padding: 52px 68px; max-width: 920px; animation: fadein 0.15s ease; }
+  .page { padding: 48px 64px; animation: fadein 0.15s ease; }
   @keyframes fadein {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
@@ -229,27 +229,29 @@
   .btn.primary { background: #5B21B6; color: #fff; border-color: transparent; font-weight: 600; }
   .btn.primary:hover { background: #4C1D95; }
 
-  /* stat cards — big numbers: Reckless light, labels: Inter */
-  .stats-row { display: flex; gap: 16px; margin-bottom: 36px; }
+  /* stat cards — wide and flat */
+  .stats-row { display: flex; gap: 14px; margin-bottom: 28px; }
   .stat-card {
     flex: 1; background: #fff; border: 1px solid #E9E9E7;
-    border-radius: 14px; padding: 24px 28px;
+    border-radius: 14px; padding: 20px 28px;
+    display: flex; align-items: center; gap: 20px;
   }
   .stat-value {
-    font-family: var(--font-display); font-size: 50px; font-weight: 300;
-    color: #111827; line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em;
+    font-family: var(--font-display); font-size: 42px; font-weight: 300;
+    color: #111827; line-height: 1; letter-spacing: -0.02em; flex-shrink: 0;
   }
+  .stat-card-text { flex: 1; min-width: 0; }
   .stat-label { font-family: var(--font-ui); font-size: 11px; font-weight: 500; color: #9CA3AF; letter-spacing: 0.07em; text-transform: uppercase; }
-  .stat-trend { font-family: var(--font-body); font-size: 12px; margin-top: 6px; }
+  .stat-trend { font-family: var(--font-body); font-size: 12px; margin-top: 4px; }
 
   /* health score block — no donut, big Reckless number + thin bar */
   .health-header {
-    display: flex; align-items: center; gap: 36px; margin-bottom: 32px;
-    background: #fff; border: 1px solid #E9E9E7; border-radius: 16px; padding: 28px 36px;
+    display: flex; align-items: center; gap: 36px; margin-bottom: 24px;
+    background: #fff; border: 1px solid #E9E9E7; border-radius: 14px; padding: 22px 32px;
   }
-  .health-score-block { flex-shrink: 0; text-align: center; min-width: 90px; }
+  .health-score-block { flex-shrink: 0; text-align: center; min-width: 80px; }
   .health-score-num {
-    font-family: var(--font-display); font-size: 56px; font-weight: 300;
+    font-family: var(--font-display); font-size: 48px; font-weight: 300;
     line-height: 1; letter-spacing: -0.02em;
   }
   .health-score-pct {
@@ -262,8 +264,8 @@
   .health-score-fill { height: 100%; border-radius: 2px; }
   .health-meta { flex: 1; }
   .health-program-name {
-    font-family: var(--font-display); font-size: 30px; font-weight: 300;
-    color: #111827; margin-bottom: 10px; letter-spacing: -0.02em;
+    font-family: var(--font-display); font-size: 26px; font-weight: 300;
+    color: #111827; margin-bottom: 8px; letter-spacing: -0.02em;
   }
   /* keep .health-ring class for backward compat but hide it */
   .health-ring { display: none; }
@@ -281,10 +283,10 @@
   /* section cards — title: Outfit medium */
   .section-card {
     background: #fff; border: 1px solid #E9E9E7;
-    border-radius: 14px; overflow: hidden; margin-bottom: 20px;
+    border-radius: 14px; overflow: hidden; margin-bottom: 16px;
   }
   .section-card-header {
-    padding: 18px 24px; border-bottom: 1px solid #F3F3F1;
+    padding: 14px 24px; border-bottom: 1px solid #F3F3F1;
     display: flex; align-items: center; justify-content: space-between;
   }
   .section-card-title {
@@ -296,7 +298,7 @@
   /* theme rows — name: Outfit, count: Inter */
   .theme-row {
     display: flex; align-items: center; gap: 16px;
-    padding: 14px 24px; border-bottom: 1px solid #F7F6F3;
+    padding: 11px 24px; border-bottom: 1px solid #F7F6F3;
     cursor: pointer; transition: background 0.1s;
   }
   .theme-row:last-child { border-bottom: none; }
@@ -336,11 +338,11 @@
   /* two-col */
   .two-col { display: flex; gap: 20px; margin-bottom: 20px; }
   .two-col .col { flex: 1; min-width: 0; }
-  .two-col .col-narrow { width: 300px; flex-shrink: 0; }
+  .two-col .col-narrow { width: 380px; flex-shrink: 0; }
 
   /* activity */
   .activity-item {
-    display: flex; gap: 12px; padding: 14px 24px;
+    display: flex; gap: 12px; padding: 11px 24px;
     border-bottom: 1px solid #F3F3F1;
   }
   .activity-item:last-child { border-bottom: none; }
@@ -353,7 +355,7 @@
   /* checklist */
   .check-item {
     display: flex; align-items: center; gap: 12px;
-    padding: 13px 24px; border-bottom: 1px solid #F3F3F1; cursor: pointer;
+    padding: 10px 24px; border-bottom: 1px solid #F3F3F1; cursor: pointer;
   }
   .check-item:last-child { border-bottom: none; }
   .check-item:hover { background: #FAFAF9; }
@@ -719,9 +721,9 @@ const VIEWS = {
     }
     // ── score block helper (replaces donut ring) ──
     const ring = (health, color) => {
-      return `<div style="flex-shrink:0;min-width:64px;text-align:center">
-        <div style="font-family:var(--font-display);font-size:36px;font-weight:300;color:${color};letter-spacing:-0.02em;line-height:1">${health}</div>
-        <div style="height:3px;background:#F0EEF8;border-radius:2px;margin-top:8px;overflow:hidden">
+      return `<div style="flex-shrink:0;min-width:52px;text-align:center">
+        <div style="font-family:var(--font-display);font-size:30px;font-weight:300;color:${color};letter-spacing:-0.02em;line-height:1">${health}</div>
+        <div style="height:3px;background:#F0EEF8;border-radius:2px;margin-top:6px;overflow:hidden">
           <div style="height:100%;width:${health}%;background:${color};border-radius:2px"></div>
         </div>
       </div>`
@@ -756,8 +758,8 @@ const VIEWS = {
         progs:['All programs'], trend:'→ Varied', tColor:'#7C3AED', view:'recent-access' },
     ]
 
-    return `<div class="page" style="max-width:960px">
-      <div class="page-hero" style="margin:-52px -68px 48px;padding:52px 68px 44px;background:linear-gradient(168deg,#DDD6FF 0%,#E8E2FF 18%,#EDE9FE 38%,rgba(243,241,255,0.5) 62%,rgba(247,246,243,0) 100%)">
+    return `<div class="page">
+      <div class="page-hero">
 
         <div style="margin-bottom:44px;display:flex;align-items:flex-end;justify-content:space-between">
           <div>
@@ -772,13 +774,13 @@ const VIEWS = {
         </div>
 
         <!-- BU health cards -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:0">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:0">
         ${progs.map(p=>`
-          <div data-view="${p.slug}" style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s,background 0.15s" onmouseenter="this.style.boxShadow='0 8px 32px rgba(109,40,217,0.12)';this.style.borderColor='${p.color}44'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.9)'"  >
+          <div data-view="${p.slug}" style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:20px 20px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s,background 0.15s" onmouseenter="this.style.boxShadow='0 8px 32px rgba(109,40,217,0.12)';this.style.borderColor='${p.color}44'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.9)'"  >
 
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
               <div>
-                <div style="font-family:var(--font-display);font-size:20px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.02em">${p.name}</div>
+                <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;margin-bottom:6px;letter-spacing:-0.02em">${p.name}</div>
                 <div style="display:flex;gap:4px;flex-wrap:wrap">
                   ${p.fw.map(f=>`<span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
                 </div>
@@ -786,7 +788,7 @@ const VIEWS = {
               <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:${p.sBg};color:${p.sColor};white-space:nowrap;margin-top:2px">${p.status}</span>
             </div>
 
-            <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
               ${ring(p.health, p.color)}
               <div style="flex:1;min-width:0">
                 <div style="font-family:var(--font-display);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:5px">8-week trend</div>
