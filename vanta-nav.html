@@ -178,28 +178,28 @@
   #content::-webkit-scrollbar { width: 5px; }
   #content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
 
-  .page { padding: 36px 44px; max-width: 860px; animation: fadein 0.15s ease; }
+  .page { padding: 52px 68px; max-width: 920px; animation: fadein 0.15s ease; }
   @keyframes fadein {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   /* page header */
-  .page-header { margin-bottom: 28px; }
+  .page-header { margin-bottom: 40px; }
   /* Breadcrumb: Outfit caps — Atak light treatment */
   .page-breadcrumb {
     font-family: var(--font-display); font-size: 10px; font-weight: 500;
-    color: #9CA3AF; margin-bottom: 8px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: #C0BDB8; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase;
   }
   .page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   .page-title-block { }
-  /* Page title: Outfit bold — Atak medium treatment */
+  /* Page title: Outfit light — Atak light display treatment */
   .page-title {
-    font-family: var(--font-display); font-size: 26px; font-weight: 700;
-    color: #111827; margin-bottom: 5px; letter-spacing: -0.025em; line-height: 1.1;
+    font-family: var(--font-display); font-size: 36px; font-weight: 300;
+    color: #111827; margin-bottom: 8px; letter-spacing: -0.03em; line-height: 1.05;
   }
   /* Subtitle: Inter regular — Nib regular treatment */
-  .page-sub { font-family: var(--font-body); font-size: 13px; color: #6B7280; line-height: 1.5; }
+  .page-sub { font-family: var(--font-body); font-size: 14px; color: #9CA3AF; line-height: 1.6; }
   .page-actions { display: flex; gap: 8px; flex-shrink: 0; margin-top: 2px; }
   .btn {
     padding: 6px 14px; border-radius: 7px; font-size: 13px; font-weight: 500;
@@ -211,35 +211,35 @@
   .btn.primary { background: #5B21B6; color: #fff; border-color: transparent; font-weight: 600; }
   .btn.primary:hover { background: #4C1D95; }
 
-  /* stat cards — big numbers: Outfit 800, labels: Inter */
-  .stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
+  /* stat cards — big numbers: Outfit 300 (Origin-style light weight), labels: Inter */
+  .stats-row { display: flex; gap: 16px; margin-bottom: 36px; }
   .stat-card {
     flex: 1; background: #fff; border: 1px solid #E9E9E7;
-    border-radius: 10px; padding: 16px 18px;
+    border-radius: 14px; padding: 24px 28px;
   }
   .stat-value {
-    font-family: var(--font-display); font-size: 28px; font-weight: 800;
-    color: #111827; line-height: 1; margin-bottom: 5px; letter-spacing: -0.03em;
+    font-family: var(--font-display); font-size: 46px; font-weight: 300;
+    color: #111827; line-height: 1; margin-bottom: 8px; letter-spacing: -0.04em;
   }
-  .stat-label { font-family: var(--font-body); font-size: 12px; color: #6B7280; }
-  .stat-trend { font-family: var(--font-body); font-size: 11px; margin-top: 3px; }
+  .stat-label { font-family: var(--font-body); font-size: 12px; color: #9CA3AF; letter-spacing: 0.01em; }
+  .stat-trend { font-family: var(--font-body); font-size: 12px; margin-top: 6px; }
 
-  /* health ring — number: Outfit, label: Outfit bold */
+  /* health ring — number: Outfit light, label: Outfit */
   .health-header {
-    display: flex; align-items: center; gap: 20px; margin-bottom: 24px;
-    background: #fff; border: 1px solid #E9E9E7; border-radius: 12px; padding: 20px 24px;
+    display: flex; align-items: center; gap: 28px; margin-bottom: 32px;
+    background: #fff; border: 1px solid #E9E9E7; border-radius: 16px; padding: 28px 32px;
   }
-  .health-ring { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+  .health-ring { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
   .health-ring svg { transform: rotate(-90deg); }
   .health-ring-num {
     position: absolute; inset: 0; display: flex; align-items: center;
     justify-content: center;
-    font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+    font-family: var(--font-display); font-size: 22px; font-weight: 300; letter-spacing: -0.03em;
   }
   .health-meta { }
   .health-program-name {
-    font-family: var(--font-display); font-size: 20px; font-weight: 700;
-    color: #111827; margin-bottom: 6px; letter-spacing: -0.02em;
+    font-family: var(--font-display); font-size: 26px; font-weight: 300;
+    color: #111827; margin-bottom: 10px; letter-spacing: -0.03em;
   }
   .health-badges { display: flex; gap: 6px; flex-wrap: wrap; }
   .badge {
@@ -254,29 +254,29 @@
   /* section cards — title: Outfit medium */
   .section-card {
     background: #fff; border: 1px solid #E9E9E7;
-    border-radius: 10px; overflow: hidden; margin-bottom: 16px;
+    border-radius: 14px; overflow: hidden; margin-bottom: 20px;
   }
   .section-card-header {
-    padding: 13px 16px; border-bottom: 1px solid #F3F3F1;
+    padding: 18px 24px; border-bottom: 1px solid #F3F3F1;
     display: flex; align-items: center; justify-content: space-between;
   }
   .section-card-title {
-    font-family: var(--font-display); font-size: 13px; font-weight: 600;
-    color: #374151; letter-spacing: -0.01em;
+    font-family: var(--font-display); font-size: 12px; font-weight: 500;
+    color: #9CA3AF; letter-spacing: 0.08em; text-transform: uppercase;
   }
   .section-card-body { padding: 4px 0; }
 
   /* theme rows — name: Outfit, count: Inter */
   .theme-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 9px 16px; border-bottom: 1px solid #F7F6F3;
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 24px; border-bottom: 1px solid #F7F6F3;
     cursor: pointer; transition: background 0.1s;
   }
   .theme-row:last-child { border-bottom: none; }
   .theme-row:hover { background: #FAFAF9; }
-  .theme-name { font-family: var(--font-body); font-size: 13px; color: #1A1A1A; width: 180px; flex-shrink: 0; }
+  .theme-name { font-family: var(--font-body); font-size: 13px; color: #1A1A1A; width: 200px; flex-shrink: 0; }
   .theme-bar-wrap { flex: 1; }
-  .theme-bar { height: 4px; background: #F3F3F1; border-radius: 3px; overflow: hidden; }
+  .theme-bar { height: 3px; background: #F3F3F1; border-radius: 3px; overflow: hidden; }
   .theme-fill { height: 100%; border-radius: 3px; }
   .theme-count { font-family: var(--font-body); font-size: 11px; color: #9CA3AF; width: 60px; text-align: right; flex-shrink: 0; }
   /* pills: Outfit — tight, Atak-feel labels */
@@ -293,12 +293,12 @@
   /* table — headers: Outfit caps, cells: Inter */
   .data-table { width: 100%; border-collapse: collapse; }
   .data-table th {
-    font-family: var(--font-display); font-size: 10px; font-weight: 600; color: #9CA3AF; text-align: left;
-    padding: 10px 16px; border-bottom: 1px solid #E9E9E7; letter-spacing: 0.08em;
+    font-family: var(--font-display); font-size: 10px; font-weight: 500; color: #C0BDB8; text-align: left;
+    padding: 14px 24px; border-bottom: 1px solid #E9E9E7; letter-spacing: 0.1em;
     text-transform: uppercase;
   }
   .data-table td {
-    font-size: 13px; color: #374151; padding: 10px 16px;
+    font-size: 13px; color: #374151; padding: 14px 24px;
     border-bottom: 1px solid #F3F3F1;
   }
   .data-table tr:last-child td { border-bottom: none; }
@@ -307,13 +307,13 @@
   .td-light { font-family: var(--font-body); color: #9CA3AF; font-size: 12px; }
 
   /* two-col */
-  .two-col { display: flex; gap: 16px; margin-bottom: 16px; }
+  .two-col { display: flex; gap: 20px; margin-bottom: 20px; }
   .two-col .col { flex: 1; min-width: 0; }
   .two-col .col-narrow { width: 300px; flex-shrink: 0; }
 
   /* activity */
   .activity-item {
-    display: flex; gap: 10px; padding: 9px 16px;
+    display: flex; gap: 12px; padding: 14px 24px;
     border-bottom: 1px solid #F3F3F1;
   }
   .activity-item:last-child { border-bottom: none; }
@@ -325,8 +325,8 @@
 
   /* checklist */
   .check-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 16px; border-bottom: 1px solid #F3F3F1; cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 24px; border-bottom: 1px solid #F3F3F1; cursor: pointer;
   }
   .check-item:last-child { border-bottom: none; }
   .check-item:hover { background: #FAFAF9; }
@@ -357,7 +357,7 @@
 
   /* vendor card grid */
   .vendor-grid { display: flex; flex-direction: column; gap: 0; }
-  .vendor-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #F3F3F1; cursor: pointer; }
+  .vendor-row { display: flex; align-items: center; gap: 14px; padding: 14px 24px; border-bottom: 1px solid #F3F3F1; cursor: pointer; }
   .vendor-row:last-child { border-bottom: none; }
   .vendor-row:hover { background: #FAFAF9; }
   .vendor-logo { width: 28px; height: 28px; border-radius: 6px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #374151; flex-shrink: 0; }
@@ -585,7 +585,7 @@ const ic = {
 // ─── VIEW TEMPLATES ──────────────────────────────────────────────────────────
 
 function programView(slug, name, health, color, frameworks, stats, themes, activity) {
-  const r = 28, circ = 2*Math.PI*r, dash = circ * (health/100)
+  const r = 37, circ = 2*Math.PI*r, dash = circ * (health/100)
   return `<div class="page">
     <div class="page-header">
       <div class="page-breadcrumb">Programs</div>
@@ -602,9 +602,9 @@ function programView(slug, name, health, color, frameworks, stats, themes, activ
     </div>
     <div class="health-header">
       <div class="health-ring">
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="${r}" fill="none" stroke="#F3F3F1" stroke-width="7"/>
-          <circle cx="36" cy="36" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="${r}" fill="none" stroke="#F3F3F1" stroke-width="6"/>
+          <circle cx="45" cy="45" r="${r}" fill="none" stroke="${color}" stroke-width="6"
             stroke-dasharray="${dash} ${circ}" stroke-linecap="round"/>
         </svg>
         <div class="health-ring-num" style="color:${color}">${health}%</div>
@@ -688,15 +688,15 @@ const VIEWS = {
       </svg>`
     }
     // ── ring helper ──
-    const ring = (health, color, r=30) => {
+    const ring = (health, color, r=34) => {
       const circ = 2*Math.PI*r, dash = circ*(health/100)
-      return `<div style="position:relative;width:76px;height:76px;flex-shrink:0">
-        <svg width="76" height="76" viewBox="0 0 76 76" style="transform:rotate(-90deg)">
-          <circle cx="38" cy="38" r="${r}" fill="none" stroke="#F0EEF8" stroke-width="7"/>
-          <circle cx="38" cy="38" r="${r}" fill="none" stroke="${color}" stroke-width="7"
+      return `<div style="position:relative;width:84px;height:84px;flex-shrink:0">
+        <svg width="84" height="84" viewBox="0 0 84 84" style="transform:rotate(-90deg)">
+          <circle cx="42" cy="42" r="${r}" fill="none" stroke="#F0EEF8" stroke-width="6"/>
+          <circle cx="42" cy="42" r="${r}" fill="none" stroke="${color}" stroke-width="6"
             stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"/>
         </svg>
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:18px;font-weight:800;color:${color};letter-spacing:-0.03em">${health}%</div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:20px;font-weight:300;color:${color};letter-spacing:-0.04em">${health}%</div>
       </div>`
     }
     // ── data ──
@@ -731,10 +731,10 @@ const VIEWS = {
 
     return `<div class="page" style="max-width:900px">
 
-      <div style="margin-bottom:26px;display:flex;align-items:flex-end;justify-content:space-between">
+      <div style="margin-bottom:44px;display:flex;align-items:flex-end;justify-content:space-between">
         <div>
-          <h1 style="font-family:var(--font-display);font-size:26px;font-weight:700;color:#111827;margin-bottom:4px;letter-spacing:-0.025em">Good morning, Pam.</h1>
-          <p style="font-size:13px;color:#9CA3AF">Wednesday, May 6 &nbsp;·&nbsp; 3 active programs &nbsp;·&nbsp; Next audit: Forge in 12 days</p>
+          <h1 style="font-family:var(--font-display);font-size:42px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.04em;line-height:1.05">Good morning, Pam.</h1>
+          <p style="font-size:14px;color:#9CA3AF;letter-spacing:0.01em">Wednesday, May 6 &nbsp;·&nbsp; 3 active programs &nbsp;·&nbsp; Next audit: Forge in 12 days</p>
         </div>
         <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#9CA3AF">
           <div style="width:6px;height:6px;border-radius:50%;background:#059669"></div>
@@ -743,13 +743,13 @@ const VIEWS = {
       </div>
 
       <!-- BU health cards -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px">
         ${progs.map(p=>`
-          <div data-view="${p.slug}" style="background:#fff;border:1px solid #E9E9E7;border-radius:14px;padding:20px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s" onmouseenter="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.07)';this.style.borderColor='${p.color}55'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='#E9E9E7'">
+          <div data-view="${p.slug}" style="background:#fff;border:1px solid #E9E9E7;border-radius:16px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s" onmouseenter="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.07)';this.style.borderColor='${p.color}55'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='#E9E9E7'">
 
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
               <div>
-                <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:#111827;margin-bottom:5px;letter-spacing:-0.015em">${p.name}</div>
+                <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.025em">${p.name}</div>
                 <div style="display:flex;gap:4px;flex-wrap:wrap">
                   ${p.fw.map(f=>`<span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
                 </div>
@@ -757,7 +757,7 @@ const VIEWS = {
               <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:${p.sBg};color:${p.sColor};white-space:nowrap;margin-top:2px">${p.status}</span>
             </div>
 
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+            <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
               ${ring(p.health, p.color)}
               <div style="flex:1;min-width:0">
                 <div style="font-family:var(--font-display);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:5px">8-week trend</div>
@@ -766,7 +766,7 @@ const VIEWS = {
               </div>
             </div>
 
-            <div style="border-top:1px solid #F3F3F1;padding-top:11px;display:flex;flex-direction:column;gap:5px">
+            <div style="border-top:1px solid #F3F3F1;padding-top:16px;display:flex;flex-direction:column;gap:8px">
               <div style="font-family:var(--font-display);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:2px">Control themes</div>
               ${p.themes.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between">
                 <span style="font-size:12px;color:#374151">${t.n}</span>
@@ -778,25 +778,25 @@ const VIEWS = {
       </div>
 
       <!-- AI Themes -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <span style="font-family:var(--font-display);font-size:11px;font-weight:700;color:#1A1A1A;letter-spacing:0.01em">Themes</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <span style="font-family:var(--font-display);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase">Themes</span>
         <div style="display:flex;align-items:center;gap:5px;background:#F5F3FF;border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:2px 9px 2px 7px">
           <svg width="10" height="10" viewBox="0 0 16 16" fill="#7C3AED"><path d="M8 1.5L9.2 5.8H13.5L10 8.3L11.2 12.5L8 10L4.8 12.5L6 8.3L2.5 5.8H6.8L8 1.5Z"/></svg>
           <span style="font-size:10px;font-weight:600;color:#7C3AED">Ilma · 4 patterns identified this week</span>
         </div>
       </div>
 
-      <div style="background:#fff;border:1px solid #E9E9E7;border-radius:12px;overflow:hidden">
+      <div style="background:#fff;border:1px solid #E9E9E7;border-radius:14px;overflow:hidden">
         ${themes.map((t,i)=>`
           <div data-view="${t.view}" style="display:flex;align-items:flex-start;gap:0;border-bottom:${i<themes.length-1?'1px solid #F7F6F3':'none'};cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
-            <div style="width:4px;background:${t.color};flex-shrink:0;align-self:stretch"></div>
-            <div style="flex:1;padding:14px 16px;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
-                <span style="font-size:13px;font-weight:600;color:#111827">${t.name}</span>
+            <div style="width:3px;background:${t.color};flex-shrink:0;align-self:stretch"></div>
+            <div style="flex:1;padding:18px 22px;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+                <span style="font-family:var(--font-display);font-size:14px;font-weight:400;color:#111827;letter-spacing:-0.01em">${t.name}</span>
                 ${t.progs.map(pr=>`<span style="font-size:10px;padding:1px 7px;border-radius:10px;background:#F3F4F6;color:#6B7280;font-weight:500">${pr}</span>`).join('')}
                 <span style="font-size:11px;font-weight:600;color:${t.tColor};margin-left:auto;white-space:nowrap">${t.trend}</span>
               </div>
-              <p style="font-size:12px;color:#6B7280;line-height:1.6;margin:0">${t.desc}</p>
+              <p style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;line-height:1.65;margin:0">${t.desc}</p>
             </div>
           </div>
         `).join('')}
