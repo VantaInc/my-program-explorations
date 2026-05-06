@@ -766,47 +766,57 @@ const VIEWS = {
     return `<div class="page">
       <div class="page-hero">
 
-        <div style="margin-bottom:44px;display:flex;align-items:flex-end;justify-content:space-between">
+        <!-- Greeting -->
+        <div style="margin-bottom:52px;display:flex;align-items:flex-end;justify-content:space-between">
           <div>
-            <p style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#A78BFA;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px">Meridian &nbsp;·&nbsp; GRC Platform</p>
-            <h1 style="font-family:var(--font-display);font-size:44px;font-weight:300;color:#1E1B4B;margin-bottom:10px;letter-spacing:-0.02em;line-height:1.05">Good morning, Pam.</h1>
-            <p style="font-family:var(--font-ui);font-size:14px;color:#7C6FAB;letter-spacing:0">Wednesday, May 6 &nbsp;·&nbsp; SOC 2 audit in 12 days &nbsp;·&nbsp; <span style="color:#DC2626;font-weight:500">1 critical alert</span></p>
+            <p style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#A78BFA;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px">Meridian &nbsp;·&nbsp; GRC Platform</p>
+            <h1 style="font-family:var(--font-display);font-size:48px;font-weight:300;color:#1E1B4B;margin-bottom:12px;letter-spacing:-0.03em;line-height:1.02">Good morning, Pam.</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#7C6FAB;line-height:1.6">Wednesday, May 6 &nbsp;·&nbsp; SOC 2 audit in 12 days &nbsp;·&nbsp; <span style="color:#DC2626;font-weight:500">1 critical alert</span></p>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;color:#A78BFA">
+          <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;color:#A78BFA;padding-bottom:4px">
             <div style="width:5px;height:5px;border-radius:50%;background:#059669"></div>
             Synced 2 hours ago
           </div>
         </div>
 
-        <!-- BU health cards -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:0">
-        ${progs.map(p=>`
-          <div data-view="${p.slug}" style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:20px 20px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s,background 0.15s" onmouseenter="this.style.boxShadow='0 8px 32px rgba(109,40,217,0.12)';this.style.borderColor='${p.color}44'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.9)'"  >
+        <!-- Section label — Origin style -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Programs &nbsp;›</span>
+          <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">4 active</span>
+        </div>
 
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+        <!-- BU health cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:0">
+        ${progs.map(p=>`
+          <div data-view="${p.slug}" style="background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);border-radius:18px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s" onmouseenter="this.style.boxShadow='0 12px 40px rgba(109,40,217,0.1)';this.style.borderColor='${p.color}33'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.95)'">
+
+            <!-- Card header -->
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
               <div>
-                <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;margin-bottom:6px;letter-spacing:-0.02em">${p.name}</div>
+                <div style="font-family:var(--font-display);font-size:19px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.02em;line-height:1.2">${p.name}</div>
                 <div style="display:flex;gap:4px;flex-wrap:wrap">
-                  ${p.fw.map(f=>`<span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
+                  ${p.fw.map(f=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:#EDE9FE;color:#5B21B6">${f}</span>`).join('')}
                 </div>
               </div>
-              <span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:${p.sBg};color:${p.sColor};white-space:nowrap;margin-top:2px">${p.status}</span>
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:${p.sBg};color:${p.sColor};white-space:nowrap;margin-top:3px;letter-spacing:0.01em">${p.status}</span>
             </div>
 
-            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <!-- Score + sparkline -->
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px">
               ${ring(p.health, p.color)}
               <div style="flex:1;min-width:0">
-                <div style="font-family:var(--font-display);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:5px">8-week trend</div>
+                <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:7px">8-week trend</div>
                 ${spark(p.trend, p.color)}
-                <div style="font-size:11px;color:#9CA3AF;margin-top:4px">${p.deadline}</div>
+                <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:6px">${p.deadline}</div>
               </div>
             </div>
 
-            <div style="border-top:1px solid #F3F3F1;padding-top:16px;display:flex;flex-direction:column;gap:8px">
-              <div style="font-family:var(--font-display);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:2px">Control themes</div>
-              ${p.themes.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between">
-                <span style="font-size:12px;color:#374151">${t.n}</span>
-                <span class="status-pill ${t.p}" style="font-size:9px;padding:1px 7px">${t.l}</span>
+            <!-- Control themes -->
+            <div style="border-top:1px solid rgba(0,0,0,0.05);padding-top:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px">Control themes</div>
+              ${p.themes.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <span style="font-family:var(--font-body);font-size:12px;color:#374151;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.n}</span>
+                <span class="status-pill ${t.p}" style="font-size:9px;padding:2px 8px">${t.l}</span>
               </div>`).join('')}
             </div>
           </div>
@@ -814,26 +824,28 @@ const VIEWS = {
         </div><!-- /BU grid -->
       </div><!-- /page-hero -->
 
-      <!-- AI Themes -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-        <span style="font-family:var(--font-display);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase">Themes</span>
-        <div style="display:flex;align-items:center;gap:5px;background:#F5F3FF;border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:2px 9px 2px 7px">
-          <svg width="10" height="10" viewBox="0 0 16 16" fill="#7C3AED"><path d="M8 1.5L9.2 5.8H13.5L10 8.3L11.2 12.5L8 10L4.8 12.5L6 8.3L2.5 5.8H6.8L8 1.5Z"/></svg>
-          <span style="font-size:10px;font-weight:600;color:#7C3AED">Ilma · 4 patterns identified this week</span>
+      <!-- Themes section -->
+      <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Themes &nbsp;›</span>
+          <div style="display:flex;align-items:center;gap:5px;background:#F5F3FF;border:1px solid rgba(109,40,217,0.12);border-radius:20px;padding:3px 10px 3px 8px">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="#7C3AED"><path d="M8 1.5L9.2 5.8H13.5L10 8.3L11.2 12.5L8 10L4.8 12.5L6 8.3L2.5 5.8H6.8L8 1.5Z"/></svg>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;letter-spacing:-0.01em">Ilma · 4 patterns identified this week</span>
+          </div>
         </div>
       </div>
 
-      <div style="background:#fff;border:1px solid #E9E9E7;border-radius:14px;overflow:hidden">
+      <div style="background:#fff;border:1px solid #E9E9E7;border-radius:16px;overflow:hidden">
         ${themes.map((t,i)=>`
-          <div data-view="${t.view}" style="display:flex;align-items:flex-start;gap:0;border-bottom:${i<themes.length-1?'1px solid #F7F6F3':'none'};cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
-            <div style="width:3px;background:${t.color};flex-shrink:0;align-self:stretch"></div>
-            <div style="flex:1;padding:18px 22px;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-                <span style="font-family:var(--font-display);font-size:14px;font-weight:400;color:#111827;letter-spacing:-0.01em">${t.name}</span>
-                ${t.progs.map(pr=>`<span style="font-size:10px;padding:1px 7px;border-radius:10px;background:#F3F4F6;color:#6B7280;font-weight:500">${pr}</span>`).join('')}
-                <span style="font-size:11px;font-weight:600;color:${t.tColor};margin-left:auto;white-space:nowrap">${t.trend}</span>
+          <div data-view="${t.view}" style="display:flex;align-items:stretch;border-bottom:${i<themes.length-1?'1px solid rgba(0,0,0,0.04)':'none'};cursor:pointer;transition:background 0.12s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="width:3px;background:${t.color};flex-shrink:0"></div>
+            <div style="flex:1;padding:26px 28px;min-width:0">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap">
+                <span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827;letter-spacing:-0.02em">${t.name}</span>
+                ${t.progs.map(pr=>`<span style="font-family:var(--font-ui);font-size:10px;padding:2px 8px;border-radius:10px;background:#F3F4F6;color:#6B7280;font-weight:500">${pr}</span>`).join('')}
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:${t.tColor};margin-left:auto;white-space:nowrap;letter-spacing:-0.01em">${t.trend}</span>
               </div>
-              <p style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;line-height:1.65;margin:0">${t.desc}</p>
+              <p style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;line-height:1.75;margin:0">${t.desc}</p>
             </div>
           </div>
         `).join('')}
