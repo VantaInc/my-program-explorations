@@ -323,6 +323,135 @@
   .view-empty svg { opacity: 0.3; }
   .view-empty p { font-size: 14px; }
 
+  /* ─── ILMA FLOATING CHAT ─── */
+  #ilma-fab {
+    position: fixed; bottom: 24px; right: 24px; z-index: 8000;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: #5B21B6;
+    box-shadow: 0 4px 20px rgba(91,33,182,0.4), 0 1px 4px rgba(0,0,0,0.15);
+    border: none; cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.18s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.18s ease, background 0.15s;
+    overflow: hidden;
+  }
+  #ilma-fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 28px rgba(91,33,182,0.5), 0 2px 6px rgba(0,0,0,0.15);
+    background: #4C1D95;
+  }
+  #ilma-fab.open {
+    transform: scale(0.92);
+    background: #3B0764;
+  }
+  .fab-avatar { width: 34px; height: 34px; border-radius: 50%; overflow: hidden; pointer-events: none; }
+  .fab-close {
+    position: absolute; opacity: 0; transition: opacity 0.15s;
+    color: #fff; font-size: 20px; font-weight: 300; line-height: 1;
+  }
+  #ilma-fab.open .fab-avatar { opacity: 0; transition: opacity 0.12s; }
+  #ilma-fab.open .fab-close { opacity: 1; }
+
+  #ilma-chat-panel {
+    position: fixed; bottom: 88px; right: 24px; z-index: 7999;
+    width: 360px; max-height: 520px;
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; overflow: hidden;
+    transform-origin: bottom right;
+    transform: scale(0.85) translateY(16px); opacity: 0;
+    pointer-events: none;
+    transition: transform 0.22s cubic-bezier(0.34,1.25,0.64,1), opacity 0.18s ease;
+  }
+  #ilma-chat-panel.open {
+    transform: scale(1) translateY(0); opacity: 1;
+    pointer-events: all;
+  }
+
+  .fchat-header {
+    padding: 14px 16px 12px;
+    background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  }
+  .fchat-header-avatar { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+  .fchat-header-name { font-size: 14px; font-weight: 600; color: #fff; flex: 1; }
+  .fchat-header-status { font-size: 10px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+  .fchat-header-btn {
+    width: 28px; height: 28px; border-radius: 7px; border: none; cursor: pointer;
+    background: rgba(255,255,255,0.15); color: #fff; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s; flex-shrink: 0;
+  }
+  .fchat-header-btn:hover { background: rgba(255,255,255,0.25); }
+
+  .fchat-messages {
+    flex: 1; overflow-y: auto; padding: 14px 14px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 0;
+  }
+  .fchat-messages::-webkit-scrollbar { width: 3px; }
+  .fchat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 2px; }
+
+  .fchat-msg-ai {
+    background: #F5F3FF; border-radius: 10px 10px 10px 3px;
+    padding: 9px 12px; font-size: 13px; color: #374151;
+    line-height: 1.55; max-width: 88%; align-self: flex-start;
+  }
+  .fchat-msg-user {
+    background: #5B21B6; border-radius: 10px 10px 3px 10px;
+    padding: 9px 12px; font-size: 13px; color: #fff;
+    line-height: 1.55; max-width: 88%; align-self: flex-end;
+  }
+  .fchat-typing {
+    display: flex; align-items: center; gap: 4px;
+    padding: 9px 12px; background: #F5F3FF;
+    border-radius: 10px 10px 10px 3px; align-self: flex-start;
+  }
+  .fchat-typing span {
+    width: 6px; height: 6px; border-radius: 50%; background: #9B5FE3;
+    animation: fchat-bounce 1.2s infinite ease-in-out;
+  }
+  .fchat-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .fchat-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes fchat-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .fchat-suggestions {
+    padding: 4px 14px 10px; display: flex; flex-wrap: wrap; gap: 5px; flex-shrink: 0;
+  }
+  .fchat-chip {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px;
+    border: 1px solid rgba(109,40,217,0.2); background: transparent;
+    color: #7C3AED; cursor: pointer; font-family: inherit;
+    transition: background 0.1s, border-color 0.1s;
+    white-space: nowrap;
+  }
+  .fchat-chip:hover { background: rgba(109,40,217,0.07); border-color: rgba(109,40,217,0.4); }
+
+  .fchat-input-row {
+    padding: 10px 12px 12px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+  }
+  #fchat-input {
+    flex: 1; border: 1px solid #E5E7EB; border-radius: 10px;
+    padding: 8px 11px; font-size: 13px; outline: none;
+    background: #F9FAFB; font-family: inherit; resize: none;
+    max-height: 80px; line-height: 1.4;
+    transition: border-color 0.1s, background 0.1s;
+  }
+  #fchat-input:focus { border-color: rgba(109,40,217,0.4); background: #fff; }
+  #fchat-input::placeholder { color: #C0BDB8; }
+  #fchat-send {
+    width: 34px; height: 34px; border-radius: 10px; border: none;
+    background: #5B21B6; color: #fff; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, transform 0.1s;
+  }
+  #fchat-send:hover { background: #4C1D95; }
+  #fchat-send:active { transform: scale(0.93); }
+
   /* ─── ILMA SPOTLIGHT ─── */
   #ilma-spotlight {
     display: none; position: fixed; inset: 0; z-index: 9999;
@@ -1566,6 +1695,161 @@ document.getElementById('tab-bar').addEventListener('click', e => {
 // init
 switchTab('home')
 renderView('home-page')
+
+// ─── ILMA FLOATING CHAT ──────────────────────────────────────────────────────
+;(function() {
+  // Inject FAB + panel HTML
+  document.body.insertAdjacentHTML('beforeend', `
+    <button id="ilma-fab" aria-label="Ask Ilma" title="Ask Ilma">
+      <div class="fab-avatar" id="fab-avatar"></div>
+      <span class="fab-close">×</span>
+    </button>
+
+    <div id="ilma-chat-panel" aria-label="Ilma chat">
+      <div class="fchat-header">
+        <div class="fchat-header-avatar" id="fchat-hdr-avatar"></div>
+        <div>
+          <div class="fchat-header-name">Ilma</div>
+          <div class="fchat-header-status">Your GRC companion</div>
+        </div>
+        <button class="fchat-header-btn" id="fchat-expand" title="Open full chat">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 9H1V15H7V13M13 7H15V1H9V3M1 1L6 6M15 15L10 10"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="fchat-messages" id="fchat-msgs"></div>
+
+      <div class="fchat-suggestions" id="fchat-chips">
+        <button class="fchat-chip" data-msg="What's my top priority today?">Top priority today?</button>
+        <button class="fchat-chip" data-msg="How ready is Forge for audit?">Forge audit ready?</button>
+        <button class="fchat-chip" data-msg="What's blocking Atlas?">Atlas blockers?</button>
+        <button class="fchat-chip" data-msg="Summarize Orbit risk">Orbit risk?</button>
+      </div>
+
+      <div class="fchat-input-row">
+        <textarea id="fchat-input" rows="1" placeholder="Ask anything…"></textarea>
+        <button id="fchat-send">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 13V3M3 8l5-5 5 5"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  `)
+
+  // inject avatars
+  document.getElementById('fab-avatar').innerHTML = ILMA_SVG(34)
+  document.getElementById('fchat-hdr-avatar').innerHTML = ILMA_SVG(30)
+
+  const fab   = document.getElementById('ilma-fab')
+  const panel = document.getElementById('ilma-chat-panel')
+  const msgs  = document.getElementById('fchat-msgs')
+  const input = document.getElementById('fchat-input')
+  const chips = document.getElementById('fchat-chips')
+  let isOpen  = false
+
+  const CANNED = {
+    "What's my top priority today?":
+      "Three things in order:\n\n1. Okta vendor assessment — 60% done, due in 3 days. Assign remaining sections to Denise now.\n2. Orbit IdP sync — get engineering to confirm the fix timeline. 12 stale accounts are a failing SOC 2 control.\n3. Forge pre-audit checklist — 3 easy items left before the audit window opens.",
+    "How ready is Forge for audit?":
+      "Forge is in good shape — 91% health, evidence 89% ready. Audit window opens May 18, 12 days out.\n\nOnly 3 pre-audit checklist items remain open: vendor assessments submission, data retention log export, and auditor intro call. All assignable today.",
+    "What's blocking Atlas?":
+      "Two active blockers:\n\n1. Okta vendor assessment — due May 9, currently 60% complete. Blocking ISO 27001 controls A.15.1.2 and A.15.2.1.\n2. Change Management policy — pending final sign-off from the security team.\n\nOkta is the critical path. Reassign to Denise or prioritize today.",
+    "Summarize Orbit risk":
+      "Orbit is the most urgent program right now — 71% health and trending down.\n\nRoot cause: IdP sync failure has left 12 former employee accounts with active credentials. This is a direct SOC 2 Type II failure on control AC-2. The longer this stays open, the harder the audit conversation gets.",
+  }
+
+  function addMsg(text, role) {
+    const div = document.createElement('div')
+    div.className = role === 'ai' ? 'fchat-msg-ai' : 'fchat-msg-user'
+    div.textContent = text
+    msgs.appendChild(div)
+    msgs.scrollTop = msgs.scrollHeight
+    return div
+  }
+
+  function showTyping() {
+    const t = document.createElement('div')
+    t.className = 'fchat-typing'; t.id = 'fchat-typing'
+    t.innerHTML = '<span></span><span></span><span></span>'
+    msgs.appendChild(t)
+    msgs.scrollTop = msgs.scrollHeight
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('fchat-typing')
+    if (t) t.remove()
+  }
+
+  function respond(userText) {
+    showTyping()
+    const delay = 600 + Math.random() * 500
+    setTimeout(() => {
+      removeTyping()
+      const reply = CANNED[userText] || "Got it — I'm looking into that across your programs. Give me a moment."
+      addMsg(reply, 'ai')
+      chips.style.display = 'none'
+    }, delay)
+  }
+
+  function sendMessage(text) {
+    const t = text.trim()
+    if (!t) return
+    addMsg(t, 'user')
+    input.value = ''
+    input.style.height = 'auto'
+    respond(t)
+  }
+
+  function togglePanel() {
+    isOpen = !isOpen
+    fab.classList.toggle('open', isOpen)
+    panel.classList.toggle('open', isOpen)
+    if (isOpen) {
+      if (msgs.children.length === 0) {
+        setTimeout(() => addMsg("Hey Pam 👋 What do you need? I can surface blockers, summarize health, or draft anything across your programs.", 'ai'), 180)
+      }
+      setTimeout(() => input.focus(), 260)
+    }
+  }
+
+  fab.addEventListener('click', togglePanel)
+
+  document.getElementById('fchat-expand').addEventListener('click', () => {
+    togglePanel()
+    renderView('ilma-new')
+  })
+
+  chips.addEventListener('click', e => {
+    const chip = e.target.closest('.fchat-chip')
+    if (chip) sendMessage(chip.dataset.msg)
+  })
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage(input.value)
+    }
+  })
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto'
+    input.style.height = Math.min(input.scrollHeight, 80) + 'px'
+  })
+
+  document.getElementById('fchat-send').addEventListener('click', () => sendMessage(input.value))
+
+  // close on outside click
+  document.addEventListener('click', e => {
+    if (isOpen && !fab.contains(e.target) && !panel.contains(e.target)) {
+      isOpen = false
+      fab.classList.remove('open')
+      panel.classList.remove('open')
+    }
+  })
+})()
 </script>
 </body>
 </html>
