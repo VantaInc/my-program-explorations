@@ -177,7 +177,22 @@
 
 
   /* ─── CONTENT AREA ─── */
-  #content { flex: 1; overflow-y: auto; background: var(--grad-bg); }
+  #content { flex: 1; overflow-y: auto; background: #F7F6F3; }
+
+  /* ─── PAGE HERO GRADIENT BAND ─── */
+  /* Bleeds edge-to-edge by inverting page padding, creating a full-width
+     lavender gradient stage behind every page header */
+  .page-hero {
+    margin: -52px -68px 44px;
+    padding: 52px 68px 44px;
+    background: linear-gradient(168deg,
+      #DDD6FF 0%,
+      #E8E2FF 18%,
+      #EDE9FE 38%,
+      rgba(243,241,255,0.5) 62%,
+      rgba(247,246,243,0) 100%
+    );
+  }
   #content::-webkit-scrollbar { width: 5px; }
   #content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
 
@@ -598,20 +613,21 @@ const ic = {
 
 function programView(slug, name, health, color, frameworks, stats, themes, activity) {
   return `<div class="page">
-    <div class="page-header">
-      <div class="page-breadcrumb">Programs</div>
-      <div class="page-heading">
-        <div class="page-title-block">
-          <h1 class="page-title">${name}</h1>
-          <p class="page-sub">${frameworks.join(' &nbsp;·&nbsp; ')}</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn">View controls</button>
-          <button class="btn primary">Generate report</button>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-breadcrumb">Programs</div>
+        <div class="page-heading">
+          <div class="page-title-block">
+            <h1 class="page-title">${name}</h1>
+            <p class="page-sub">${frameworks.join(' &nbsp;·&nbsp; ')}</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn">View controls</button>
+            <button class="btn primary">Generate report</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="health-header">
+      <div class="health-header" style="background:rgba(255,255,255,0.75);backdrop-filter:blur(8px)">
       <div class="health-score-block">
         <div class="health-score-num" style="color:${color}">${health}</div>
         <div class="health-score-pct">Health score</div>
@@ -629,6 +645,7 @@ function programView(slug, name, health, color, frameworks, stats, themes, activ
         ${stats.map(s=>`<div style="text-align:right"><div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1">${s.v}</div><div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:5px;letter-spacing:0.07em;text-transform:uppercase">${s.l}</div></div>`).join('')}
       </div>
     </div>
+    </div><!-- /page-hero -->
     <div class="two-col">
       <div class="col">
         <div class="section-card">
@@ -660,11 +677,13 @@ function programView(slug, name, health, color, frameworks, stats, themes, activ
 
 function tableView(title, breadcrumb, cols, rows, actions='') {
   return `<div class="page">
-    <div class="page-header">
-      <div class="page-breadcrumb">${breadcrumb}</div>
-      <div class="page-heading">
-        <div class="page-title-block"><h1 class="page-title">${title}</h1></div>
-        <div class="page-actions">${actions}</div>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-breadcrumb">${breadcrumb}</div>
+        <div class="page-heading">
+          <div class="page-title-block"><h1 class="page-title">${title}</h1></div>
+          <div class="page-actions">${actions}</div>
+        </div>
       </div>
     </div>
     <div class="section-card">
@@ -723,37 +742,39 @@ const VIEWS = {
         themes:[{n:'Access Management',p:'pill-risk',l:'At risk'},{n:'Incident Response',p:'pill-warn',l:'Needs attention'},{n:'Data Protection',p:'pill-review',l:'In review'}] },
     ]
     const themes = [
-      { name:'Access Management', color:'#DC2626', bg:'#FEF2F2',
-        desc:'Active concerns across Atlas and Orbit. Orbit identity sync failure has been unresolved for 47 days — accounts belonging to former employees remain active.',
-        progs:['Atlas','Orbit'], trend:'↓ Declining', tColor:'#DC2626', view:'recent-access' },
-      { name:'Vendor Risk', color:'#D97706', bg:'#FFFBEB',
-        desc:'Okta vendor assessment is 60% complete and due in 3 days. Blocking 2 ISO 27001 controls in Atlas from passing.',
-        progs:['Atlas'], trend:'→ Stable', tColor:'#D97706', view:'recent-okta' },
-      { name:'Audit Readiness', color:'#059669', bg:'#F0FDF4',
-        desc:'Forge SOC 2 audit window opens May 18. Evidence is 89% ready. 3 pre-audit checklist items remain open — all assignable now.',
-        progs:['Forge'], trend:'↑ Improving', tColor:'#059669', view:'deadline-forge' },
-      { name:'Identity & Offboarding', color:'#7C3AED', bg:'#F5F3FF',
-        desc:'12 former employee accounts still hold active credentials in Orbit. IdP sync failure is the root cause. This is a failing SOC 2 control (AC-2).',
+      { name:'Identity & Offboarding', color:'#DC2626', bg:'#FEF2F2',
+        desc:'12 former employee accounts remain active in Orbit — IdP sync has not completed in 47 days. This is a failing SOC 2 control (AC-2) and may require auditor disclosure.',
         progs:['Orbit'], trend:'↓ Critical', tColor:'#DC2626', view:'recent-stale' },
+      { name:'Vendor Assessment Gap', color:'#D97706', bg:'#FFFBEB',
+        desc:'Okta security questionnaire is 60% complete with 3 days to the May 9 deadline. Two ISO 27001 controls (A.15.1.2, A.15.2.1) are blocked until it clears.',
+        progs:['Atlas'], trend:'→ Overdue', tColor:'#D97706', view:'recent-okta' },
+      { name:'Audit Readiness', color:'#059669', bg:'#F0FDF4',
+        desc:'Forge audit window opens May 18 — 12 days out. Evidence is 89% collected. 3 checklist items remain: vendor logs, retention export, and auditor intro call.',
+        progs:['Forge'], trend:'↑ On track', tColor:'#059669', view:'deadline-forge' },
+      { name:'Access Control Coverage', color:'#7C3AED', bg:'#F5F3FF',
+        desc:'Access Management is the most represented theme across all three programs — 46 controls tracked. Orbit's coverage is 55%. Atlas and Forge are both above 88%.',
+        progs:['All programs'], trend:'→ Varied', tColor:'#7C3AED', view:'recent-access' },
     ]
 
-    return `<div class="page" style="max-width:900px">
+    return `<div class="page" style="max-width:960px">
+      <div class="page-hero" style="margin:-52px -68px 48px;padding:52px 68px 44px;background:linear-gradient(168deg,#DDD6FF 0%,#E8E2FF 18%,#EDE9FE 38%,rgba(243,241,255,0.5) 62%,rgba(247,246,243,0) 100%)">
 
-      <div style="margin-bottom:44px;display:flex;align-items:flex-end;justify-content:space-between">
-        <div>
-          <h1 style="font-family:var(--font-display);font-size:44px;font-weight:300;color:#111827;margin-bottom:8px;letter-spacing:-0.02em;line-height:1.05">Good morning, Pam.</h1>
-          <p style="font-size:14px;color:#9CA3AF;letter-spacing:0.01em">Wednesday, May 6 &nbsp;·&nbsp; 3 active programs &nbsp;·&nbsp; Next audit: Forge in 12 days</p>
+        <div style="margin-bottom:44px;display:flex;align-items:flex-end;justify-content:space-between">
+          <div>
+            <p style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#A78BFA;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px">Meridian &nbsp;·&nbsp; GRC Platform</p>
+            <h1 style="font-family:var(--font-display);font-size:44px;font-weight:300;color:#1E1B4B;margin-bottom:10px;letter-spacing:-0.02em;line-height:1.05">Good morning, Pam.</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#7C6FAB;letter-spacing:0">Wednesday, May 6 &nbsp;·&nbsp; SOC 2 audit in 12 days &nbsp;·&nbsp; <span style="color:#DC2626;font-weight:500">1 critical alert</span></p>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;color:#A78BFA">
+            <div style="width:5px;height:5px;border-radius:50%;background:#059669"></div>
+            Synced 2 hours ago
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#9CA3AF">
-          <div style="width:6px;height:6px;border-radius:50%;background:#059669"></div>
-          Updated 2 hours ago
-        </div>
-      </div>
 
-      <!-- BU health cards -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px">
+        <!-- BU health cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:0">
         ${progs.map(p=>`
-          <div data-view="${p.slug}" style="background:#fff;border:1px solid #E9E9E7;border-radius:16px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s" onmouseenter="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.07)';this.style.borderColor='${p.color}55'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='#E9E9E7'">
+          <div data-view="${p.slug}" style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:28px 24px;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s,background 0.15s" onmouseenter="this.style.boxShadow='0 8px 32px rgba(109,40,217,0.12)';this.style.borderColor='${p.color}44'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.9)'"  >
 
             <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
               <div>
@@ -783,7 +804,8 @@ const VIEWS = {
             </div>
           </div>
         `).join('')}
-      </div>
+        </div><!-- /BU grid -->
+      </div><!-- /page-hero -->
 
       <!-- AI Themes -->
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
@@ -879,10 +901,12 @@ const VIEWS = {
 
   // ── PROGRAMS OVERVIEW ──
   programs: () => `<div class="page">
-    <div class="page-header">
-      <div class="page-heading">
-        <div class="page-title-block"><h1 class="page-title">Programs</h1><p class="page-sub">3 active programs &nbsp;·&nbsp; Next audit: Forge in 12 days</p></div>
-        <div class="page-actions"><button class="btn primary">New program</button></div>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-heading">
+          <div class="page-title-block"><h1 class="page-title">Programs</h1><p class="page-sub">3 active &nbsp;·&nbsp; Forge audit in 12 days &nbsp;·&nbsp; 1 at risk</p></div>
+          <div class="page-actions"><button class="btn primary">New program</button></div>
+        </div>
       </div>
     </div>
     <div class="section-card">
@@ -936,10 +960,12 @@ const VIEWS = {
 
   // ── VENDORS ──
   vendors: () => `<div class="page">
-    <div class="page-header">
-      <div class="page-heading">
-        <div class="page-title-block"><h1 class="page-title">Vendors</h1><p class="page-sub">8 vendors &nbsp;·&nbsp; 2 assessments overdue</p></div>
-        <div class="page-actions"><button class="btn primary">Add vendor</button></div>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-heading">
+          <div class="page-title-block"><h1 class="page-title">Vendors</h1><p class="page-sub">8 vendors tracked &nbsp;·&nbsp; 1 overdue &nbsp;·&nbsp; 1 due within 2 weeks</p></div>
+          <div class="page-actions"><button class="btn primary">Add vendor</button></div>
+        </div>
       </div>
     </div>
     <div class="section-card">
@@ -966,9 +992,11 @@ const VIEWS = {
 
   // ── REPORTS ──
   reports: () => `<div class="page">
-    <div class="page-header">
-      <div class="page-heading">
-        <div class="page-title-block"><h1 class="page-title">Reports</h1><p class="page-sub">Generate reports for any audience</p></div>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-heading">
+          <div class="page-title-block"><h1 class="page-title">Reports</h1><p class="page-sub">Audit-ready exports, executive summaries, and compliance snapshots</p></div>
+        </div>
       </div>
     </div>
     <div class="two-col">
@@ -1250,20 +1278,23 @@ const VIEWS = {
 
   // ── ILMA: NEW CHAT ──
   'ilma-new': () => `<div class="page">
-    <div class="page-header" style="margin-bottom:20px">
-      <h1 class="page-title">Ask Ilma</h1>
-      <p class="page-sub" style="margin-top:4px">Question-oriented search across all your programs, controls, and evidence.</p>
+    <div class="page-hero">
+      <div class="page-header" style="margin-bottom:0">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0">${ILMA_SVG(36)}</div>
+          <div>
+            <h1 class="page-title" style="font-size:30px;margin-bottom:2px">Ask Ilma</h1>
+            <p class="page-sub" style="font-size:13px">Instant answers across all programs, controls, evidence, and vendors.</p>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="chat-wrap">
-      <div class="chat-header">
-        <div class="chat-avatar">${ILMA_SVG(30)}</div>
-        <div><div class="chat-name">Ilma</div><div class="chat-status">Online</div></div>
-      </div>
-      <div class="chat-messages" id="chat-msgs">
-        <div class="msg-ai">Hey Pam 👋 What do you need? I can summarize program health, surface blockers, draft a report, or answer anything about your controls and evidence.</div>
+      <div class="chat-messages" id="chat-msgs" style="min-height:200px">
+        <div class="msg-ai">Hey Pam — what do you need today? I can surface blockers, summarize health across programs, draft a report, or answer anything about your controls and evidence.</div>
       </div>
       <div class="chat-input-wrap">
-        <input id="chat-input" type="text" placeholder="Ask anything about your programs..." />
+        <input id="chat-input" type="text" placeholder="What's my biggest risk right now?" />
         <button class="chat-send" id="chat-send">↑</button>
       </div>
     </div>
@@ -1284,16 +1315,18 @@ const VIEWS = {
 
   // ── INBOX: STALE ACCOUNTS ──
   'inbox-stale': () => `<div class="page">
-    <div class="page-header">
-      <div class="page-breadcrumb">Inbox</div>
-      <div class="page-heading">
-        <div class="page-title-block">
-          <h1 class="page-title">12 stale accounts flagged in Orbit</h1>
-          <p class="page-sub">Identity provider sync failure &nbsp;·&nbsp; 1 hour ago &nbsp;·&nbsp; Critical</p>
-        </div>
-        <div class="page-actions">
-          <button class="btn">Dismiss</button>
-          <button class="btn primary">Remediate now</button>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-breadcrumb">Inbox &nbsp;›&nbsp; Critical alert</div>
+        <div class="page-heading">
+          <div class="page-title-block">
+            <h1 class="page-title">12 former employee accounts still active</h1>
+            <p class="page-sub">Orbit &nbsp;·&nbsp; Identity provider sync failure &nbsp;·&nbsp; 1 hour ago</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Assign to Denise</button>
+            <button class="btn primary">Remediate now</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1324,18 +1357,24 @@ const VIEWS = {
 
   // ── INBOX: OTHER ──
   'inbox-okta': () => `<div class="page">
-    <div class="page-header">
-      <div class="page-breadcrumb">Inbox</div>
-      <h1 class="page-title">Okta assessment due in 3 days</h1>
-      <p class="page-sub" style="margin-top:4px">Blocking 2 ISO 27001 controls &nbsp;·&nbsp; 3 hours ago</p>
+    <div class="page-hero">
+      <div class="page-header">
+        <div class="page-breadcrumb">Inbox &nbsp;›&nbsp; Vendor alert</div>
+        <div class="page-heading">
+          <div class="page-title-block">
+            <h1 class="page-title">Okta assessment due in 3 days</h1>
+            <p class="page-sub">Atlas &nbsp;·&nbsp; ISO 27001 blocked &nbsp;·&nbsp; 3 hours ago</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn">Assign to Denise</button>
+            <button class="btn primary">Open assessment</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="section-card">
-      <div class="section-card-body" style="padding:16px">
-        <p style="font-size:13px;color:#374151;line-height:1.65">The Okta vendor assessment in Atlas is 60% complete and due May 9. The remaining sections (Access control policies, Incident response, Subprocessors) are blocking two ISO 27001 controls from passing. <br><br>Recommend assigning the remaining sections to Denise today.</p>
-        <div style="display:flex;gap:8px;margin-top:16px">
-          <button class="btn">Assign to Denise</button>
-          <button class="btn primary">Open assessment</button>
-        </div>
+      <div class="section-card-body" style="padding:24px 28px">
+        <p style="font-family:var(--font-body);font-size:14px;color:#374151;line-height:1.7">The Okta vendor security questionnaire in Atlas is 60% complete with 3 days until the May 9 deadline. The remaining sections — Access control policies, Incident response, and Subprocessors — are blocking two ISO 27001 controls (A.15.1.2, A.15.2.1) from passing. Recommending assignment to Denise to clear the remaining sections today.</p>
       </div>
     </div>
   </div>`,
@@ -1392,95 +1431,115 @@ const TAB_LABELS = { home:'Home', ilma:'Ilma', inbox:'Inbox', search:'Search' }
 const TABS = {
   home: () => `
     <div class="nav-section">
-      <span class="sec-label">Coming up</span>
-      <button class="nav-row" data-view="deadline-forge">
-        <span class="row-icon" style="color:#374151">${ic.cal}</span>
-        <span class="row-text">Forge SOC 2 audit</span>
-        <span class="row-meta">12 days</span>
+      <span class="sec-label">Urgent</span>
+      <button class="nav-row" data-view="inbox-stale">
+        <span class="row-icon" style="color:#DC2626">${ic.flag}</span>
+        <span class="row-text">12 stale accounts — Orbit</span>
+        <span class="row-meta" style="color:#DC2626">Critical</span>
       </button>
       <button class="nav-row" data-view="deadline-okta">
         <span class="row-icon" style="color:#D97706">${ic.flag}</span>
-        <span class="row-text">Okta vendor assessment</span>
+        <span class="row-text">Okta assessment overdue</span>
         <span class="row-meta" style="color:#D97706">3 days</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Coming up</span>
+      <button class="nav-row" data-view="deadline-forge">
+        <span class="row-icon">${ic.cal}</span>
+        <span class="row-text">Forge SOC 2 audit window</span>
+        <span class="row-meta">May 18</span>
       </button>
     </div>
     <div class="nav-section">
       <span class="sec-label">Recents</span>
       <button class="nav-row" data-view="recent-access">
         <span class="row-icon">${ic.doc}</span>
-        <span class="row-text">Access Management controls</span>
+        <span class="row-text">Access Management review</span>
         <span class="row-meta">2h</span>
       </button>
       <button class="nav-row" data-view="recent-okta">
         <span class="row-icon">${ic.doc}</span>
-        <span class="row-text">Okta vendor review</span>
+        <span class="row-text">Okta vendor questionnaire</span>
         <span class="row-meta">1d</span>
       </button>
       <button class="nav-row" data-view="recent-stale">
         <span class="row-icon">${ic.doc}</span>
-        <span class="row-text">Stale control verification</span>
+        <span class="row-text">Stale account remediation</span>
         <span class="row-meta">2d</span>
       </button>
     </div>
     <div class="nav-section">
       <span class="sec-label">Programs</span>
-      <button class="nav-row" data-view="forge">${ic.dot('#059669')}<span class="row-text">Forge</span><span class="row-meta" style="color:#059669;font-weight:500">91%</span></button>
-      <button class="nav-row" data-view="reports-forge" style="padding-left:22px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#6B7280;font-size:12px">Reports</span></button>
-      <button class="nav-row" data-view="atlas">${ic.dot('#D97706')}<span class="row-text">Atlas</span><span class="row-meta" style="color:#D97706;font-weight:500">84%</span></button>
-      <button class="nav-row" data-view="reports-atlas" style="padding-left:22px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#6B7280;font-size:12px">Reports</span></button>
-      <button class="nav-row" data-view="orbit">${ic.dot('#DC2626')}<span class="row-text">Orbit</span><span class="row-meta" style="color:#DC2626;font-weight:500">71%</span></button>
-      <button class="nav-row" data-view="reports-orbit" style="padding-left:22px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#6B7280;font-size:12px">Reports</span></button>
+      <button class="nav-row" data-view="forge">${ic.dot('#059669')}<span class="row-text">Forge</span><span class="row-meta" style="color:#059669;font-weight:600">91</span></button>
+      <button class="nav-row" data-view="reports-forge" style="padding-left:24px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#9CA3AF;font-size:12px">Reports</span></button>
+      <button class="nav-row" data-view="atlas">${ic.dot('#D97706')}<span class="row-text">Atlas</span><span class="row-meta" style="color:#D97706;font-weight:600">84</span></button>
+      <button class="nav-row" data-view="reports-atlas" style="padding-left:24px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#9CA3AF;font-size:12px">Reports</span></button>
+      <button class="nav-row" data-view="orbit">${ic.dot('#DC2626')}<span class="row-text">Orbit</span><span class="row-meta" style="color:#DC2626;font-weight:600">71</span></button>
+      <button class="nav-row" data-view="reports-orbit" style="padding-left:24px"><span class="row-icon">${ic.doc}</span><span class="row-text" style="color:#9CA3AF;font-size:12px">Reports</span></button>
     </div>`,
 
   ilma: () => `
     <div class="nav-section" style="margin-bottom:8px;padding:0 2px">
-      <button data-view="ilma-new" style="width:100%;display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:7px;border:1px dashed rgba(109,40,217,0.3);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:#7C3AED;font-family:inherit;transition:background 0.1s,border-color 0.1s" onmouseenter="this.style.background='rgba(109,40,217,0.05)';this.style.borderColor='rgba(109,40,217,0.5)'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(109,40,217,0.3)'">
+      <button data-view="ilma-new" style="width:100%;display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:8px;border:1px dashed rgba(109,40,217,0.28);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:#7C3AED;font-family:var(--font-ui);transition:background 0.1s,border-color 0.1s" onmouseenter="this.style.background='rgba(109,40,217,0.05)';this.style.borderColor='rgba(109,40,217,0.5)'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(109,40,217,0.28)'">
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
-        New chat
+        New conversation
       </button>
     </div>
     <div class="nav-section">
       <span class="sec-label">Recent conversations</span>
-      <button class="nav-row" data-view="ilma-health"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Program health overview</span><span class="row-meta">2h</span></button>
-      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Atlas ISO 27001 blockers</span><span class="row-meta">1d</span></button>
-      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Forge audit readiness</span><span class="row-meta">3d</span></button>
-      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Generate Caesar summary</span><span class="row-meta">4d</span></button>
+      <button class="nav-row" data-view="ilma-health"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Program health — all 3</span><span class="row-meta">2h</span></button>
+      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">What's blocking Atlas ISO 27001?</span><span class="row-meta">1d</span></button>
+      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Forge pre-audit checklist</span><span class="row-meta">3d</span></button>
+      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Draft Caesar exec summary</span><span class="row-meta">4d</span></button>
+      <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Orbit identity risk summary</span><span class="row-meta">5d</span></button>
     </div>`,
 
   inbox: () => `
     <div class="nav-section">
-      <span class="sec-label">Today</span>
+      <span class="sec-label">Needs action</span>
       <button class="inbox-item" data-view="inbox-stale">
         <div class="inbox-dot" style="background:#DC2626"></div>
-        <div><div class="inbox-title">12 stale accounts flagged in Orbit</div><div class="inbox-sub">Identity sync failure &nbsp;·&nbsp; 1h ago</div></div>
+        <div><div class="inbox-title">12 former employee accounts still active in Orbit</div><div class="inbox-sub">IdP sync failure &nbsp;·&nbsp; 1h ago &nbsp;·&nbsp; Critical</div></div>
       </button>
       <button class="inbox-item" data-view="inbox-okta">
         <div class="inbox-dot" style="background:#D97706"></div>
-        <div><div class="inbox-title">Okta assessment due in 3 days</div><div class="inbox-sub">Blocking 2 controls &nbsp;·&nbsp; 3h ago</div></div>
+        <div><div class="inbox-title">Okta assessment 3 days from deadline</div><div class="inbox-sub">Blocking 2 ISO 27001 controls &nbsp;·&nbsp; 3h ago</div></div>
       </button>
     </div>
     <div class="nav-section">
-      <span class="sec-label">Earlier</span>
+      <span class="sec-label">Recent</span>
       <button class="inbox-item" data-view="default">
         <div class="inbox-dot" style="background:#9CA3AF"></div>
-        <div><div class="inbox-title">Evidence refresh completed</div><div class="inbox-sub">34 controls updated &nbsp;·&nbsp; Yesterday</div></div>
+        <div><div class="inbox-title">Forge evidence refresh completed</div><div class="inbox-sub">34 controls updated &nbsp;·&nbsp; Yesterday</div></div>
+      </button>
+      <button class="inbox-item" data-view="default">
+        <div class="inbox-dot" style="background:#7C3AED"></div>
+        <div><div class="inbox-title">Denise submitted 4 vendor sections</div><div class="inbox-sub">Atlas · Okta questionnaire &nbsp;·&nbsp; 2d ago</div></div>
       </button>
       <button class="inbox-item" data-view="default">
         <div class="inbox-dot" style="background:#9CA3AF"></div>
-        <div><div class="inbox-title">Denise completed 4 tasks</div><div class="inbox-sub">Atlas vendor questionnaires &nbsp;·&nbsp; 2d</div></div>
+        <div><div class="inbox-title">SOC 2 audit window confirmed</div><div class="inbox-sub">Forge · May 18 – June 3 &nbsp;·&nbsp; 3d ago</div></div>
       </button>
     </div>`,
 
   search: () => `
-    <div class="search-input-wrap">
+    <div class="search-input-wrap" style="margin-bottom:12px">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#9CA3AF" stroke-width="1.5"><circle cx="7" cy="7" r="4"/><path d="M10.5 10.5L13.5 13.5"/></svg>
-      <input type="text" placeholder="Search controls, vendors, frameworks..." autofocus />
+      <input type="text" placeholder="Search controls, vendors, risks..." autofocus />
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Jump to</span>
+      <button class="nav-row" data-view="forge"><span class="row-icon" style="color:#059669">${ic.doc}</span><span class="row-text">Forge</span><span class="row-meta" style="color:#059669">SOC 2</span></button>
+      <button class="nav-row" data-view="atlas"><span class="row-icon" style="color:#D97706">${ic.doc}</span><span class="row-text">Atlas</span><span class="row-meta" style="color:#D97706">ISO 27001</span></button>
+      <button class="nav-row" data-view="controls"><span class="row-icon">${ic.doc}</span><span class="row-text">All controls</span></button>
+      <button class="nav-row" data-view="vendors"><span class="row-icon">${ic.doc}</span><span class="row-text">Vendors</span></button>
     </div>
     <div class="nav-section">
       <span class="sec-label">Recent searches</span>
-      <button class="nav-row" data-view="recent-access"><span class="row-icon">${ic.srch}</span><span class="row-text">Access control</span></button>
+      <button class="nav-row" data-view="recent-access"><span class="row-icon">${ic.srch}</span><span class="row-text">access control review</span></button>
       <button class="nav-row" data-view="recent-okta"><span class="row-icon">${ic.srch}</span><span class="row-text">Okta vendor assessment</span></button>
-      <button class="nav-row" data-view="controls"><span class="row-icon">${ic.srch}</span><span class="row-text">SOC 2 evidence</span></button>
+      <button class="nav-row" data-view="controls"><span class="row-icon">${ic.srch}</span><span class="row-text">SOC 2 evidence status</span></button>
     </div>`,
 }
 
