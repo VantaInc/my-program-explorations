@@ -25,7 +25,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: var(--font-body);
-    font-size: 14px; color: #1A1A1A; background: #F7F6F3;
+    font-size: 14px; color: #1A1A1A; background: #EDE9FE;
     height: 100vh; overflow: hidden; display: flex;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -177,21 +177,18 @@
 
 
   /* ─── CONTENT AREA ─── */
-  #content { flex: 1; overflow-y: auto; background: #F7F6F3; }
+  #content {
+    flex: 1; overflow-y: auto;
+    background: linear-gradient(155deg, #DDD6FF 0%, #E8E2FF 10%, #EDE9FE 22%, #F0EDFF 38%, #F5F3FF 55%, #F7F6F3 80%, #F7F6F3 100%);
+    background-attachment: fixed;
+  }
 
   /* ─── PAGE HERO GRADIENT BAND ─── */
-  /* Bleeds edge-to-edge by inverting page padding, creating a full-width
-     lavender gradient stage behind every page header */
+  /* Now transparent — full gradient lives on #content background */
   .page-hero {
     margin: -48px -64px 44px;
     padding: 48px 64px 44px;
-    background: linear-gradient(168deg,
-      #DDD6FF 0%,
-      #E8E2FF 18%,
-      #EDE9FE 38%,
-      rgba(243,241,255,0.5) 62%,
-      rgba(247,246,243,0) 100%
-    );
+    background: transparent;
   }
   #content::-webkit-scrollbar { width: 5px; }
   #content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
