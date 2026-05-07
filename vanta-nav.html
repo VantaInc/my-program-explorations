@@ -1642,6 +1642,278 @@ const VIEWS = {
     </div>
   </div>`,
 
+  // ── FORGE: EVIDENCE ──
+  'forge-evidence': () => {
+    const themes = [
+      { name:'Access Management', color:'#059669', pct:94, items:[
+        { id:'ac01', title:'User access review — Q1 2025',           status:'ready',   owner:'Pam',    updated:'May 2', control:'AC-01', file:'access-review-q1.pdf' },
+        { id:'ac02', title:'Offboarding checklist — April',          status:'ready',   owner:'Denise', updated:'May 1', control:'AC-02', file:'offboarding-apr.xlsx' },
+        { id:'ac03', title:'Privileged access log export',           status:'ready',   owner:'Denise', updated:'Apr 28', control:'AC-03', file:'priv-access-log.csv' },
+        { id:'ac04', title:'MFA enforcement policy',                 status:'ready',   owner:'Pam',    updated:'Apr 15', control:'AC-04', file:'mfa-policy-v2.pdf' },
+        { id:'ac05', title:'RBAC role definition matrix',            status:'missing', owner:'—',      updated:'—', control:'AC-07', file:null },
+      ]},
+      { name:'Change Management', color:'#D97706', pct:88, items:[
+        { id:'cm01', title:'Change management policy v2.3',          status:'review',  owner:'Pam',    updated:'May 4', control:'CM-01', file:'cm-policy-v2.3.pdf' },
+        { id:'cm02', title:'Change log — April 2025',                status:'ready',   owner:'Denise', updated:'May 1', control:'CM-02', file:'change-log-apr.csv' },
+        { id:'cm03', title:'Emergency change runbook',               status:'ready',   owner:'Eng',    updated:'Mar 20', control:'CM-04', file:'emergency-runbook.pdf' },
+        { id:'cm04', title:'Peer review screenshots — 3 PRs',        status:'ready',   owner:'Eng',    updated:'Apr 30', control:'CM-03', file:'pr-reviews.zip' },
+      ]},
+      { name:'Incident Response', color:'#059669', pct:100, items:[
+        { id:'ir01', title:'IR plan v3.1 — signed',                  status:'ready',   owner:'Pam',    updated:'Apr 10', control:'IR-01', file:'ir-plan-v3.1.pdf' },
+        { id:'ir02', title:'Tabletop exercise record — Feb 2025',    status:'ready',   owner:'Denise', updated:'Mar 1', control:'IR-02', file:'tabletop-feb.pdf' },
+        { id:'ir03', title:'Incident register — YTD',                status:'ready',   owner:'Denise', updated:'May 3', control:'IR-03', file:'incident-register.xlsx' },
+      ]},
+      { name:'Data Protection', color:'#D97706', pct:80, items:[
+        { id:'dp01', title:'Data classification policy',             status:'ready',   owner:'Pam',    updated:'Apr 20', control:'DP-01', file:'data-class-policy.pdf' },
+        { id:'dp02', title:'Encryption standards doc',               status:'ready',   owner:'Eng',    updated:'Apr 12', control:'DP-02', file:'encryption-standards.pdf' },
+        { id:'dp03', title:'Vendor activity logs — Q1',              status:'missing', owner:'—',      updated:'—', control:'DP-07', file:null },
+        { id:'dp04', title:'Data retention export — Q1',             status:'missing', owner:'—',      updated:'—', control:'DP-08', file:null },
+      ]},
+      { name:'Vendor Management', color:'#059669', pct:91, items:[
+        { id:'vm01', title:'Vendor inventory — current',             status:'ready',   owner:'Pam',    updated:'May 2', control:'VM-01', file:'vendor-inventory.xlsx' },
+        { id:'vm02', title:'Okta security questionnaire',            status:'ready',   owner:'Denise', updated:'Apr 22', control:'VM-03', file:'okta-questionnaire.pdf' },
+        { id:'vm03', title:'AWS BAA agreement',                      status:'ready',   owner:'Pam',    updated:'Jan 15', control:'VM-02', file:'aws-baa.pdf' },
+        { id:'vm04', title:'Vendor activity logs export',            status:'missing', owner:'—',      updated:'—', control:'VM-04', file:null },
+      ]},
+    ]
+    const allItems = themes.flatMap(t => t.items.map(i => ({...i, theme:t.name, themeColor:t.color})))
+    const readyCount  = allItems.filter(i=>i.status==='ready').length
+    const missingCount= allItems.filter(i=>i.status==='missing').length
+    const reviewCount = allItems.filter(i=>i.status==='review').length
+    const totalCount  = allItems.length
+
+    const statusPill = (s) => {
+      if (s==='ready')   return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#D1FAE5;color:#065F46;letter-spacing:0.02em">Ready</span>`
+      if (s==='missing') return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#FEE2E2;color:#991B1B;letter-spacing:0.02em">Missing</span>`
+      if (s==='review')  return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#FEF3C7;color:#92400E;letter-spacing:0.02em">Needs review</span>`
+    }
+
+    return `<div class="page">
+      <div class="page-hero">
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Forge &nbsp;›&nbsp; Evidence</div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+          <div>
+            <h1 style="font-family:var(--font-display);font-size:42px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px">Evidence</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#9CA3AF">SOC 2 Type II &nbsp;·&nbsp; ${totalCount} items tracked &nbsp;·&nbsp; Audit in 12 days</p>
+          </div>
+          <button class="btn primary" style="display:flex;align-items:center;gap:6px">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+            Add evidence
+          </button>
+        </div>
+
+        <!-- Summary stat strip -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:0">
+          ${[
+            { val:readyCount,   label:'Ready',        sub:'Collected & verified',       color:'#059669', bg:'rgba(255,255,255,0.88)' },
+            { val:missingCount, label:'Missing',       sub:'Not yet submitted',           color:'#DC2626', bg:'rgba(254,242,242,0.7)' },
+            { val:reviewCount,  label:'Needs review',  sub:'Flagged for attention',       color:'#D97706', bg:'rgba(255,255,255,0.88)' },
+            { val:'89%',        label:'Readiness',     sub:'On track for May 15 freeze',  color:'#5B21B6', bg:'rgba(255,255,255,0.88)' },
+          ].map(s=>`
+            <div style="background:${s.bg};backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:20px 22px">
+              <div style="font-family:var(--font-display);font-size:40px;font-weight:300;color:${s.color};letter-spacing:-0.04em;line-height:1;margin-bottom:6px">${s.val}</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#9CA3AF;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:3px">${s.label}</div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${s.sub}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div><!-- /page-hero -->
+
+      <!-- Ilma nudge -->
+      <div style="background:rgba(245,243,255,0.7);border:1px solid rgba(109,40,217,0.1);border-radius:14px;padding:16px 20px;margin-bottom:32px;display:flex;align-items:center;gap:14px">
+        <div style="flex-shrink:0">${ILMA_SVG(22)}</div>
+        <p style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.65;margin:0"><strong>3 items are missing.</strong> Vendor activity logs and the data retention export together take about 45 minutes. The RBAC matrix can be generated from your existing role definitions — I can draft a template for you.</p>
+        <button style="flex-shrink:0;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap">Draft template →</button>
+      </div>
+
+      <!-- Evidence by theme -->
+      ${themes.map(t => `
+        <div style="margin-bottom:28px">
+          <!-- Theme header -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:3px;height:18px;border-radius:2px;background:${t.color};flex-shrink:0"></div>
+            <span style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#374151;letter-spacing:-0.01em">${t.name}</span>
+            <div style="flex:1;height:3px;background:#F3F4F6;border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:${t.pct}%;background:${t.color};border-radius:2px"></div>
+            </div>
+            <span style="font-family:var(--font-display);font-size:18px;font-weight:300;color:${t.color};letter-spacing:-0.03em">${t.pct}<span style="font-size:10px;opacity:0.6">%</span></span>
+          </div>
+
+          <!-- Items table -->
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:14px;overflow:hidden">
+            <!-- Header row -->
+            <div style="display:grid;grid-template-columns:1fr 90px 80px 80px 80px;gap:0;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,0.04)">
+              ${['Evidence item','Control','Owner','Updated','Status'].map(h=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">${h}</span>`).join('')}
+            </div>
+            ${t.items.map((item,i) => `
+              <div style="display:grid;grid-template-columns:1fr 90px 80px 80px 80px;gap:0;padding:14px 20px;border-bottom:${i<t.items.length-1?'1px solid rgba(0,0,0,0.04)':'none'};cursor:pointer;transition:background 0.1s;align-items:center" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                  ${item.status==='missing'
+                    ? `<div style="width:18px;height:18px;border-radius:5px;border:1.5px dashed #FCA5A5;flex-shrink:0"></div>`
+                    : `<div style="width:18px;height:18px;border-radius:5px;background:${item.status==='ready'?'#D1FAE5':'#FEF3C7'};display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="${item.status==='ready'?'#059669':'#D97706'}" stroke-width="2"><path d="M2 5L4.5 7.5L8 3"/></svg></div>`
+                  }
+                  <span style="font-family:var(--font-body);font-size:13px;color:${item.status==='missing'?'#9CA3AF':'#111827'};font-style:${item.status==='missing'?'italic':'normal'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.title}</span>
+                </div>
+                <span style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;font-weight:500">${item.control}</span>
+                <span style="font-family:var(--font-ui);font-size:12px;color:#6B7280">${item.owner}</span>
+                <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">${item.updated}</span>
+                ${statusPill(item.status)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>`
+  },
+
+  // ── FORGE: TEAM ──
+  'forge-team': () => {
+    const members = [
+      { name:'Pam Chen',       role:'Program Owner',      avatar:'PC', color:'#5B21B6', avatarBg:'#EDE9FE',
+        owns:['Access Management','Vendor Management','Data Protection'],
+        tasks:3, openItems:1, lastActive:'Today',
+        bio:'Leads Forge end-to-end. Reviews all control evidence and signs off on policy documents.' },
+      { name:'Denise Park',    role:'Compliance Analyst',  avatar:'DP', color:'#059669', avatarBg:'#D1FAE5',
+        owns:['Change Management','Incident Response'],
+        tasks:5, openItems:2, lastActive:'2 hours ago',
+        bio:'Owns evidence collection and vendor questionnaire follow-through. Key executor on Forge.' },
+      { name:'Marcus Webb',    role:'Engineering Lead',    avatar:'MW', color:'#2563EB', avatarBg:'#DBEAFE',
+        owns:['Change Management','Incident Response'],
+        tasks:4, openItems:1, lastActive:'Yesterday',
+        bio:'Owns technical controls — change log exports, PR review screenshots, encryption docs.' },
+      { name:'Caesar Liu',     role:'Executive Sponsor',   avatar:'CL', color:'#6B7280', avatarBg:'#F3F4F6',
+        owns:['All programs'],
+        tasks:1, openItems:0, lastActive:'3 days ago',
+        bio:'Executive visibility only. Receives monthly status reports and signs off on escalations.' },
+    ]
+
+    const controlOwnership = [
+      { theme:'Access Management',   owner:'Pam Chen',    pct:94, color:'#059669', items:5 },
+      { theme:'Change Management',   owner:'Denise Park', pct:88, color:'#D97706', items:4 },
+      { theme:'Incident Response',   owner:'Denise Park', pct:100,color:'#059669', items:3 },
+      { theme:'Data Protection',     owner:'Pam Chen',    pct:80, color:'#D97706', items:4 },
+      { theme:'Vendor Management',   owner:'Pam Chen',    pct:91, color:'#059669', items:4 },
+    ]
+
+    const activity = [
+      { name:'Denise Park', action:'submitted 4 vendor questionnaire sections', time:'2 hours ago', color:'#059669' },
+      { name:'Marcus Webb', action:'uploaded PR review screenshots for CM-03', time:'Yesterday', color:'#2563EB' },
+      { name:'Pam Chen',    action:'completed access review for Q1', time:'May 2', color:'#5B21B6' },
+      { name:'Denise Park', action:'marked IR-02 tabletop exercise as complete', time:'May 1', color:'#059669' },
+      { name:'Marcus Webb', action:'updated encryption standards doc', time:'Apr 28', color:'#2563EB' },
+    ]
+
+    return `<div class="page">
+      <div class="page-hero">
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Forge &nbsp;›&nbsp; Team</div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px">
+          <div>
+            <h1 style="font-family:var(--font-display);font-size:42px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px">Team</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#9CA3AF">4 members &nbsp;·&nbsp; Forge SOC 2 Type II &nbsp;·&nbsp; Audit in 12 days</p>
+          </div>
+          <button class="btn" style="display:flex;align-items:center;gap:6px">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+            Invite member
+          </button>
+        </div>
+
+        <!-- Member cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+          ${members.map(m => `
+            <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);border-radius:18px;padding:24px 22px;transition:box-shadow 0.18s" onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
+              <!-- Avatar + name -->
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                <div style="width:40px;height:40px;border-radius:50%;background:${m.avatarBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-ui);font-size:13px;font-weight:600;color:${m.color}">${m.avatar}</div>
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:#111827;letter-spacing:-0.01em;line-height:1.2">${m.name}</div>
+                  <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:2px">${m.role}</div>
+                </div>
+              </div>
+
+              <!-- Bio -->
+              <p style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.65;margin-bottom:18px">${m.bio}</p>
+
+              <!-- Stats row -->
+              <div style="display:flex;gap:16px;margin-bottom:16px;padding:12px 0;border-top:1px solid rgba(0,0,0,0.05);border-bottom:1px solid rgba(0,0,0,0.05)">
+                <div style="text-align:center">
+                  <div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.03em">${m.tasks}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">Tasks</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:${m.openItems>0?'#D97706':'#059669'};letter-spacing:-0.03em">${m.openItems}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">Open</div>
+                </div>
+                <div style="flex:1;text-align:right">
+                  <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:4px">Active</div>
+                  <div style="font-family:var(--font-ui);font-size:11px;color:#6B7280;font-weight:500;margin-top:2px">${m.lastActive}</div>
+                </div>
+              </div>
+
+              <!-- Owns -->
+              <div style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px">Owns</div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                ${m.owns.map(o=>`<span style="font-family:var(--font-ui);font-size:11px;color:#374151;display:flex;align-items:center;gap:6px"><span style="width:5px;height:5px;border-radius:50%;background:${m.color};flex-shrink:0"></span>${o}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div><!-- /page-hero -->
+
+      <!-- Two-col: Control ownership + Activity feed -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:24px">
+
+        <!-- Control ownership table -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Control ownership &nbsp;›</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr 120px 60px 80px;padding:10px 22px;border-bottom:1px solid rgba(0,0,0,0.04)">
+              ${['Theme','Owner','Items','Progress'].map(h=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">${h}</span>`).join('')}
+            </div>
+            ${controlOwnership.map((c,i)=>`
+              <div style="display:grid;grid-template-columns:1fr 120px 60px 80px;padding:16px 22px;border-bottom:${i<controlOwnership.length-1?'1px solid rgba(0,0,0,0.04)':'none'};align-items:center;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:3px;height:14px;border-radius:1px;background:${c.color}"></div>
+                  <span style="font-family:var(--font-body);font-size:13px;color:#111827">${c.theme}</span>
+                </div>
+                <span style="font-family:var(--font-ui);font-size:12px;color:#6B7280">${c.owner}</span>
+                <span style="font-family:var(--font-ui);font-size:12px;color:#9CA3AF">${c.items}</span>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;height:3px;background:#F3F4F6;border-radius:2px;overflow:hidden">
+                    <div style="height:100%;width:${c.pct}%;background:${c.color};border-radius:2px"></div>
+                  </div>
+                  <span style="font-family:var(--font-display);font-size:14px;font-weight:300;color:${c.color};letter-spacing:-0.02em">${c.pct}<span style="font-size:9px;opacity:0.6">%</span></span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Activity feed -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Activity &nbsp;›</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            ${activity.map((a,i)=>`
+              <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:50%;background:${members.find(m=>m.name===a.name)?.avatarBg||'#F3F4F6'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:${a.color}">${a.name.split(' ').map(n=>n[0]).join('')}</div>
+                <div style="flex:1;min-width:0">
+                  <p style="font-family:var(--font-body);font-size:12px;color:#374151;line-height:1.5;margin-bottom:4px"><strong style="color:#111827">${a.name}</strong> ${a.action}</p>
+                  <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${a.time}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+    </div>`
+  },
+
   // ── AUDIT TIMELINE ──
   'audit-timeline': () => {
     // Task state — simple toggle via onclick
@@ -1983,7 +2255,7 @@ const BU_NAV = {
         <span class="row-text">Controls</span>
         <span class="row-meta">46</span>
       </button>
-      <button class="nav-row" data-view="default">
+      <button class="nav-row" data-view="forge-evidence">
         <span class="row-icon">${ic.doc}</span>
         <span class="row-text">Evidence</span>
         <span class="row-meta">89%</span>
@@ -1998,7 +2270,7 @@ const BU_NAV = {
         <span class="row-text">Audit timeline</span>
         <span class="row-meta" style="color:#5B21B6">May 18</span>
       </button>
-      <button class="nav-row" data-view="default">
+      <button class="nav-row" data-view="forge-team">
         <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><circle cx="3.5" cy="11" r="2"/><circle cx="12.5" cy="11" r="2"/><path d="M8 7.5V9.5M3.5 9V9M12.5 9V9"/></svg></span>
         <span class="row-text">Team</span>
       </button>
