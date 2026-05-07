@@ -41,10 +41,14 @@
 
   /* workspace header */
   .ws-header {
-    padding: 22px 20px 14px;
+    padding: 18px 16px 14px;
     display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
+    flex-shrink: 0; border-radius: 10px; margin: 6px 6px 0;
+    transition: background 0.1s;
   }
+  .ws-header:hover { background: rgba(0,0,0,0.03); }
+  .ws-header.dropdown-open { background: rgba(0,0,0,0.04); }
+  #sidebar { position: relative; }
   .ws-left { display: flex; align-items: center; gap: 10px; }
   .ws-logo {
     width: 26px; height: 26px; border-radius: 7px; background: #5B21B6;
@@ -552,11 +556,80 @@
 </div>
 
 <aside id="sidebar">
-  <div class="ws-header">
+  <!-- Workspace / Context switcher -->
+  <div class="ws-header" id="ws-trigger" onclick="toggleCtxDropdown(event)" style="cursor:pointer;position:relative">
     <div class="ws-left">
-      <div class="ws-logo">V</div>
-      <span class="ws-name">Meridian</span>
+      <div class="ws-logo" id="ws-logo" style="font-size:11px;font-weight:700">V</div>
+      <div>
+        <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase;font-weight:500;line-height:1;margin-bottom:3px" id="ws-context-label">Entire Company</div>
+        <span class="ws-name" id="ws-name">Meridian</span>
+      </div>
     </div>
+    <svg id="ws-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#C0BDB8" stroke-width="1.8" style="flex-shrink:0;transition:transform 0.15s"><path d="M2.5 4.5L6 8L9.5 4.5"/></svg>
+  </div>
+
+  <!-- Context dropdown -->
+  <div id="ctx-dropdown" style="display:none;position:absolute;top:66px;left:10px;right:10px;background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,0.14),0 2px 8px rgba(0,0,0,0.06);z-index:200;overflow:hidden;animation:fadein 0.1s ease">
+
+    <!-- Entire Company row -->
+    <div class="ctx-item" id="ctx-company" onclick="setContext('company')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:8px;background:#5B21B6;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.8"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;letter-spacing:-0.01em">Meridian</div>
+        <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:1px">Entire company · 3 BUs</div>
+      </div>
+      <svg id="ctx-company-check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#5B21B6" stroke-width="2"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
+    </div>
+
+    <div style="height:1px;background:rgba(0,0,0,0.05);margin:0 10px"></div>
+
+    <!-- BU rows -->
+    <div class="ctx-item" id="ctx-forge" onclick="setContext('forge')" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:8px;background:#ECFDF5;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:#059669"></div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;letter-spacing:-0.01em">Forge</div>
+        <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:1px">SOC 2 Type II</div>
+      </div>
+      <span style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#059669;letter-spacing:-0.03em">91</span>
+      <svg id="ctx-forge-check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#059669" stroke-width="2" style="display:none"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
+    </div>
+
+    <div class="ctx-item" id="ctx-atlas" onclick="setContext('atlas')" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:8px;background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:#D97706"></div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;letter-spacing:-0.01em">Atlas</div>
+        <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:1px">SOC 2 · ISO 27001</div>
+      </div>
+      <span style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#D97706;letter-spacing:-0.03em">84</span>
+      <svg id="ctx-atlas-check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#D97706" stroke-width="2" style="display:none"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
+    </div>
+
+    <div class="ctx-item" id="ctx-orbit" onclick="setContext('orbit')" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:8px;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <div style="width:8px;height:8px;border-radius:50%;background:#DC2626"></div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;letter-spacing:-0.01em">Orbit</div>
+        <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:1px">SOC 2 Type II</div>
+      </div>
+      <span style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#DC2626;letter-spacing:-0.03em">71</span>
+      <svg id="ctx-orbit-check" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#DC2626" stroke-width="2" style="display:none"><path d="M2.5 7L5.5 10L11.5 4"/></svg>
+    </div>
+
+    <div style="height:1px;background:rgba(0,0,0,0.05);margin:0 10px"></div>
+
+    <!-- Add BU -->
+    <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;color:#7C3AED;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+      <div style="width:28px;height:28px;border-radius:8px;border:1.5px dashed rgba(109,40,217,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#A78BFA;font-size:16px;font-weight:300">+</div>
+      <div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#7C3AED;letter-spacing:-0.01em">Add Business Unit</div>
+    </div>
+
   </div>
 
   <div class="tab-bar" id="tab-bar">
@@ -1594,6 +1667,232 @@ const VIEWS = {
   </div>`,
 }
 
+// ─── CONTEXT SWITCHER ────────────────────────────────────────────────────────
+
+let currentCtx = 'company'
+let dropdownOpen = false
+
+const CTX_META = {
+  company: { label:'Entire Company', name:'Meridian',  color:'#5B21B6', logoBg:'#5B21B6',  logoText:'V',  homeView:'home-page' },
+  forge:   { label:'Business Unit',  name:'Forge',     color:'#059669', logoBg:'#059669',  logoText:'F',  homeView:'forge' },
+  atlas:   { label:'Business Unit',  name:'Atlas',     color:'#D97706', logoBg:'#D97706',  logoText:'A',  homeView:'atlas' },
+  orbit:   { label:'Business Unit',  name:'Orbit',     color:'#DC2626', logoBg:'#DC2626',  logoText:'O',  homeView:'orbit' },
+}
+
+function toggleCtxDropdown(e) {
+  e.stopPropagation()
+  dropdownOpen = !dropdownOpen
+  const dd = document.getElementById('ctx-dropdown')
+  const trigger = document.getElementById('ws-trigger')
+  const chevron = document.getElementById('ws-chevron')
+  dd.style.display = dropdownOpen ? 'block' : 'none'
+  trigger.classList.toggle('dropdown-open', dropdownOpen)
+  chevron.style.transform = dropdownOpen ? 'rotate(180deg)' : ''
+}
+
+function setContext(slug) {
+  currentCtx = slug
+  dropdownOpen = false
+
+  const meta = CTX_META[slug]
+  const dd = document.getElementById('ctx-dropdown')
+  const trigger = document.getElementById('ws-trigger')
+  const chevron = document.getElementById('ws-chevron')
+
+  // Update header display
+  document.getElementById('ws-name').textContent = meta.name
+  document.getElementById('ws-context-label').textContent = meta.label
+  const logo = document.getElementById('ws-logo')
+  logo.style.background = meta.logoBg
+  logo.textContent = meta.logoText
+
+  // Update checkmarks
+  ;['company','forge','atlas','orbit'].forEach(s => {
+    const el = document.getElementById(`ctx-${s}-check`)
+    if (el) el.style.display = s === slug ? 'block' : 'none'
+  })
+
+  // Close dropdown
+  dd.style.display = 'none'
+  trigger.classList.remove('dropdown-open')
+  chevron.style.transform = ''
+
+  // Re-render nav for new context, then navigate
+  renderNavForCtx(slug)
+  renderView(meta.homeView)
+  setActive(meta.homeView)
+}
+
+function renderNavForCtx(ctx) {
+  const navBody = document.getElementById('nav-body')
+  const activeTab = document.querySelector('.tab-btn.active')
+  const tab = activeTab ? activeTab.dataset.tab : 'home'
+
+  if (ctx === 'company') {
+    navBody.innerHTML = TABS[tab] ? TABS[tab]() : ''
+  } else {
+    navBody.innerHTML = BU_NAV[ctx] ? BU_NAV[ctx]() : ''
+  }
+  // re-wire nav-row clicks
+  navBody.querySelectorAll('[data-view]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation()
+      renderView(el.dataset.view)
+      setActive(el.dataset.view)
+    })
+  })
+}
+
+// Per-BU nav content — shown when context is switched to a specific BU
+const BU_NAV = {
+  forge: () => `
+    <div class="nav-section">
+      <button class="nav-row active" data-view="forge">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z"/></svg></span>
+        <span class="row-text">Overview</span>
+        <span class="row-meta" style="color:#059669;font-weight:600">91</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Program</span>
+      <button class="nav-row" data-view="controls">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span>
+        <span class="row-text">Controls</span>
+        <span class="row-meta">46</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon">${ic.doc}</span>
+        <span class="row-text">Evidence</span>
+        <span class="row-meta">89%</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14C2 11.2 4.7 9 8 9C11.3 9 14 11.2 14 14"/></svg></span>
+        <span class="row-text">Vendors</span>
+        <span class="row-meta">12</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 4.5V8C14 11.5 11 13.5 8 14.5C5 13.5 2 11.5 2 8V4.5L8 2Z"/></svg></span>
+        <span class="row-text">Audit timeline</span>
+        <span class="row-meta" style="color:#5B21B6">May 18</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><circle cx="3.5" cy="11" r="2"/><circle cx="12.5" cy="11" r="2"/><path d="M8 7.5V9.5M3.5 9V9M12.5 9V9"/></svg></span>
+        <span class="row-text">Team</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Urgent</span>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon" style="color:#D97706">${ic.flag}</span>
+        <span class="row-text">Data Protection review</span>
+        <span class="row-meta" style="color:#D97706">Review</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Reports</span>
+      <button class="nav-row" data-view="reports-forge"><span class="row-icon">${ic.doc}</span><span class="row-text">SOC 2 readiness report</span></button>
+      <button class="nav-row" data-view="default"><span class="row-icon">${ic.doc}</span><span class="row-text">Evidence export</span></button>
+    </div>`,
+
+  atlas: () => `
+    <div class="nav-section">
+      <button class="nav-row active" data-view="atlas">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z"/></svg></span>
+        <span class="row-text">Overview</span>
+        <span class="row-meta" style="color:#D97706;font-weight:600">84</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Program</span>
+      <button class="nav-row" data-view="controls">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span>
+        <span class="row-text">Controls</span>
+        <span class="row-meta">58</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon">${ic.doc}</span>
+        <span class="row-text">Evidence</span>
+        <span class="row-meta">76%</span>
+      </button>
+      <button class="nav-row" data-view="inbox-okta">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14C2 11.2 4.7 9 8 9C11.3 9 14 11.2 14 14"/></svg></span>
+        <span class="row-text">Vendors</span>
+        <span class="row-meta" style="color:#D97706">1 overdue</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><circle cx="3.5" cy="11" r="2"/><circle cx="12.5" cy="11" r="2"/><path d="M8 7.5V9.5M3.5 9V9M12.5 9V9"/></svg></span>
+        <span class="row-text">Team</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Blockers</span>
+      <button class="nav-row" data-view="inbox-okta">
+        <span class="row-icon" style="color:#DC2626">${ic.flag}</span>
+        <span class="row-text">Okta assessment</span>
+        <span class="row-meta" style="color:#DC2626">3 days</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon" style="color:#D97706">${ic.flag}</span>
+        <span class="row-text">Change mgmt sign-off</span>
+        <span class="row-meta" style="color:#D97706">Pending</span>
+      </button>
+    </div>`,
+
+  orbit: () => `
+    <div class="nav-section">
+      <button class="nav-row active" data-view="orbit">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z"/></svg></span>
+        <span class="row-text">Overview</span>
+        <span class="row-meta" style="color:#DC2626;font-weight:600">71</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Program</span>
+      <button class="nav-row" data-view="controls">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span>
+        <span class="row-text">Controls</span>
+        <span class="row-meta">41</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon">${ic.doc}</span>
+        <span class="row-text">Evidence</span>
+        <span class="row-meta">62%</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14C2 11.2 4.7 9 8 9C11.3 9 14 11.2 14 14"/></svg></span>
+        <span class="row-text">Vendors</span>
+        <span class="row-meta">8</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="2.5"/><circle cx="3.5" cy="11" r="2"/><circle cx="12.5" cy="11" r="2"/><path d="M8 7.5V9.5M3.5 9V9M12.5 9V9"/></svg></span>
+        <span class="row-text">Team</span>
+      </button>
+    </div>
+    <div class="nav-section">
+      <span class="sec-label">Critical</span>
+      <button class="nav-row" data-view="inbox-stale">
+        <span class="row-icon" style="color:#DC2626">${ic.flag}</span>
+        <span class="row-text">12 stale accounts</span>
+        <span class="row-meta" style="color:#DC2626">Critical</span>
+      </button>
+      <button class="nav-row" data-view="default">
+        <span class="row-icon" style="color:#D97706">${ic.flag}</span>
+        <span class="row-text">IdP sync failure</span>
+        <span class="row-meta" style="color:#D97706">47 days</span>
+      </button>
+    </div>`,
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', () => {
+  if (dropdownOpen) {
+    dropdownOpen = false
+    document.getElementById('ctx-dropdown').style.display = 'none'
+    document.getElementById('ws-trigger').classList.remove('dropdown-open')
+    document.getElementById('ws-chevron').style.transform = ''
+  }
+})
+
 // ─── RENDER VIEW ─────────────────────────────────────────────────────────────
 
 function renderView(id) {
@@ -1772,7 +2071,12 @@ function switchTab(tabId) {
       lbl.remove()
     }
   })
-  document.getElementById('nav-body').innerHTML = TABS[tabId]()
+  // In BU context, home tab shows BU nav; other tabs still show standard content
+  if (tabId === 'home' && currentCtx !== 'company') {
+    document.getElementById('nav-body').innerHTML = BU_NAV[currentCtx]()
+  } else {
+    document.getElementById('nav-body').innerHTML = TABS[tabId]()
+  }
   wireNavClicks()
 }
 
