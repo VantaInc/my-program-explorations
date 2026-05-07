@@ -80,7 +80,14 @@
     flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
     padding: 7px 10px; border-radius: 9px; border: none; cursor: pointer;
     font-family: var(--font-ui); font-size: 12px; font-weight: 500;
-    letter-spacing: -0.01em; transition: background 0.1s;
+    letter-spacing: -0.01em; transition: background 0.1s, gap 0.15s;
+  }
+  .pill-label {
+    max-width: 0; overflow: hidden; opacity: 0; white-space: nowrap;
+    transition: max-width 0.2s ease, opacity 0.15s ease;
+  }
+  .action-pill:hover .pill-label, .action-pill.active .pill-label {
+    max-width: 80px; opacity: 1;
   }
   .action-pill.home { background: rgba(0,0,0,0.03); color: #374151; border: 1px solid rgba(0,0,0,0.06); }
   .action-pill.home:hover { background: rgba(0,0,0,0.07); }
@@ -651,15 +658,15 @@
   <div class="action-strip">
     <button class="action-pill home" id="pill-home" onclick="goHome()">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z"/></svg>
-      <span>Home</span>
+      <span class="pill-label">Home</span>
     </button>
     <button class="action-pill ilma" id="pill-ilma" onclick="triggerActionPill('ilma')">
       <span id="pill-ilma-icon"></span>
-      <span>Ask Ilma</span>
+      <span class="pill-label">Ask Ilma</span>
     </button>
     <button class="action-pill inbox" id="pill-inbox" onclick="triggerActionPill('inbox')">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4C2 3.4 2.4 3 3 3H13C13.6 3 14 3.4 14 4V11C14 11.6 13.6 12 13 12H3C2.4 12 2 11.6 2 11V4Z"/><path d="M2 4L8 8.5L14 4"/></svg>
-      <span>Inbox</span>
+      <span class="pill-label">Inbox</span>
       <span style="background:#DC2626;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:14px;text-align:center;line-height:1.6">2</span>
     </button>
   </div>
