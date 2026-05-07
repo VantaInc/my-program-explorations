@@ -82,6 +82,8 @@
     font-family: var(--font-ui); font-size: 12px; font-weight: 500;
     letter-spacing: -0.01em; transition: background 0.1s;
   }
+  .action-pill.home { background: rgba(0,0,0,0.03); color: #374151; border: 1px solid rgba(0,0,0,0.06); }
+  .action-pill.home:hover { background: rgba(0,0,0,0.07); }
   .action-pill.ilma { background: #F5F3FF; color: #7C3AED; }
   .action-pill.ilma:hover, .action-pill.ilma.active { background: #EDE9FE; }
   .action-pill.inbox { background: rgba(0,0,0,0.03); color: #374151; border: 1px solid rgba(0,0,0,0.06); }
@@ -647,6 +649,10 @@
     <input type="text" placeholder="Search controls, vendors…" id="nav-search-input" />
   </div>
   <div class="action-strip">
+    <button class="action-pill home" id="pill-home" onclick="goHome()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z"/></svg>
+      <span>Home</span>
+    </button>
     <button class="action-pill ilma" id="pill-ilma" onclick="triggerActionPill('ilma')">
       <span id="pill-ilma-icon"></span>
       <span>Ask Ilma</span>
@@ -2930,6 +2936,16 @@ const TABS = {
       <button class="nav-row" data-view="recent-okta"><span class="row-icon">${ic.srch}</span><span class="row-text">Okta vendor assessment</span></button>
       <button class="nav-row" data-view="controls"><span class="row-icon">${ic.srch}</span><span class="row-text">SOC 2 evidence status</span></button>
     </div>`,
+}
+
+// ── Home pill — context-aware home nav ────────────────────────────────────────
+function goHome() {
+  activePill = null
+  document.getElementById('pill-ilma').classList.remove('active')
+  document.getElementById('pill-inbox').classList.remove('active')
+  renderNavForCtx(currentCtx)
+  renderView(CTX_META[currentCtx].homeView)
+  setActive(CTX_META[currentCtx].homeView)
 }
 
 // ── Option B: action pill handler (Ilma / Inbox) ──────────────────────────────
