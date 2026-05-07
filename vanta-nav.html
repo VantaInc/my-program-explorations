@@ -1642,6 +1642,229 @@ const VIEWS = {
     </div>
   </div>`,
 
+  // ── AUDIT TIMELINE ──
+  'audit-timeline': () => {
+    // Task state — simple toggle via onclick
+    const tasks = [
+      { id:'t1', done:false, title:'Upload vendor activity logs', theme:'Vendor Management', est:'15 min',
+        desc:'Export the last 90 days of vendor activity from your SIEM and attach to control VM-04.',
+        urgency:'today', urgencyColor:'#5B21B6', urgencyBg:'#EDE9FE' },
+      { id:'t2', done:false, title:'Complete data retention export', theme:'Data Protection', est:'30 min',
+        desc:'Run the Q1 retention report and attach evidence to DP-07 and DP-08. Template is pre-filled.',
+        urgency:'today', urgencyColor:'#5B21B6', urgencyBg:'#EDE9FE' },
+      { id:'t3', done:true,  title:'Schedule auditor intro call', theme:'Audit Prep', est:'5 min',
+        desc:'Book the 30-min intro call with the audit team for May 16. Use the calendar link they sent.',
+        urgency:'done', urgencyColor:'#059669', urgencyBg:'#D1FAE5' },
+      { id:'t4', done:false, title:'Sign off Change Management policy', theme:'Change Management', est:'10 min',
+        desc:'Review the updated CM policy (v2.3) and add your signature. Waiting on you — Denise finalized it.',
+        urgency:'tomorrow', urgencyColor:'#D97706', urgencyBg:'#FEF3C7' },
+      { id:'t5', done:false, title:'Review Data Protection flagged controls', theme:'Data Protection', est:'20 min',
+        desc:'Two DP controls are flagged at 80%. Review the gaps identified by Ilma and confirm or reassign.',
+        urgency:'tomorrow', urgencyColor:'#D97706', urgencyBg:'#FEF3C7' },
+    ]
+    const themes = [
+      { name:'Access Management',   pct:94, pass:17, total:18, color:'#059669', status:'Passing' },
+      { name:'Change Management',   pct:88, pass:15, total:17, color:'#D97706', status:'1 pending sign-off' },
+      { name:'Incident Response',   pct:100,pass:12, total:12, color:'#059669', status:'Complete' },
+      { name:'Data Protection',     pct:80, pass:8,  total:10, color:'#D97706', status:'2 gaps flagged' },
+      { name:'Vendor Management',   pct:91, pass:10, total:11, color:'#059669', status:'1 item due today' },
+    ]
+    const milestones = [
+      { date:'May 6',  label:'Today',                    done:true,  color:'#5B21B6', pct:0 },
+      { date:'May 9',  label:'Evidence collection opens', done:true,  color:'#059669', pct:25 },
+      { date:'May 15', label:'Evidence freeze',           done:false, color:'#D97706', pct:75 },
+      { date:'May 16', label:'Auditor intro call',        done:false, color:'#5B21B6', pct:83 },
+      { date:'May 18', label:'Audit window opens',        done:false, color:'#DC2626', pct:100 },
+      { date:'Jun 3',  label:'Report delivery',           done:false, color:'#6B7280', pct:100 },
+    ]
+    const todayTasks  = tasks.filter(t => t.urgency === 'today')
+    const tomorrowTasks = tasks.filter(t => t.urgency === 'tomorrow')
+    const doneTasks   = tasks.filter(t => t.urgency === 'done')
+
+    const taskCard = (t) => `
+      <div id="task-${t.id}" onclick="toggleTask('${t.id}')" style="background:${t.done?'rgba(240,253,244,0.8)':'rgba(255,255,255,0.9)'};backdrop-filter:blur(12px);border:1px solid ${t.done?'rgba(5,150,105,0.15)':'rgba(255,255,255,0.95)'};border-radius:14px;padding:20px 22px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden" onmouseenter="if(!this.classList.contains('done'))this.style.boxShadow='0 6px 22px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
+        ${t.done ? `<div style="position:absolute;top:0;left:0;right:0;height:2px;background:#059669;opacity:0.4"></div>` : ''}
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <!-- Checkbox -->
+          <div style="width:20px;height:20px;border-radius:6px;border:1.5px solid ${t.done?'#059669':'rgba(0,0,0,0.15)'};background:${t.done?'#059669':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s">
+            ${t.done ? `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2"><path d="M2 5L4.5 7.5L8 3"/></svg>` : ''}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+              <span style="font-family:var(--font-body);font-size:14px;font-weight:500;color:${t.done?'#6B7280':'#111827'};text-decoration:${t.done?'line-through':'none'};letter-spacing:-0.01em">${t.title}</span>
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:${t.urgencyBg};color:${t.urgencyColor};letter-spacing:0.04em;text-transform:uppercase">${t.done?'Done':t.urgency}</span>
+            </div>
+            <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.65;margin-bottom:10px">${t.desc}</p>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;background:#F3F4F6;color:#6B7280">${t.theme}</span>
+              <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">~${t.est}</span>
+            </div>
+          </div>
+        </div>
+      </div>`
+
+    return `<div class="page">
+      <div class="page-hero">
+
+        <!-- Breadcrumb -->
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Forge &nbsp;›&nbsp; Audit Timeline</div>
+
+        <!-- Hero -->
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:40px">
+          <div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+              <span style="font-family:var(--font-display);font-size:72px;font-weight:300;color:#5B21B6;letter-spacing:-0.04em;line-height:1">12</span>
+              <span style="font-family:var(--font-ui);font-size:18px;color:#9CA3AF;font-weight:400;margin-bottom:8px">days to audit</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:#059669">On track</span>
+              <span style="font-family:var(--font-ui);font-size:12px;color:#9CA3AF">·</span>
+              <span style="font-family:var(--font-ui);font-size:12px;color:#9CA3AF">SOC 2 Type II &nbsp;·&nbsp; May 18 – June 3</span>
+            </div>
+          </div>
+          <!-- Readiness stat -->
+          <div style="text-align:right">
+            <div style="font-family:var(--font-display);font-size:48px;font-weight:300;color:#059669;letter-spacing:-0.04em;line-height:1">89<span style="font-size:22px;opacity:0.6">%</span></div>
+            <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:4px;letter-spacing:0.04em;text-transform:uppercase">Evidence ready</div>
+          </div>
+        </div>
+
+        <!-- Visual timeline strip -->
+        <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:18px;padding:28px 32px;margin-bottom:0">
+          <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:22px">Timeline</div>
+
+          <!-- Track -->
+          <div style="position:relative;height:4px;background:#F3F4F6;border-radius:2px;margin:0 0 0 0;margin-bottom:36px">
+            <!-- Progress fill (today = ~25% through the pre-audit window) -->
+            <div style="position:absolute;left:0;top:0;height:100%;width:25%;background:linear-gradient(90deg,#5B21B6,#7C3AED);border-radius:2px"></div>
+
+            <!-- Milestone dots -->
+            ${milestones.map((m,i) => {
+              const isToday = m.label === 'Today'
+              const isFuture = !m.done && !isToday
+              const isPast = m.done && !isToday
+              const leftPct = i === 0 ? 0 : i === 5 ? 100 : [0,25,75,83,100,100][i]
+              return `<div style="position:absolute;left:${leftPct}%;transform:translateX(-50%);top:50%;transform:translate(-50%,-50%)">
+                <div style="width:${isToday?14:10}px;height:${isToday?14:10}px;border-radius:50%;background:${isToday?'#5B21B6':isPast?'#059669':'#E5E7EB'};border:${isToday?'3px solid white':'2px solid white'};box-shadow:${isToday?'0 0 0 3px rgba(91,33,182,0.25)':'none'}"></div>
+              </div>`
+            }).join('')}
+          </div>
+
+          <!-- Milestone labels below track -->
+          <div style="display:flex;justify-content:space-between;position:relative">
+            ${milestones.map((m,i) => {
+              const leftPct = i === 0 ? 0 : i === 5 ? 100 : [0,25,75,83,100,100][i]
+              const isToday = m.label === 'Today'
+              const isFuture = !m.done && !isToday
+              return `<div style="text-align:${i===0?'left':i===milestones.length-1?'right':'center'};${i>0?'flex:1;':''} min-width:60px">
+                <div style="font-family:var(--font-ui);font-size:11px;font-weight:${isToday?'700':'500'};color:${isToday?'#5B21B6':isFuture?'#374151':'#9CA3AF'}">${m.date}</div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:${isToday?'#A78BFA':'#9CA3AF'};margin-top:2px;line-height:1.3">${m.label}</div>
+              </div>`
+            }).join('')}
+          </div>
+        </div>
+      </div><!-- /page-hero -->
+
+      <!-- Ilma prep section -->
+      <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Ilma &nbsp;›&nbsp; Today's prep</span>
+          <div style="display:flex;align-items:center;gap:5px;background:#F5F3FF;border:1px solid rgba(109,40,217,0.12);border-radius:20px;padding:3px 10px 3px 8px">
+            ${ILMA_SVG(13)}
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED">2 tasks · ~45 min total</span>
+          </div>
+        </div>
+        <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">At this pace you'll be 100% ready by May 15 ↗</span>
+      </div>
+
+      <!-- Ilma context card -->
+      <div style="background:rgba(245,243,255,0.7);border:1px solid rgba(109,40,217,0.1);border-radius:14px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px">
+        <div style="flex-shrink:0;margin-top:1px">${ILMA_SVG(24)}</div>
+        <div>
+          <p style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.7;margin:0">You have <strong>3 items left</strong> before evidence is ready for the May 18 audit. I've batched today's work to take about 45 minutes — one vendor log upload, one data export, and one policy sign-off you can delegate to Denise. Do these now and you'll hit freeze day at 100%.</p>
+        </div>
+      </div>
+
+      <!-- Today's tasks -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        ${todayTasks.map(taskCard).join('')}
+      </div>
+
+      <!-- Done tasks (collapsed row) -->
+      ${doneTasks.length ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        ${doneTasks.map(taskCard).join('')}
+      </div>` : ''}
+
+      <!-- Tomorrow label + tasks -->
+      <div style="margin-top:28px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+        <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Tomorrow's batch &nbsp;›</span>
+        <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">~30 min</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:44px">
+        ${tomorrowTasks.map(taskCard).join('')}
+      </div>
+
+      <!-- Two-col: Evidence tracker + Milestones -->
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:24px">
+
+        <!-- Evidence tracker -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Evidence by theme &nbsp;›</span>
+            <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">44 of 49 controls ready</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;overflow:hidden">
+            ${themes.map((t,i) => `
+              <div style="padding:20px 24px;border-bottom:${i<themes.length-1?'1px solid rgba(0,0,0,0.04)':'none'}">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                  <span style="font-family:var(--font-body);font-size:13px;font-weight:500;color:#111827">${t.name}</span>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">${t.pass}/${t.total} controls</span>
+                    <span style="font-family:var(--font-display);font-size:22px;font-weight:300;color:${t.color};letter-spacing:-0.03em;line-height:1">${t.pct}<span style="font-size:11px;opacity:0.6">%</span></span>
+                  </div>
+                </div>
+                <!-- Progress bar -->
+                <div style="height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden;margin-bottom:8px">
+                  <div style="height:100%;width:${t.pct}%;background:${t.color};border-radius:2px;transition:width 0.3s ease"></div>
+                </div>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">${t.status}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Key dates -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Key dates &nbsp;›</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${[
+              { date:'May 9',  days:3,  label:'Evidence collection opens', color:'#059669', bg:'#F0FDF4', note:'Fieldwork begins' },
+              { date:'May 15', days:9,  label:'Evidence freeze', color:'#D97706', bg:'#FFFBEB', note:'All items must be submitted' },
+              { date:'May 16', days:10, label:'Auditor intro call', color:'#5B21B6', bg:'#F5F3FF', note:'30 min · Book now' },
+              { date:'May 18', days:12, label:'Audit window opens', color:'#DC2626', bg:'#FEF2F2', note:'SOC 2 Type II fieldwork' },
+              { date:'Jun 3',  days:28, label:'Report delivery',   color:'#6B7280', bg:'#F9FAFB', note:'Final SOC 2 report' },
+            ].map(d => `
+              <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+                <div style="flex-shrink:0;text-align:center;min-width:34px">
+                  <div style="font-family:var(--font-display);font-size:24px;font-weight:300;color:${d.color};letter-spacing:-0.04em;line-height:1">${d.days}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;letter-spacing:0.04em">days</div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-body);font-size:12px;font-weight:500;color:#111827;margin-bottom:2px">${d.label}</div>
+                  <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">${d.date} &nbsp;·&nbsp; ${d.note}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div><!-- /two-col -->
+
+    </div>`
+  },
+
   // ── INBOX: OTHER ──
   'inbox-okta': () => `<div class="page">
     <div class="page-hero">
@@ -1770,7 +1993,7 @@ const BU_NAV = {
         <span class="row-text">Vendors</span>
         <span class="row-meta">12</span>
       </button>
-      <button class="nav-row" data-view="default">
+      <button class="nav-row" data-view="audit-timeline">
         <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2L14 4.5V8C14 11.5 11 13.5 8 14.5C5 13.5 2 11.5 2 8V4.5L8 2Z"/></svg></span>
         <span class="row-text">Audit timeline</span>
         <span class="row-meta" style="color:#5B21B6">May 18</span>
@@ -1881,6 +2104,31 @@ const BU_NAV = {
         <span class="row-meta" style="color:#D97706">47 days</span>
       </button>
     </div>`,
+}
+
+// ─── TASK TOGGLE ─────────────────────────────────────────────────────────────
+function toggleTask(id) {
+  // Re-render the view with the task toggled
+  // For prototype: just visually flip the card
+  const card = document.getElementById(`task-${id}`)
+  if (!card) return
+  const checkbox = card.querySelector('div > div:first-child')
+  const isDone = card.style.background.includes('240,253')
+  if (isDone) {
+    card.style.background = 'rgba(255,255,255,0.9)'
+    card.style.borderColor = 'rgba(255,255,255,0.95)'
+    checkbox.style.background = 'transparent'
+    checkbox.style.borderColor = 'rgba(0,0,0,0.15)'
+    checkbox.innerHTML = ''
+  } else {
+    card.style.background = 'rgba(240,253,244,0.8)'
+    card.style.borderColor = 'rgba(5,150,105,0.15)'
+    checkbox.style.background = '#059669'
+    checkbox.style.borderColor = '#059669'
+    checkbox.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="2"><path d="M2 5L4.5 7.5L8 3"/></svg>`
+    const titleEl = card.querySelector('span[style*="font-weight:500"]')
+    if (titleEl) { titleEl.style.textDecoration = 'line-through'; titleEl.style.color = '#6B7280' }
+  }
 }
 
 // Close dropdown when clicking outside
