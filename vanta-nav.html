@@ -1767,16 +1767,439 @@ const VIEWS = {
     </div>`
   },
 
+  // ── FORGE: VENDORS ──
+  'forge-vendors': () => {
+    const vendors = [
+      { name:'Okta',       category:'Identity & Access', risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Not required', lastReview:'Apr 2025', nextReview:'Apr 2026', status:'clear',
+        controls:['AC-01','AC-02','AC-03'], spend:'$24k/yr',
+        desc:'Primary identity provider. SSO and MFA for all Forge systems.' },
+      { name:'AWS',        category:'Infrastructure',    risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Signed Jan 2025', lastReview:'Jan 2025', nextReview:'Jan 2026', status:'clear',
+        controls:['VM-01','VM-02','DP-02'], spend:'$180k/yr',
+        desc:'Core cloud infrastructure. SOC 2 + ISO 27001 certified.' },
+      { name:'GitHub',     category:'Dev Tools',         risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Not required', lastReview:'Mar 2025', nextReview:'Mar 2026', status:'clear',
+        controls:['CM-02','CM-03'], spend:'$12k/yr',
+        desc:'Source control and CI/CD. PR review evidence collected.' },
+      { name:'Datadog',    category:'Monitoring',        risk:'Medium', riskColor:'#D97706', riskBg:'#FEF3C7',
+        questPct:72, baa:'Pending', lastReview:'Nov 2024', nextReview:'Overdue', status:'review',
+        controls:['IR-03','VM-04'], spend:'$36k/yr',
+        desc:'Observability platform. Annual questionnaire overdue — review needed before audit.' },
+      { name:'Salesforce', category:'CRM',               risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Signed Feb 2024', lastReview:'Feb 2025', nextReview:'Feb 2026', status:'clear',
+        controls:['DP-01'], spend:'$96k/yr',
+        desc:'Customer data platform. BAA in place, SOC 2 certified.' },
+      { name:'Stripe',     category:'Payments',          risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Not required', lastReview:'Apr 2025', nextReview:'Apr 2026', status:'clear',
+        controls:['DP-07'], spend:'variable',
+        desc:'Payment processing. PCI DSS Level 1 certified.' },
+      { name:'Slack',      category:'Communication',     risk:'Medium', riskColor:'#D97706', riskBg:'#FEF3C7',
+        questPct:80, baa:'Not required', lastReview:'Feb 2025', nextReview:'Aug 2025', status:'review',
+        controls:['AC-04','CM-01'], spend:'$28k/yr',
+        desc:'Team communication. Questionnaire 80% complete — DLP controls section outstanding.' },
+      { name:'Snowflake',  category:'Data Warehouse',    risk:'High',   riskColor:'#DC2626', riskBg:'#FEE2E2',
+        questPct:45, baa:'Not signed', lastReview:'Oct 2024', nextReview:'Overdue', status:'risk',
+        controls:['DP-07','DP-08','VM-04'], spend:'$60k/yr',
+        desc:'Data warehouse with PII in scope. BAA outstanding and questionnaire stalled at 45%.' },
+      { name:'PagerDuty',  category:'Incident Mgmt',    risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
+        questPct:100, baa:'Not required', lastReview:'Mar 2025', nextReview:'Mar 2026', status:'clear',
+        controls:['IR-01','IR-02'], spend:'$8k/yr',
+        desc:'On-call and incident response. Fully assessed and integrated with IR controls.' },
+    ]
+
+    const clearCount  = vendors.filter(v=>v.status==='clear').length
+    const reviewCount = vendors.filter(v=>v.status==='review').length
+    const riskCount   = vendors.filter(v=>v.status==='risk').length
+
+    const riskVendors  = vendors.filter(v=>v.status==='risk')
+    const reviewVendors= vendors.filter(v=>v.status==='review')
+
+    const statusPill = (s, riskColor, riskBg, riskLabel) => {
+      if (s==='clear')  return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#D1FAE5;color:#065F46;letter-spacing:0.02em">Cleared</span>`
+      if (s==='review') return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#FEF3C7;color:#92400E;letter-spacing:0.02em">Needs review</span>`
+      if (s==='risk')   return `<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;background:#FEE2E2;color:#991B1B;letter-spacing:0.02em">At risk</span>`
+    }
+
+    const questBar = (pct, status) => {
+      const color = status==='clear'?'#059669':status==='review'?'#D97706':'#DC2626'
+      return `<div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:3px;background:#F3F4F6;border-radius:2px;overflow:hidden;min-width:50px">
+          <div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div>
+        </div>
+        <span style="font-family:var(--font-display);font-size:14px;font-weight:300;color:${color};letter-spacing:-0.02em;flex-shrink:0">${pct}<span style="font-size:9px;opacity:0.6">%</span></span>
+      </div>`
+    }
+
+    return `<div class="page">
+      <div class="page-hero">
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Forge &nbsp;›&nbsp; Vendors</div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+          <div>
+            <h1 style="font-family:var(--font-display);font-size:42px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px">Vendors</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#9CA3AF">${vendors.length} vendors in scope &nbsp;·&nbsp; SOC 2 Type II &nbsp;·&nbsp; Audit in 12 days</p>
+          </div>
+          <button class="btn primary" style="display:flex;align-items:center;gap:6px">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+            Add vendor
+          </button>
+        </div>
+
+        <!-- Stat strip -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          ${[
+            { val:clearCount,  label:'Cleared',      sub:'Assessment complete',      color:'#059669', bg:'rgba(255,255,255,0.88)' },
+            { val:reviewCount, label:'Needs review',  sub:'Questionnaire incomplete', color:'#D97706', bg:'rgba(255,253,235,0.7)' },
+            { val:riskCount,   label:'At risk',       sub:'Action required',          color:'#DC2626', bg:'rgba(254,242,242,0.7)' },
+            { val:'91%',       label:'Coverage',      sub:'Controls with vendor evidence', color:'#5B21B6', bg:'rgba(255,255,255,0.88)' },
+          ].map(s=>`
+            <div style="background:${s.bg};backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:20px 22px">
+              <div style="font-family:var(--font-display);font-size:40px;font-weight:300;color:${s.color};letter-spacing:-0.04em;line-height:1;margin-bottom:6px">${s.val}</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#9CA3AF;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:3px">${s.label}</div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${s.sub}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Ilma risk call-out -->
+      ${riskVendors.length || reviewVendors.length ? `
+      <div style="background:rgba(245,243,255,0.7);border:1px solid rgba(109,40,217,0.1);border-radius:14px;padding:18px 22px;margin-bottom:32px;display:flex;align-items:flex-start;gap:14px">
+        <div style="flex-shrink:0;margin-top:1px">${ILMA_SVG(22)}</div>
+        <div style="flex:1">
+          <p style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.7;margin:0 0 12px">
+            <strong>Snowflake is the biggest audit risk.</strong> PII is in scope, the BAA isn't signed, and the questionnaire is stalled at 45%. Two DP controls (DP-07, DP-08) are blocked by it. Datadog and Slack are behind on annual reviews but won't block the audit if addressed this week.
+          </p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Draft Snowflake BAA →</button>
+            <button style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#D97706;background:#FEF3C7;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Send Datadog reminder →</button>
+            <button style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#6B7280;background:#F3F4F6;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Assign to Denise</button>
+          </div>
+        </div>
+      </div>` : ''}
+
+      <!-- At-risk + needs review spotlight cards -->
+      ${riskVendors.length ? `
+      <div style="margin-bottom:16px">
+        <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Needs attention &nbsp;›</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px">
+        ${[...riskVendors,...reviewVendors].map(v=>`
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid ${v.status==='risk'?'rgba(220,38,38,0.12)':'rgba(217,119,6,0.12)'};border-radius:16px;padding:22px 22px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+              <div>
+                <div style="font-family:var(--font-ui);font-size:16px;font-weight:600;color:#111827;letter-spacing:-0.02em;margin-bottom:2px">${v.name}</div>
+                <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">${v.category}</div>
+              </div>
+              ${statusPill(v.status)}
+            </div>
+            <p style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.65;margin-bottom:16px">${v.desc}</p>
+            <div style="margin-bottom:14px">${questBar(v.questPct, v.status)}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px">
+              ${v.controls.map(c=>`<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 7px;border-radius:8px;background:#F3F4F6;color:#6B7280">${c}</span>`).join('')}
+            </div>
+            <div style="display:flex;gap:6px">
+              <button style="flex:1;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(109,40,217,0.1);border-radius:8px;padding:7px;cursor:pointer">Continue assessment</button>
+              <button style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;background:transparent;border:1px solid #E5E7EB;border-radius:8px;padding:7px 12px;cursor:pointer">Assign</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>` : ''}
+
+      <!-- Full vendor table -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">All vendors &nbsp;›</span>
+        <div style="display:flex;gap:8px">
+          ${['All','Cleared','Needs review','At risk'].map((f,i)=>`
+            <button onclick="filterVendors('${f}')" id="vf-${f.replace(' ','-')}" style="font-family:var(--font-ui);font-size:11px;font-weight:${i===0?'600':'500'};padding:5px 12px;border-radius:20px;border:1px solid ${i===0?'#5B21B6':'#E5E7EB'};background:${i===0?'#5B21B6':'transparent'};color:${i===0?'#fff':'#6B7280'};cursor:pointer;transition:all 0.1s">${f}</button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;overflow:hidden">
+        <!-- Header -->
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 80px 1fr 100px 90px;padding:10px 22px;border-bottom:1px solid rgba(0,0,0,0.04)">
+          ${['Vendor','Category','Risk','Questionnaire','BAA','Status'].map(h=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">${h}</span>`).join('')}
+        </div>
+        <div id="vendor-rows">
+        ${vendors.map((v,i)=>`
+          <div data-status="${v.status}" style="display:grid;grid-template-columns:1.4fr 1fr 80px 1fr 100px 90px;padding:15px 22px;border-bottom:${i<vendors.length-1?'1px solid rgba(0,0,0,0.04)':'none'};cursor:pointer;transition:background 0.1s;align-items:center" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div>
+              <div style="font-family:var(--font-body);font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${v.name}</div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${v.spend}</div>
+            </div>
+            <span style="font-family:var(--font-ui);font-size:12px;color:#6B7280">${v.category}</span>
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:${v.riskBg};color:${v.riskColor};width:fit-content">${v.risk}</span>
+            ${questBar(v.questPct, v.status)}
+            <span style="font-family:var(--font-ui);font-size:11px;color:${v.baa.includes('Pending')||v.baa==='Not signed'?'#D97706':'#9CA3AF'}">${v.baa}</span>
+            ${statusPill(v.status)}
+          </div>
+        `).join('')}
+        </div>
+      </div>
+
+      <script>
+      function filterVendors(filter) {
+        document.querySelectorAll('[id^="vf-"]').forEach(b => {
+          const active = b.textContent.trim() === filter
+          b.style.background = active ? '#5B21B6' : 'transparent'
+          b.style.color = active ? '#fff' : '#6B7280'
+          b.style.borderColor = active ? '#5B21B6' : '#E5E7EB'
+          b.style.fontWeight = active ? '600' : '500'
+        })
+        document.querySelectorAll('#vendor-rows > div').forEach(row => {
+          const s = row.dataset.status
+          row.style.display = (filter==='All' || (filter==='Cleared'&&s==='clear') || (filter==='Needs review'&&s==='review') || (filter==='At risk'&&s==='risk')) ? 'grid' : 'none'
+        })
+      }
+      <\/script>
+    </div>`
+  },
+
   // ── FORGE: TEAM ──
   'forge-team': () => {
     const members = [
-      { name:'Pam Chen',       role:'Program Owner',      avatar:'PC', color:'#5B21B6', avatarBg:'#EDE9FE',
-        owns:['Access Management','Vendor Management','Data Protection'],
-        tasks:3, openItems:1, lastActive:'Today',
-        bio:'Leads Forge end-to-end. Reviews all control evidence and signs off on policy documents.' },
-      { name:'Denise Park',    role:'Compliance Analyst',  avatar:'DP', color:'#059669', avatarBg:'#D1FAE5',
-        owns:['Change Management','Incident Response'],
-        tasks:5, openItems:2, lastActive:'2 hours ago',
+      { name:'Pam Chen',    initials:'PC', role:'Program Owner',     color:'#5B21B6', avatarBg:'#EDE9FE',
+        owns:['Access Management','Vendor Mgmt','Data Protection'], tasks:3, open:1, lastActive:'Today',
+        bio:'Leads Forge end-to-end. Reviews all control evidence and signs off on policies.' },
+      { name:'Denise Park', initials:'DP', role:'Compliance Analyst', color:'#059669', avatarBg:'#D1FAE5',
+        owns:['Change Management','Incident Response'],             tasks:5, open:2, lastActive:'2h ago',
+        bio:'Owns evidence collection and vendor questionnaire follow-through.' },
+      { name:'Marcus Webb', initials:'MW', role:'Engineering Lead',   color:'#2563EB', avatarBg:'#DBEAFE',
+        owns:['Change Mgmt (tech)','Incident Response'],            tasks:4, open:1, lastActive:'Yesterday',
+        bio:'Owns technical controls — change logs, PR reviews, encryption docs.' },
+      { name:'Caesar Liu',  initials:'CL', role:'Executive Sponsor',  color:'#6B7280', avatarBg:'#F3F4F6',
+        owns:['Escalations','Exec reports'],                        tasks:1, open:0, lastActive:'3 days ago',
+        bio:'Executive visibility only. Signs off on escalations and receives monthly reports.' },
+    ]
+
+    // Unassigned tasks Ilma wants to surface
+    const suggestions = [
+      { title:'Upload vendor activity logs',   est:'15 min', theme:'Vendor Management', control:'VM-04',
+        recommended:'Denise Park', reason:'Handled last 3 vendor evidence uploads', urgency:'today',
+        urgencyColor:'#DC2626', urgencyBg:'#FEE2E2', canAgent:false },
+      { title:'Complete data retention export', est:'30 min', theme:'Data Protection',   control:'DP-07',
+        recommended:'Denise Park', reason:'Owns DP evidence collection', urgency:'today',
+        urgencyColor:'#DC2626', urgencyBg:'#FEE2E2', canAgent:false },
+      { title:'Send Datadog questionnaire reminder', est:'5 min', theme:'Vendor Management', control:'VM-04',
+        recommended:null, reason:null, urgency:'today',
+        urgencyColor:'#5B21B6', urgencyBg:'#EDE9FE', canAgent:true,
+        agentNote:'Ilma can draft and send this for you' },
+      { title:'Draft RBAC role matrix',         est:'20 min', theme:'Access Management', control:'AC-07',
+        recommended:null, reason:null, urgency:'this week',
+        urgencyColor:'#D97706', urgencyBg:'#FEF3C7', canAgent:true,
+        agentNote:'Ilma can generate this from your existing role definitions' },
+      { title:'Sign off Change Mgmt policy v2.3', est:'10 min', theme:'Change Management', control:'CM-01',
+        recommended:'Pam Chen', reason:'Program Owner sign-off required', urgency:'this week',
+        urgencyColor:'#D97706', urgencyBg:'#FEF3C7', canAgent:false },
+    ]
+
+    const assignedTasks = [
+      { title:'Evidence refresh — 34 controls',   assignee:'Denise Park', initials:'DP', color:'#059669', status:'done',    due:'Done May 2' },
+      { title:'Audit window confirmed — May 18',  assignee:'Pam Chen',    initials:'PC', color:'#5B21B6', status:'done',    due:'Done Apr 30' },
+      { title:'PR review screenshots for CM-03',  assignee:'Marcus Webb', initials:'MW', color:'#2563EB', status:'active',  due:'Due May 8' },
+      { title:'Okta questionnaire follow-up',     assignee:'Denise Park', initials:'DP', color:'#059669', status:'active',  due:'Due May 9' },
+      { title:'Data Protection policy review',    assignee:'Pam Chen',    initials:'PC', color:'#5B21B6', status:'active',  due:'Due May 12' },
+    ]
+
+    const activity = [
+      { initials:'DP', color:'#059669', avatarBg:'#D1FAE5', name:'Denise Park', action:'submitted 4 vendor questionnaire sections', time:'2h ago' },
+      { initials:'MW', color:'#2563EB', avatarBg:'#DBEAFE', name:'Marcus Webb', action:'uploaded PR review screenshots (CM-03)', time:'Yesterday' },
+      { initials:'PC', color:'#5B21B6', avatarBg:'#EDE9FE', name:'Pam Chen',    action:'completed access review Q1', time:'May 2' },
+    ]
+
+    return `<div class="page">
+      <div class="page-hero">
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:28px">Forge &nbsp;›&nbsp; Team</div>
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px">
+          <div>
+            <h1 style="font-family:var(--font-display);font-size:42px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.05;margin-bottom:10px">Team</h1>
+            <p style="font-family:var(--font-ui);font-size:14px;color:#9CA3AF">4 members &nbsp;·&nbsp; ${assignedTasks.filter(t=>t.status==='active').length} active tasks &nbsp;·&nbsp; Audit in 12 days</p>
+          </div>
+          <button class="btn" style="display:flex;align-items:center;gap:6px">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+            Invite member
+          </button>
+        </div>
+
+        <!-- Member cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          ${members.map(m=>`
+            <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:22px 20px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="width:36px;height:36px;border-radius:50%;background:${m.avatarBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-ui);font-size:12px;font-weight:600;color:${m.color}">${m.initials}</div>
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:#111827;letter-spacing:-0.01em">${m.name}</div>
+                  <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:1px">${m.role}</div>
+                </div>
+              </div>
+              <p style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;line-height:1.6;margin-bottom:14px">${m.bio}</p>
+              <div style="display:flex;gap:10px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.05);border-bottom:1px solid rgba(0,0,0,0.05);margin-bottom:12px">
+                <div style="text-align:center;flex:1">
+                  <div style="font-family:var(--font-display);font-size:20px;font-weight:300;color:#111827;letter-spacing:-0.03em">${m.tasks}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;text-transform:uppercase;letter-spacing:0.06em">Tasks</div>
+                </div>
+                <div style="text-align:center;flex:1">
+                  <div style="font-family:var(--font-display);font-size:20px;font-weight:300;color:${m.open>0?'#D97706':'#059669'};letter-spacing:-0.03em">${m.open}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;text-transform:uppercase;letter-spacing:0.06em">Open</div>
+                </div>
+                <div style="text-align:center;flex:1">
+                  <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:2px">${m.lastActive}</div>
+                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;text-transform:uppercase;letter-spacing:0.06em">Active</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                ${m.owns.map(o=>`<span style="font-family:var(--font-ui);font-size:11px;color:#374151;display:flex;align-items:center;gap:6px"><span style="width:4px;height:4px;border-radius:50%;background:${m.color};flex-shrink:0"></span>${o}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Ilma: what to assign -->
+      <div style="margin-bottom:18px;display:flex;align-items:center;gap:10px">
+        <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Ilma &nbsp;›&nbsp; Suggested actions</span>
+        <div style="display:flex;align-items:center;gap:5px;background:#F5F3FF;border:1px solid rgba(109,40,217,0.12);border-radius:20px;padding:3px 10px 3px 8px">
+          ${ILMA_SVG(13)}
+          <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED">5 unassigned items — audit in 12 days</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,243,255,0.5);border:1px solid rgba(109,40,217,0.08);border-radius:16px;padding:20px;margin-bottom:36px;display:flex;flex-direction:column;gap:10px">
+        ${suggestions.map((s,si)=>`
+          <div id="sug-${si}" style="background:rgba(255,255,255,0.9);border:1px solid rgba(255,255,255,0.95);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+            <!-- Urgency dot -->
+            <div style="width:8px;height:8px;border-radius:50%;background:${s.urgencyColor};flex-shrink:0;margin-top:1px"></div>
+
+            <!-- Task info -->
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+                <span style="font-family:var(--font-body);font-size:13px;font-weight:500;color:#111827">${s.title}</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;background:${s.urgencyBg};color:${s.urgencyColor};letter-spacing:0.03em;text-transform:uppercase">${s.urgency}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;padding:1px 7px;border-radius:8px;background:#F3F4F6;color:#6B7280">${s.control}</span>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">~${s.est}</span>
+                ${s.canAgent ? `<span style="font-family:var(--font-ui);font-size:10px;color:#7C3AED;display:flex;align-items:center;gap:4px">${ILMA_SVG(11)} ${s.agentNote}</span>` : ''}
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              ${s.canAgent ? `
+                <button onclick="document.getElementById('sug-${si}').style.opacity='0.4'" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:7px 13px;cursor:pointer;white-space:nowrap">Let Ilma handle it</button>
+              ` : s.recommended ? `
+                <div style="display:flex;align-items:center;gap:6px">
+                  <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">Suggested:</div>
+                  <div style="display:flex;align-items:center;gap:5px;background:#F0FDF4;border:1px solid rgba(5,150,105,0.12);border-radius:20px;padding:3px 10px 3px 6px;cursor:pointer" onclick="assignTask(${si},'${s.recommended}')" title="${s.reason}">
+                    <div style="width:18px;height:18px;border-radius:50%;background:#D1FAE5;display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:9px;font-weight:600;color:#059669">${s.recommended.split(' ').map(n=>n[0]).join('')}</div>
+                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#059669">${s.recommended.split(' ')[0]}</span>
+                  </div>
+                </div>
+              ` : ''}
+              <!-- Assign to dropdown trigger -->
+              <div style="position:relative">
+                <button onclick="toggleAssignMenu(${si})" style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#6B7280;background:transparent;border:1px solid #E5E7EB;border-radius:8px;padding:6px 12px;cursor:pointer">${s.canAgent||s.recommended?'Reassign':'Assign to →'}</button>
+                <div id="assign-menu-${si}" style="display:none;position:absolute;right:0;top:34px;background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;min-width:160px;overflow:hidden">
+                  ${members.map(m=>`
+                    <div onclick="assignTask(${si},'${m.name}')" style="display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
+                      <div style="width:22px;height:22px;border-radius:50%;background:${m.avatarBg};display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:9px;font-weight:600;color:${m.color}">${m.initials}</div>
+                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151">${m.name}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <!-- Dismiss -->
+              <button onclick="document.getElementById('sug-${si}').style.display='none'" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:#C0BDB8;font-size:16px;border-radius:6px;flex-shrink:0" onmouseenter="this.style.background='#F3F4F6'" onmouseleave="this.style.background='transparent'">×</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Two-col: Active tasks + Activity -->
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:24px">
+
+        <!-- Active tasks table -->
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Active tasks &nbsp;›</span>
+            <button style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px">
+              <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 1v12M1 7h12"/></svg>
+              Add task
+            </button>
+          </div>
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr 120px 90px;padding:10px 22px;border-bottom:1px solid rgba(0,0,0,0.04)">
+              ${['Task','Assignee','Due'].map(h=>`<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">${h}</span>`).join('')}
+            </div>
+            ${assignedTasks.map((t,i)=>`
+              <div style="display:grid;grid-template-columns:1fr 120px 90px;padding:14px 22px;border-bottom:${i<assignedTasks.length-1?'1px solid rgba(0,0,0,0.04)':'none'};align-items:center;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:16px;height:16px;border-radius:4px;${t.status==='done'?`background:#D1FAE5;display:flex;align-items:center;justify-content:center`:`border:1.5px solid #E5E7EB`};flex-shrink:0">
+                    ${t.status==='done'?`<svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="#059669" stroke-width="2"><path d="M2 5L4.5 7.5L8 3"/></svg>`:''}
+                  </div>
+                  <span style="font-family:var(--font-body);font-size:13px;color:${t.status==='done'?'#9CA3AF':'#111827'};text-decoration:${t.status==='done'?'line-through':'none'}">${t.title}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <div style="width:22px;height:22px;border-radius:50%;background:${members.find(m=>m.initials===t.initials)?.avatarBg||'#F3F4F6'};display:flex;align-items:center;justify-content:center;font-family:var(--font-ui);font-size:9px;font-weight:600;color:${t.color}">${t.initials}</div>
+                  <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">${t.assignee.split(' ')[0]}</span>
+                </div>
+                <span style="font-family:var(--font-ui);font-size:11px;color:${t.status==='done'?'#9CA3AF':'#374151'}">${t.due}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div>
+          <div style="margin-bottom:16px">
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;letter-spacing:0.08em;text-transform:uppercase">Activity &nbsp;›</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${activity.map(a=>`
+              <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:12px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:50%;background:${a.avatarBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:${a.color}">${a.initials}</div>
+                <div>
+                  <p style="font-family:var(--font-body);font-size:12px;color:#374151;line-height:1.5;margin-bottom:3px"><strong style="color:#111827">${a.name}</strong> ${a.action}</p>
+                  <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${a.time}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <script>
+      function toggleAssignMenu(idx) {
+        document.querySelectorAll('[id^="assign-menu-"]').forEach((m,i) => {
+          m.style.display = (i === idx && m.style.display === 'none') ? 'block' : 'none'
+        })
+      }
+      function assignTask(idx, name) {
+        const card = document.getElementById('sug-' + idx)
+        if (!card) return
+        const initials = name.split(' ').map(n=>n[0]).join('')
+        // Show assigned state
+        card.style.opacity = '0.55'
+        const menu = document.getElementById('assign-menu-' + idx)
+        if (menu) menu.style.display = 'none'
+        // Brief flash of assigned state
+        const btns = card.querySelectorAll('button')
+        btns.forEach(b => { if(b.textContent.includes('Assign')||b.textContent.includes('Reassign')) b.textContent = '✓ Assigned to ' + name.split(' ')[0] })
+      }
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[id^="assign-menu-"]') && !e.target.closest('button')) {
+          document.querySelectorAll('[id^="assign-menu-"]').forEach(m => m.style.display = 'none')
+        }
+      })
+      <\/script>
+    </div>`
+  },
+
+  // ── FORGE: VENDORS (old placeholder removed above) ──
+  // ── AUDIT TIMELINE ──
         bio:'Owns evidence collection and vendor questionnaire follow-through. Key executor on Forge.' },
       { name:'Marcus Webb',    role:'Engineering Lead',    avatar:'MW', color:'#2563EB', avatarBg:'#DBEAFE',
         owns:['Change Management','Incident Response'],
@@ -2260,7 +2683,7 @@ const BU_NAV = {
         <span class="row-text">Evidence</span>
         <span class="row-meta">89%</span>
       </button>
-      <button class="nav-row" data-view="default">
+      <button class="nav-row" data-view="forge-vendors">
         <span class="row-icon"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14C2 11.2 4.7 9 8 9C11.3 9 14 11.2 14 14"/></svg></span>
         <span class="row-text">Vendors</span>
         <span class="row-meta">12</span>
