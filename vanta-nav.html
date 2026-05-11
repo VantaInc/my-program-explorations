@@ -1626,38 +1626,45 @@ const VIEWS = {
       { title:'Stale account pattern detected', urgency:'Critical', urgencyColor:'#DC2626', urgencyBg:'#FEE2E2',
         bu:'Orbit', buColor:'#DC2626', buBg:'#FEF2F2', week:'This week',
         body:'12 former employee accounts remain active — IdP sync hasn\'t completed in 47 days. AC-2 is currently failing and may require auditor disclosure at the May 18 window.',
-        action:'View accounts', view:'recent-stale',
-        meta:'Detected May 6 · Access Management · AC-2' },
+        meta:'Detected May 6 · Access Management · AC-2',
+        ilmaPrompt:'What should I do about the 12 stale accounts in Orbit?',
+        ilmaReply:'This is your most urgent item before the May 18 audit window. Here\'s what I\'d do right now:<br><br><strong>1. Revoke access immediately.</strong> All 12 accounts map to former employees — there\'s no legitimate reason they should be active. I can generate the revocation list from the IdP sync log if you need it.<br><br><strong>2. Fix the sync.</strong> The IdP connector has been failing for 47 days. Your IT admin needs to re-authenticate the Okta integration today — this is the root cause.<br><br><strong>3. Document everything.</strong> Auditors will ask about this. A short remediation note (who was affected, when access was revoked, what caused the sync failure) is enough to satisfy AC-2 disclosure requirements.<br><br>Want me to draft the remediation note, or pull the list of affected accounts?' },
       { title:'Vendor deadline at risk', urgency:'Warning', urgencyColor:'#D97706', urgencyBg:'#FEF3C7',
         bu:'Atlas', buColor:'#D97706', buBg:'#FFFBEB', week:'This week',
         body:'Okta security questionnaire is 60% complete with 3 days to the May 9 deadline. Two ISO 27001 controls are blocked until it clears.',
-        action:'Draft questions', view:'recent-okta',
-        meta:'Detected May 5 · Vendor Management · VM-04' },
+        meta:'Detected May 5 · Vendor Management · VM-04',
+        ilmaPrompt:'Can you help me finish the Okta vendor questionnaire?',
+        ilmaReply:'Yes — I\'ve reviewed the 40% that\'s outstanding. Most of the remaining questions are about Okta\'s encryption, incident response, and sub-processor policies, which are all publicly documented in their security whitepaper.<br><br>I can draft answers to all 14 remaining questions based on Okta\'s published documentation and your existing vendor controls. That should get you to 95%+ — Denise would just need to review before submitting.<br><br>The two ISO 27001 controls blocked on this are VM-04 (vendor risk assessment) and AC-06 (third-party access). Both will go green once the questionnaire is marked complete.<br><br>Want me to draft the answers now?' },
       { title:'Forge audit readiness improving', urgency:'On track', urgencyColor:'#059669', urgencyBg:'#D1FAE5',
         bu:'Forge', buColor:'#059669', buBg:'#F0FDF4', week:'This week',
         body:'Evidence is 89% collected with 12 days to audit. 3 items remain: vendor logs, retention export, and auditor intro. All are assigned and moving.',
-        action:'See checklist', view:'deadline-forge',
-        meta:'Detected May 4 · Audit Prep · AF-01' },
+        meta:'Detected May 4 · Audit Prep · AF-01',
+        ilmaPrompt:'What are the 3 remaining items before the Forge audit?',
+        ilmaReply:'You\'re in good shape — here\'s exactly what\'s left:<br><br><strong>1. Vendor activity logs (VM-04)</strong> — assigned to Denise. She needs to export the last 90 days from your SIEM and attach it to the control. Estimated 15 min. Due: any time before May 18.<br><br><strong>2. Data retention export (DP-07, DP-08)</strong> — also Denise. The Q1 retention report template is pre-filled; she just needs to run it and upload. Estimated 30 min.<br><br><strong>3. Auditor intro call</strong> — unassigned. This is a 30-min intro with the audit team. The calendar link they sent is in your inbox from May 2. Someone needs to book a slot before May 16.<br><br>Everything else is green. At this pace you\'ll be fully ready by May 14, 4 days before the window opens.' },
       { title:'Data Protection coverage gap', urgency:'Warning', urgencyColor:'#D97706', urgencyBg:'#FEF3C7',
         bu:'Atlas', buColor:'#D97706', buBg:'#FFFBEB', week:'This week',
         body:'Two data protection controls are at 80% — below the 85% threshold for the upcoming ISO 27001 review. DP-07 and DP-08 need evidence uploads before May 12.',
-        action:'View controls', view:'controls',
-        meta:'Detected May 3 · Data Protection · DP-07, DP-08' },
+        meta:'Detected May 3 · Data Protection · DP-07, DP-08',
+        ilmaPrompt:'What exactly do DP-07 and DP-08 need for the ISO 27001 review?',
+        ilmaReply:'Both controls are close — they just need one evidence upload each.<br><br><strong>DP-07 (Data Retention)</strong> needs a current retention policy document with an effective date in the last 12 months. Your existing policy is from March 2024, which is within range — it just hasn\'t been attached to the control yet. Pam can upload it directly from the evidence library.<br><br><strong>DP-08 (Data Disposal)</strong> needs evidence of a disposal process — typically a procedure doc or a log of disposed assets. You have a draft disposal SOP from Q4 that Marcus never finalized. It\'s at 80% — I can complete the remaining sections if you want to move fast.<br><br>Both should be doable before May 12. Want me to pre-fill the evidence upload for DP-07 and draft the missing sections of the DP-08 SOP?' },
       { title:'Change management velocity slowing', urgency:'Warning', urgencyColor:'#D97706', urgencyBg:'#FEF3C7',
         bu:'Forge', buColor:'#059669', buBg:'#F0FDF4', week:'Last week',
         body:'PR review turnaround increased from 1.2 to 3.4 days over the past two weeks. CM-03 evidence cadence is at risk if this continues through the audit window.',
-        action:'View trend', view:'controls',
-        meta:'Detected Apr 30 · Change Management · CM-03' },
+        meta:'Detected Apr 30 · Change Management · CM-03',
+        ilmaPrompt:'Why is change management slowing down and should I be worried?',
+        ilmaReply:'The slowdown is real but recoverable. Here\'s what I\'m seeing:<br><br>PR review turnaround jumped from 1.2 → 3.4 days over the past two weeks. The pattern correlates with Marcus being pulled into the audit prep work — he\'s the primary reviewer on CM-03 and has been context-switching heavily.<br><br><strong>Should you be worried?</strong> Not yet, but it needs attention. CM-03 requires evidence of timely peer review for every change. If turnaround stays above 3 days through May 18, auditors may flag it as a process gap even if the underlying changes were sound.<br><br><strong>What I\'d do:</strong> Ask Marcus to clear his PR review queue by end of week — it\'s 6 open items. Then consider temporarily adding Denise as a secondary reviewer for the audit window so there\'s no single point of failure.<br><br>Want me to draft a quick note to Marcus summarizing the backlog?' },
       { title:'Incident response plan needs refresh', urgency:'Low', urgencyColor:'#6B7280', urgencyBg:'#F3F4F6',
         bu:'Orbit', buColor:'#DC2626', buBg:'#FEF2F2', week:'Last week',
         body:'IR plan was last updated 91 days ago. SOC 2 auditors typically flag plans older than 90 days. Pam has been assigned — estimated 30 min to update.',
-        action:'Open task', view:'controls',
-        meta:'Detected Apr 29 · Incident Response · IR-01' },
+        meta:'Detected Apr 29 · Incident Response · IR-01',
+        ilmaPrompt:'What needs to change in the incident response plan?',
+        ilmaReply:'The plan itself is solid — this is mostly a freshness update. Here\'s what I\'d change:<br><br><strong>1. Update the date and version number.</strong> Auditors often check this first. Bump it to v3.2, today\'s date.<br><br><strong>2. Reflect the current on-call rotation.</strong> The plan still lists Jamie Lee as IR lead. Jamie left in February. Update to Marcus Webb (Forge) and Denise Park (Atlas/Orbit).<br><br><strong>3. Add the new escalation path to Caesar.</strong> You added an exec escalation tier in Q4 but it\'s not reflected in the IR plan yet.<br><br>Everything else — runbooks, severity definitions, communication templates — looks current.<br><br>I can generate a redlined version of the plan with these three changes applied. Want me to draft it?' },
       { title:'Encryption evidence collected', urgency:'On track', urgencyColor:'#059669', urgencyBg:'#D1FAE5',
         bu:'Forge', buColor:'#059669', buBg:'#F0FDF4', week:'Last week',
         body:'All 4 encryption controls now have passing evidence attached. Marcus completed the final upload for DP-03 and DP-04 — removes a blocker from the audit checklist.',
-        action:'View evidence', view:'forge-evidence',
-        meta:'Detected Apr 28 · Data Protection · DP-03, DP-04' },
+        meta:'Detected Apr 28 · Data Protection · DP-03, DP-04',
+        ilmaPrompt:'Is encryption fully covered for the Forge audit?',
+        ilmaReply:'Yes — encryption is one of your cleanest areas going into the audit. Here\'s the full picture:<br><br><strong>DP-01 (Encryption at rest)</strong> — passing. AWS KMS config documented and verified.<br><strong>DP-02 (Encryption in transit)</strong> — passing. TLS 1.2+ enforced across all services.<br><strong>DP-03 (Key management)</strong> — passing. Marcus uploaded the key rotation log on Apr 28.<br><strong>DP-04 (Database encryption)</strong> — passing. RDS encryption confirmed with screenshot evidence.<br><br>All four have auditor-ready evidence attached. No action needed here — this is one less thing to worry about before May 18.<br><br>The only data protection items still open are DP-07 and DP-08 in Atlas, which are a separate gap I\'ve flagged separately.' },
     ]
 
     const weeks = [...new Set(all.map(i => i.week))]
@@ -1722,8 +1729,8 @@ const VIEWS = {
                     <p style="font-family:var(--font-body);font-size:13px;color:#6B7280;line-height:1.7;margin:0">${ins.body}</p>
                   </div>
                   <!-- Right: action -->
-                  <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:12px;padding-top:2px">
-                    <button onclick="event.stopPropagation();renderView('${ins.view}');setActive('${ins.view}')" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap">${ins.action} →</button>
+                  <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:2px">
+                    <button onclick="event.stopPropagation();openIlmaChat('${ins.ilmaPrompt.replace(/'/g,"\\'")}','${ins.ilmaReply.replace(/'/g,"\\'")}')" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px">${ILMA_SVG(12)} Ask Ilma</button>
                   </div>
                 </div>
               `).join('')}
@@ -1736,28 +1743,37 @@ const VIEWS = {
   },
 
   // ── ILMA: NEW CHAT ──
-  'ilma-new': () => `<div class="page">
-    <div class="page-hero">
-      <div class="page-header" style="margin-bottom:0">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-          <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0">${ILMA_SVG(36)}</div>
-          <div>
-            <h1 class="page-title" style="font-size:30px;margin-bottom:2px">Ask Ilma</h1>
-            <p class="page-sub" style="font-size:13px">Instant answers across all programs, controls, evidence, and vendors.</p>
+  'ilma-new': () => {
+    const seed = _ilmaChat
+    _ilmaChat = null
+    return `<div class="page">
+      <div class="page-hero">
+        <div class="page-header" style="margin-bottom:0">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0">${ILMA_SVG(36)}</div>
+            <div>
+              <h1 class="page-title" style="font-size:30px;margin-bottom:2px">Ask Ilma</h1>
+              <p class="page-sub" style="font-size:13px">Instant answers across all programs, controls, evidence, and vendors.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="chat-wrap">
-      <div class="chat-messages" id="chat-msgs" style="min-height:200px">
-        <div class="msg-ai">Hey Pam — what do you need today? I can surface blockers, summarize health across programs, draft a report, or answer anything about your controls and evidence.</div>
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chat-msgs" style="min-height:200px">
+          ${seed ? `
+            <div class="msg-user">${seed.prompt}</div>
+            <div class="msg-ai" id="ilma-seed-reply" style="opacity:0;transition:opacity 0.3s ease">${seed.reply}</div>
+          ` : `
+            <div class="msg-ai">Hey Pam — what do you need today? I can surface blockers, summarize health across programs, draft a report, or answer anything about your controls and evidence.</div>
+          `}
+        </div>
+        <div class="chat-input-wrap">
+          <input id="chat-input" type="text" placeholder="What's my biggest risk right now?" />
+          <button class="chat-send" id="chat-send">↑</button>
+        </div>
       </div>
-      <div class="chat-input-wrap">
-        <input id="chat-input" type="text" placeholder="What's my biggest risk right now?" />
-        <button class="chat-send" id="chat-send">↑</button>
-      </div>
-    </div>
-  </div>`,
+    </div>`
+  },
 
   // ── ILMA: PAST CONVOS ──
   'ilma-health': () => `<div class="page">
@@ -2946,6 +2962,9 @@ function renderView(id) {
     }
     sendBtn.addEventListener('click', send)
     chatInput.addEventListener('keydown', e => { if (e.key==='Enter') send() })
+    // fade in seeded reply if present
+    const seedReply = document.getElementById('ilma-seed-reply')
+    if (seedReply) setTimeout(() => { seedReply.style.opacity = '1' }, 420)
   }
   // content area: all data-view elements (program chips, recent cards, rec buttons, table rows)
   document.querySelectorAll('#content [data-view]').forEach(el => {
@@ -3083,6 +3102,19 @@ const TABS = {
       <button class="nav-row" data-view="recent-okta"><span class="row-icon">${ic.srch}</span><span class="row-text">Okta vendor assessment</span></button>
       <button class="nav-row" data-view="controls"><span class="row-icon">${ic.srch}</span><span class="row-text">SOC 2 evidence status</span></button>
     </div>`,
+}
+
+// ── Ilma chat launcher — opens chat with pre-seeded prompt + response ─────────
+let _ilmaChat = null
+function openIlmaChat(prompt, reply) {
+  _ilmaChat = { prompt, reply }
+  renderView('ilma-new')
+  setActive('ilma-new')
+  // pill state
+  activePill = 'ilma'
+  document.getElementById('pill-ilma').classList.add('active')
+  document.getElementById('pill-inbox').classList.remove('active')
+  renderNavForCtx(currentCtx)
 }
 
 // ── Report toast ─────────────────────────────────────────────────────────────
