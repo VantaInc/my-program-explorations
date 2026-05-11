@@ -1112,17 +1112,17 @@ const VIEWS = {
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:44px">
         ${insights.map(ins=>`
-          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:24px;cursor:pointer;transition:box-shadow 0.18s" onclick="openIlmaChat('${ins.ilmaPrompt.replace(/'/g,"\\'")}','${ins.ilmaReply.replace(/'/g,"\\'")}') " onmouseenter="this.style.boxShadow='0 8px 28px rgba(109,40,217,0.1)';this.style.borderColor='rgba(124,58,237,0.2)'" onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(255,255,255,0.95)'">
+          <div style="background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:24px;transition:box-shadow 0.18s" onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:14px">
               <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                 <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:12px;background:${ins.urgencyBg};color:${ins.urgencyColor};letter-spacing:0.04em;text-transform:uppercase">${ins.urgency}</span>
                 <span style="font-family:var(--font-ui);font-size:9px;font-weight:500;padding:2px 8px;border-radius:12px;background:#F3F4F6;color:${ins.buColor}">${ins.bu}</span>
               </div>
-              <div style="flex-shrink:0;opacity:0.5">${ILMA_SVG(16)}</div>
+              <button onclick="openIlmaChat('${ins.ilmaPrompt.replace(/'/g,"\\'")}','${ins.ilmaReply.replace(/'/g,"\\'")}') " title="Ask Ilma about this" style="flex-shrink:0;background:none;border:none;padding:3px;border-radius:50%;cursor:pointer;opacity:0.4;transition:opacity 0.15s,background 0.15s" onmouseenter="this.style.opacity='1';this.style.background='#F5F3FF'" onmouseleave="this.style.opacity='0.4';this.style.background='none'">${ILMA_SVG(16)}</button>
             </div>
             <div style="font-family:var(--font-display);font-size:15px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.35;margin-bottom:12px">${ins.title}</div>
             <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.75;margin-bottom:18px">${ins.body}</p>
-            <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;letter-spacing:-0.01em;display:flex;align-items:center;gap:4px">${ILMA_SVG(11)} ${ins.action}</span>
+            <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;letter-spacing:-0.01em">${ins.action}</span>
           </div>
         `).join('')}
       </div>
