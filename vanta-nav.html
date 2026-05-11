@@ -875,15 +875,18 @@ const VIEWS = {
       const areaPath = path + ` L${w} ${h} L0 ${h} Z`
       const lx = xs[xs.length-1].toFixed(1), ly = ys[ys.length-1].toFixed(1)
       const gradId = `gs${Math.round(Math.random()*99999)}`
-      return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block;overflow:visible">
-        <defs><linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
-          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-        </linearGradient></defs>
-        <path d="${areaPath}" fill="url(#${gradId})"/>
-        <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${lx}" cy="${ly}" r="4" fill="${color}" filter="drop-shadow(0 0 4px ${color}55)"/>
-      </svg>`
+      const dotTop = (parseFloat(ly) - 4).toFixed(1)
+      return `<div style="position:relative;width:100%;height:${h}px">
+        <svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block;position:absolute;inset:0">
+          <defs><linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="${color}" stop-opacity="0.28"/>
+            <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+          </linearGradient></defs>
+          <path d="${areaPath}" fill="url(#${gradId})"/>
+          <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div style="position:absolute;right:-4px;top:${dotTop}px;width:8px;height:8px;border-radius:50%;background:${color};box-shadow:0 0 6px ${color}88;pointer-events:none"></div>
+      </div>`
     }
     // ── score number (big, no bar — bar lives in card footer) ──
     const ring = (health, color) => {
