@@ -421,6 +421,10 @@
   .view-empty p { font-size: 14px; }
 
   /* ─── ILMA SPOTLIGHT ─── */
+  @keyframes toast-in {
+    from { opacity:0; transform:translateY(12px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0)    scale(1); }
+  }
   #ilma-spotlight {
     display: none; position: fixed; inset: 0; z-index: 9999;
     background: rgba(10,8,20,0.45); backdrop-filter: blur(6px);
@@ -502,6 +506,35 @@
 </style>
 </head>
 <body>
+
+<!-- ─── REPORT TOAST ─── -->
+<div id="report-toast" style="
+  position:fixed;bottom:32px;right:32px;z-index:9998;
+  background:rgba(255,255,255,0.97);backdrop-filter:blur(16px);
+  border:1px solid rgba(0,0,0,0.07);border-radius:16px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.16),0 2px 8px rgba(0,0,0,0.06);
+  padding:18px 22px;min-width:300px;max-width:360px;
+  display:none;flex-direction:column;gap:12px;
+  animation:toast-in 0.22s cubic-bezier(0.22,1,0.36,1)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="report-toast-icon" style="width:32px;height:32px;border-radius:50%;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+    <div style="flex:1;min-width:0">
+      <div id="report-toast-title" style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:#111827;letter-spacing:-0.01em"></div>
+      <div id="report-toast-sub" style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF;margin-top:2px"></div>
+    </div>
+    <button onclick="document.getElementById('report-toast').style.display='none'" style="background:none;border:none;cursor:pointer;color:#C0BDB8;font-size:18px;line-height:1;padding:0 0 0 8px">×</button>
+  </div>
+  <div id="report-toast-bar" style="height:3px;border-radius:2px;background:#F3F4F6;overflow:hidden">
+    <div id="report-toast-progress" style="height:100%;border-radius:2px;background:#7C3AED;width:0%;transition:width 1.8s cubic-bezier(0.4,0,0.2,1)"></div>
+  </div>
+  <div id="report-toast-actions" style="display:none;gap:8px">
+    <button id="report-toast-dl" style="flex:1;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#fff;background:#5B21B6;border:none;border-radius:9px;padding:8px 16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v8M4 7l4 4 4-4M2 13h12"/></svg>
+      Download PDF
+    </button>
+    <button onclick="document.getElementById('report-toast').style.display='none'" style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#6B7280;background:rgba(0,0,0,0.04);border:none;border-radius:9px;padding:8px 14px;cursor:pointer">Dismiss</button>
+  </div>
+</div>
 
 <!-- ─── ILMA SPOTLIGHT OVERLAY ─── -->
 <div id="ilma-spotlight" role="dialog" aria-modal="true">
@@ -765,8 +798,8 @@ function programView(slug, name, health, color, frameworks, stats, themes, activ
             </svg>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn">View controls</button>
-            <button class="btn primary">Generate report</button>
+            <button class="btn" onclick="renderView('controls');setActive('controls')">View controls</button>
+            <button class="btn primary" onclick="renderView('reports-${slug}');setActive('reports-${slug}')">Generate report</button>
           </div>
         </div>
       </div>
@@ -1327,7 +1360,7 @@ const VIEWS = {
                 <div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name} ${r.badge?`<span class="badge ${r.badgeCls}" style="font-size:10px">✦ ${r.badge}</span>`:''}</div>
                 <div style="font-size:12px;color:#9CA3AF">${r.desc}</div>
               </div>
-              <button class="btn" style="font-size:12px;padding:4px 10px">Generate</button>
+              <button class="btn" style="font-size:12px;padding:4px 10px" onclick="showGenerating('${r.name}')">Generate</button>
             </div>`).join('')}
           </div>
         </div>
@@ -1356,12 +1389,12 @@ const VIEWS = {
       <div class="page-breadcrumb">Forge &nbsp;›&nbsp; Reports</div>
       <div class="page-heading">
         <div class="page-title-block"><h1 class="page-title">Forge reports</h1><p class="page-sub">SOC 2 Type II &nbsp;·&nbsp; Audit window in 12 days</p></div>
-        <div class="page-actions"><button class="btn primary">Generate report</button></div>
+        <div class="page-actions"><button class="btn primary" onclick="showGenerating('SOC 2 Audit Report')">Generate report</button></div>
       </div>
     </div>
     <div class="section-card"><div class="section-card-body">
       ${[{name:'SOC 2 Audit Report',desc:'Full control evidence for auditors',badge:'',recent:'Apr 20'},{name:'Executive Summary',desc:'Board-level narrative — Caesar ready',badge:'AI',recent:'Apr 28'},{name:'Pre-Audit Checklist Export',desc:'Open items before May 18 audit window',badge:'',recent:''},{name:'Custom Report',desc:'Choose date range and format',badge:'',recent:''}]
-        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px">Generate</button></div>`).join('')}
+        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px" onclick="showGenerating('${r.name}')">Generate</button></div>`).join('')}
     </div></div>
   </div>`,
 
@@ -1371,12 +1404,12 @@ const VIEWS = {
       <div class="page-breadcrumb">Atlas &nbsp;›&nbsp; Reports</div>
       <div class="page-heading">
         <div class="page-title-block"><h1 class="page-title">Atlas reports</h1><p class="page-sub">SOC 2 Type II &nbsp;·&nbsp; ISO 27001 &nbsp;·&nbsp; 2 blockers</p></div>
-        <div class="page-actions"><button class="btn primary">Generate report</button></div>
+        <div class="page-actions"><button class="btn primary" onclick="showGenerating('ISO 27001 Readiness Report')">Generate report</button></div>
       </div>
     </div>
     <div class="section-card"><div class="section-card-body">
       ${[{name:'ISO 27001 Readiness',desc:'Gap analysis — 84% ready, 2 controls blocked',badge:'',recent:'Apr 15'},{name:'Executive Summary',desc:'Board-level narrative — Caesar ready',badge:'AI',recent:'Apr 28'},{name:'Vendor Assessment Status',desc:'Okta overdue · 6 vendors tracked',badge:'',recent:''},{name:'Custom Report',desc:'Choose date range and format',badge:'',recent:''}]
-        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px">Generate</button></div>`).join('')}
+        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px" onclick="showGenerating('${r.name}')">Generate</button></div>`).join('')}
     </div></div>
   </div>`,
 
@@ -1386,12 +1419,12 @@ const VIEWS = {
       <div class="page-breadcrumb">Orbit &nbsp;›&nbsp; Reports</div>
       <div class="page-heading">
         <div class="page-title-block"><h1 class="page-title">Orbit reports</h1><p class="page-sub">SOC 2 Type II &nbsp;·&nbsp; 71% health &nbsp;·&nbsp; 12 stale accounts</p></div>
-        <div class="page-actions"><button class="btn primary">Generate report</button></div>
+        <div class="page-actions"><button class="btn primary" onclick="showGenerating('Orbit SOC 2 Status Report')">Generate report</button></div>
       </div>
     </div>
     <div class="section-card"><div class="section-card-body">
       ${[{name:'Incident Disclosure Draft',desc:'12 stale accounts — interim report for Caesar',badge:'AI',recent:''},{name:'SOC 2 Status Report',desc:'Current health: 71% · Access Management at risk',badge:'',recent:'Apr 10'},{name:'Access Review Export',desc:'Full account list with status · IdP sync failure',badge:'',recent:''},{name:'Custom Report',desc:'Choose date range and format',badge:'',recent:''}]
-        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px">Generate</button></div>`).join('')}
+        .map(r=>`<div class="theme-row" style="padding:11px 16px"><div style="flex:1"><div style="font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${r.name}${r.badge?` <span class="badge framework" style="font-size:10px">✦ ${r.badge}</span>`:''}</div><div style="font-size:12px;color:#9CA3AF">${r.desc}</div></div>${r.recent?`<span style="font-size:11px;color:#C0BDB8;margin-right:12px">${r.recent}</span>`:''}<button class="btn" style="font-size:12px;padding:4px 10px" onclick="showGenerating('${r.name}')">Generate</button></div>`).join('')}
     </div></div>
   </div>`,
 
@@ -2935,6 +2968,47 @@ const TABS = {
       <button class="nav-row" data-view="recent-okta"><span class="row-icon">${ic.srch}</span><span class="row-text">Okta vendor assessment</span></button>
       <button class="nav-row" data-view="controls"><span class="row-icon">${ic.srch}</span><span class="row-text">SOC 2 evidence status</span></button>
     </div>`,
+}
+
+// ── Report toast ─────────────────────────────────────────────────────────────
+function showGenerating(name) {
+  const toast   = document.getElementById('report-toast')
+  const icon    = document.getElementById('report-toast-icon')
+  const title   = document.getElementById('report-toast-title')
+  const sub     = document.getElementById('report-toast-sub')
+  const bar     = document.getElementById('report-toast-bar')
+  const prog    = document.getElementById('report-toast-progress')
+  const actions = document.getElementById('report-toast-actions')
+
+  icon.innerHTML = ILMA_SVG(18)
+  title.textContent = name || 'Generating report…'
+  sub.textContent = 'Ilma is compiling controls and evidence…'
+  prog.style.transition = 'none'
+  prog.style.width = '0%'
+  actions.style.display = 'none'
+  bar.style.display = 'block'
+  toast.style.display = 'flex'
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      prog.style.transition = 'width 1.8s cubic-bezier(0.4,0,0.2,1)'
+      prog.style.width = '92%'
+    })
+  })
+
+  setTimeout(() => {
+    prog.style.transition = 'width 0.3s ease'
+    prog.style.width = '100%'
+    title.textContent = name ? `${name} ready` : 'Report ready'
+    sub.textContent = 'PDF · 2.4 MB · Generated just now'
+    icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><path d="M3 8l3.5 3.5L13 5"/></svg>`
+    icon.style.background = '#D1FAE5'
+    bar.style.display = 'none'
+    actions.style.display = 'flex'
+    document.getElementById('report-toast-dl').onclick = () => {
+      document.getElementById('report-toast').style.display = 'none'
+    }
+  }, 2200)
 }
 
 // ── Home pill — context-aware home nav ────────────────────────────────────────
