@@ -4004,6 +4004,19 @@ function openIlmaSidebar(context, seedPrompt, seedReply, chips) {
   _ilmaSidebarLog = []
   _ilmaSidebarChips = chips || []
 
+  // Switch nav to Ask Ilma if not already there
+  if (activePill !== 'ilma') {
+    activePill = 'ilma'
+    document.getElementById('pill-ilma').classList.add('active')
+    document.getElementById('pill-inbox').classList.remove('active')
+    const navBody = document.getElementById('nav-body')
+    navBody.innerHTML = TABS['ilma'] ? TABS['ilma']() : ''
+    wireNavClicks()
+    // Clear badge since user is now in Ilma context
+    const badge = document.getElementById('pill-ilma-badge')
+    if (badge) { _ilmaAgentCount = 0; badge.style.display = 'none' }
+  }
+
   // Set context label
   document.getElementById('ilma-sidebar-ctx').textContent = context || ''
 
