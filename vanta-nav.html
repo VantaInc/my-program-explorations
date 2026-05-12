@@ -223,6 +223,56 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── Ilma Sidebar ─────────────────────────────────────────────────────────── */
+  #ilma-sidebar {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 380px; z-index: 850;
+    background: #fff;
+    border-left: 1px solid rgba(0,0,0,0.07);
+    box-shadow: -12px 0 48px rgba(15,10,40,0.13), -2px 0 8px rgba(0,0,0,0.04);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+    pointer-events: none;
+  }
+  #ilma-sidebar.open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  #ilma-sidebar-scrim {
+    position: fixed; inset: 0; z-index: 849;
+    background: rgba(15,10,40,0);
+    transition: background 0.32s ease;
+    pointer-events: none;
+  }
+  #ilma-sidebar-scrim.open {
+    background: rgba(15,10,40,0.18);
+    pointer-events: auto;
+  }
+  .ilma-msg-user {
+    display: flex; justify-content: flex-end; margin-bottom: 10px;
+  }
+  .ilma-msg-user > div {
+    background: rgba(124,58,237,0.1); color: #1A1A1A;
+    padding: 9px 13px; border-radius: 16px 16px 4px 16px;
+    font-size: 13px; max-width: 260px; line-height: 1.5;
+    font-family: var(--font-body);
+  }
+  .ilma-msg-ai {
+    display: flex; gap: 8px; margin-bottom: 10px; align-items: flex-start;
+  }
+  .ilma-msg-ai > div {
+    background: #F9F8F7; border: 1px solid rgba(0,0,0,0.07);
+    padding: 10px 13px; border-radius: 4px 16px 16px 16px;
+    font-size: 13px; max-width: 280px; line-height: 1.6; color: #1A1A1A;
+    font-family: var(--font-body);
+  }
+  #ilma-sidebar-log { scrollbar-width: thin; }
+  #ilma-sidebar-input-box:focus-within {
+    background: rgba(245,243,255,0.95) !important;
+    border-color: rgba(124,58,237,0.28) !important;
+  }
+
   /* BU modal grow animation */
   @keyframes bu-modal-grow {
     from { transform: translate(var(--modal-ox), var(--modal-oy)) scale(var(--modal-sx), var(--modal-sy)); opacity: 0.6; border-radius: 18px; }
@@ -752,6 +802,41 @@
 <main id="content"></main>
 
 <!-- ── BU Data Modal ── -->
+<!-- ── Ilma Sidebar ──────────────────────────────────────────────────────────── -->
+<div id="ilma-sidebar-scrim" onclick="closeIlmaSidebar()"></div>
+<div id="ilma-sidebar">
+  <!-- Header -->
+  <div style="display:flex;align-items:center;gap:10px;padding:18px 20px 16px;border-bottom:1px solid rgba(0,0,0,0.07);flex-shrink:0">
+    <div style="flex-shrink:0">${ILMA_SVG(20)}</div>
+    <div style="flex:1">
+      <div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:#111827;letter-spacing:-0.01em">Ask Ilma</div>
+      <div id="ilma-sidebar-ctx" style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.04em;text-transform:uppercase;margin-top:1px"></div>
+    </div>
+    <button onclick="closeIlmaSidebar()" style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,0.05);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s" onmouseenter="this.style.background='rgba(0,0,0,0.1)'" onmouseleave="this.style.background='rgba(0,0,0,0.05)'">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 1l9 9M10 1L1 10" stroke="#6B7280" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Chat log -->
+  <div id="ilma-sidebar-log" style="flex:1;overflow-y:auto;padding:18px 18px 8px"></div>
+
+  <!-- Suggested chips -->
+  <div id="ilma-sidebar-chips" style="padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:5px"></div>
+
+  <!-- Input -->
+  <div style="padding:8px 14px 18px;flex-shrink:0">
+    <div id="ilma-sidebar-input-box" style="display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.025);border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:9px 9px 9px 14px;transition:all 0.15s">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;opacity:0.38"><path d="M8 1.5l1.3 4H14l-3.6 2.6 1.4 4.3L8 9.8l-3.8 2.6 1.4-4.3L2 5.5h4.7L8 1.5z" fill="#5B21B6"/></svg>
+      <input id="ilma-sidebar-input" type="text" placeholder="Ask a follow-up…"
+        style="flex:1;border:none;background:transparent;font-family:var(--font-ui);font-size:13px;color:#111827;outline:none"
+        onkeydown="if(event.key==='Enter')_ilmaSidebarSend()"/>
+      <button onclick="_ilmaSidebarSend()" style="width:28px;height:28px;border-radius:50%;border:none;background:#7C3AED;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.15s" onmouseenter="this.style.opacity='0.75'" onmouseleave="this.style.opacity='1'">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 6 2 2v3.5l5 .5-5 .5V10z" fill="#fff"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="bu-modal" style="display:none;position:fixed;inset:0;z-index:900;pointer-events:none">
   <!-- Scrim -->
   <div id="bu-modal-scrim" onclick="closeBUModal()" style="position:absolute;inset:0;background:rgba(15,10,40,0);pointer-events:auto;transition:background 0.32s ease"></div>
@@ -2234,7 +2319,8 @@ Let me know if you hit anything unexpected.</div>
       { name:'Datadog',    category:'Monitoring',        risk:'Medium', riskColor:'#D97706', riskBg:'#FEF3C7',
         questPct:72, baa:'Pending', lastReview:'Nov 2024', nextReview:'Overdue', status:'review',
         controls:['IR-03','VM-04'], spend:'$36k/yr',
-        desc:'Observability platform. Annual questionnaire overdue — review needed before audit.' },
+        desc:'Observability platform. Annual questionnaire overdue — review needed before audit.',
+        ilma:{ ctx:'Forge · Vendors · Datadog', q:'What do I need to do to clear Datadog before the audit?', a:'Datadog needs its annual vendor review wrapped up — the questionnaire is at 72% and has been stalled since November. The BAA is also still pending. Neither issue will block the audit if you close them this week.<br><br>I\'d suggest two moves: <b>1.</b> Send a nudge to Datadog\'s security contact asking them to complete the outstanding sections. <b>2.</b> Assign the BAA follow-up to whoever owns VM-04 with a hard deadline of this Friday. I can draft the reminder email right now.', chips:['Draft reminder to Datadog','Who owns VM-04?','What\'s left in the questionnaire?','Will this affect the audit timeline?'] } },
       { name:'Salesforce', category:'CRM',               risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
         questPct:100, baa:'Signed Feb 2024', lastReview:'Feb 2025', nextReview:'Feb 2026', status:'clear',
         controls:['DP-01'], spend:'$96k/yr',
@@ -2246,11 +2332,13 @@ Let me know if you hit anything unexpected.</div>
       { name:'Slack',      category:'Communication',     risk:'Medium', riskColor:'#D97706', riskBg:'#FEF3C7',
         questPct:80, baa:'Not required', lastReview:'Feb 2025', nextReview:'Aug 2025', status:'review',
         controls:['AC-04','CM-01'], spend:'$28k/yr',
-        desc:'Team communication. Questionnaire 80% complete — DLP controls section outstanding.' },
+        desc:'Team communication. Questionnaire 80% complete — DLP controls section outstanding.',
+        ilma:{ ctx:'Forge · Vendors · Slack', q:'What\'s left to clear Slack?', a:'Slack\'s questionnaire is 80% done — just the DLP controls section is outstanding. The annual review isn\'t due until August, so there\'s runway, but closing it before the audit window is the right call.<br><br>No BAA required for Slack. The DLP section covers data loss prevention policies, retention settings, and export controls — I can prefill that section based on your existing DP policies and send it to Slack\'s security team for sign-off. Want me to draft it?', chips:['Draft DLP questionnaire section','When exactly is the review due?','Is this audit-blocking?','Who handles Slack vendor review?'] } },
       { name:'Snowflake',  category:'Data Warehouse',    risk:'High',   riskColor:'#DC2626', riskBg:'#FEE2E2',
         questPct:45, baa:'Not signed', lastReview:'Oct 2024', nextReview:'Overdue', status:'risk',
         controls:['DP-07','DP-08','VM-04'], spend:'$60k/yr',
-        desc:'Data warehouse with PII in scope. BAA outstanding and questionnaire stalled at 45%.' },
+        desc:'Data warehouse with PII in scope. BAA outstanding and questionnaire stalled at 45%.',
+        ilma:{ ctx:'Forge · Vendors · Snowflake', q:'What\'s blocking Snowflake from being cleared?', a:'Two things are blocking Snowflake, and both need to move this week:<br><br><b>1. BAA not signed</b> — PII is in scope and there\'s no Business Associate Agreement in place. This directly blocks controls DP-07 and DP-08. I can draft the BAA from your template right now — it just needs a legal review and Snowflake\'s countersignature.<br><br><b>2. Questionnaire stalled at 45%</b> — There\'s no named owner and no deadline. I\'d assign Denise by EOD Friday. The remaining sections are mostly around encryption and access controls, which I can prefill from your existing docs.', chips:['Draft the Snowflake BAA','Assign questionnaire to Denise','What controls does this block?','Will this delay the audit?'] } },
       { name:'PagerDuty',  category:'Incident Mgmt',    risk:'Low',    riskColor:'#059669', riskBg:'#D1FAE5',
         questPct:100, baa:'Not required', lastReview:'Mar 2025', nextReview:'Mar 2026', status:'clear',
         controls:['IR-01','IR-02'], spend:'$8k/yr',
@@ -2320,10 +2408,16 @@ Let me know if you hit anything unexpected.</div>
           <p style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.7;margin:0 0 12px">
             <strong>Snowflake is the biggest audit risk.</strong> PII is in scope, the BAA isn't signed, and the questionnaire is stalled at 45%. Two DP controls (DP-07, DP-08) are blocked by it. Datadog and Slack are behind on annual reviews but won't block the audit if addressed this week.
           </p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <button style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Draft Snowflake BAA →</button>
             <button style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#D97706;background:#FEF3C7;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Send Datadog reminder →</button>
             <button style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#6B7280;background:#F3F4F6;border:none;border-radius:8px;padding:6px 14px;cursor:pointer">Assign to Denise</button>
+            <button onclick="openIlmaSidebar('Forge · Vendors','What should I prioritize to reduce vendor risk before the SOC 2 audit?','Snowflake is your top priority and the only one that could actually block the audit. Here\\'s the order I\\'d work through it:<br><br><b>1. Snowflake BAA</b> — PII is in scope and the BAA is missing. This directly blocks DP-07 and DP-08. I can draft the BAA for you right now.<br><br><b>2. Snowflake questionnaire</b> — Stalled at 45%. Assign it to a named owner with a hard deadline (I\\'d suggest Denise by EOD Friday).<br><br><b>3. Datadog &amp; Slack</b> — Annual reviews are overdue but neither blocks the audit if handled this week. A reminder email to the vendor contacts should unblock both.',['Why is Snowflake highest risk?','Draft the Snowflake BAA','Who should own the questionnaire?','Will this affect our audit timeline?'])"
+              style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#7C3AED;background:transparent;border:1.5px solid rgba(124,58,237,0.25);border-radius:8px;padding:6px 14px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-left:auto;transition:all 0.15s"
+              onmouseenter="this.style.background='rgba(124,58,237,0.06)'"
+              onmouseleave="this.style.background='transparent'">
+              ${ILMA_SVG(13)} Ask Ilma
+            </button>
           </div>
         </div>
       </div>` : ''}
@@ -2352,6 +2446,11 @@ Let me know if you hit anything unexpected.</div>
               <button style="flex:1;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(109,40,217,0.1);border-radius:8px;padding:7px;cursor:pointer">Continue assessment</button>
               <button style="font-family:var(--font-ui);font-size:11px;font-weight:500;color:#9CA3AF;background:transparent;border:1px solid #E5E7EB;border-radius:8px;padding:7px 12px;cursor:pointer">Assign</button>
             </div>
+            ${v.ilma ? `
+            <button onclick="openVendorIlma('${v.name}')" style="margin-top:8px;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:transparent;border:1px solid rgba(109,40,217,0.22);border-radius:8px;padding:7px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='rgba(109,40,217,0.04)'" onmouseleave="this.style.background='transparent'">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" fill="rgba(109,40,217,0.18)"/><path d="M12 14c-5 0-8 2.5-8 4v1h16v-1c0-1.5-3-4-8-4z" fill="rgba(109,40,217,0.18)"/><circle cx="12" cy="8" r="2.5" fill="#7C3AED"/></svg>
+              Ask Ilma
+            </button>` : ''}
           </div>
         `).join('')}
       </div>` : ''}
@@ -2373,10 +2472,16 @@ Let me know if you hit anything unexpected.</div>
         </div>
         <div id="vendor-rows">
         ${vendors.map((v,i)=>`
-          <div data-status="${v.status}" style="display:grid;grid-template-columns:1.4fr 1fr 80px 1fr 100px 90px;padding:15px 22px;border-bottom:${i<vendors.length-1?'1px solid rgba(0,0,0,0.04)':'none'};cursor:pointer;transition:background 0.1s;align-items:center" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
-            <div>
-              <div style="font-family:var(--font-body);font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${v.name}</div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${v.spend}</div>
+          <div data-status="${v.status}" class="vendor-row" style="display:grid;grid-template-columns:1.4fr 1fr 80px 1fr 100px 90px;padding:15px 22px;border-bottom:${i<vendors.length-1?'1px solid rgba(0,0,0,0.04)':'none'};cursor:pointer;transition:background 0.1s;align-items:center;position:relative" onmouseenter="this.style.background='#FAFAF9';this.querySelector('.row-ilma-btn')&&(this.querySelector('.row-ilma-btn').style.opacity='1')" onmouseleave="this.style.background='transparent';this.querySelector('.row-ilma-btn')&&(this.querySelector('.row-ilma-btn').style.opacity='0')">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div>
+                <div style="font-family:var(--font-body);font-size:13px;font-weight:500;color:#111827;margin-bottom:2px">${v.name}</div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${v.spend}</div>
+              </div>
+              ${v.ilma ? `<button class="row-ilma-btn" onclick="event.stopPropagation();openVendorIlma('${v.name}')" style="opacity:0;transition:opacity 0.15s;display:flex;align-items:center;gap:4px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:3px 9px;cursor:pointer;white-space:nowrap;flex-shrink:0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="5" fill="rgba(109,40,217,0.2)"/><circle cx="12" cy="8" r="2.5" fill="#7C3AED"/><path d="M12 14c-5 0-8 2.5-8 4v1h16v-1c0-1.5-3-4-8-4z" fill="rgba(109,40,217,0.2)"/></svg>
+                Ask Ilma
+              </button>` : ''}
             </div>
             <span style="font-family:var(--font-ui);font-size:12px;color:#6B7280">${v.category}</span>
             <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:${v.riskBg};color:${v.riskColor};width:fit-content">${v.risk}</span>
@@ -2389,6 +2494,16 @@ Let me know if you hit anything unexpected.</div>
       </div>
 
       <script>
+      // Build lookup from vendor ilma metadata (injected at render time)
+      window._vendorIlmaMap = {};
+      ${vendors.filter(v=>v.ilma).map(v=>`window._vendorIlmaMap[${JSON.stringify(v.name)}] = ${JSON.stringify(v.ilma)};`).join('\n      ')}
+
+      function openVendorIlma(name) {
+        const m = window._vendorIlmaMap[name];
+        if (!m) return;
+        openIlmaSidebar(m.ctx, m.q, m.a, m.chips);
+      }
+
       function filterVendors(filter) {
         document.querySelectorAll('[id^="vf-"]').forEach(b => {
           const active = b.textContent.trim() === filter
@@ -3878,6 +3993,106 @@ function closeBUModal() {
     document.removeEventListener('keydown', document._buModalKeyHandler)
     document._buModalKeyHandler = null
   }
+}
+
+// ── Ilma Sidebar ─────────────────────────────────────────────────────────────
+let _ilmaSidebarLog = []
+let _ilmaSidebarChips = []
+
+function openIlmaSidebar(context, seedPrompt, seedReply, chips) {
+  _ilmaSidebarLog = []
+  _ilmaSidebarChips = chips || []
+
+  // Set context label
+  document.getElementById('ilma-sidebar-ctx').textContent = context || ''
+
+  // Seed with opening message + Ilma reply
+  if (seedPrompt) {
+    _ilmaSidebarLog.push({ role: 'user', text: seedPrompt })
+    if (seedReply) _ilmaSidebarLog.push({ role: 'ai', text: seedReply })
+  }
+
+  _ilmaSidebarRender()
+
+  // Slide in
+  document.getElementById('ilma-sidebar').classList.add('open')
+  document.getElementById('ilma-sidebar-scrim').classList.add('open')
+
+  // Keyboard close
+  document._ilmaSidebarKey = e => { if (e.key === 'Escape') closeIlmaSidebar() }
+  document.addEventListener('keydown', document._ilmaSidebarKey)
+
+  setTimeout(() => {
+    const log = document.getElementById('ilma-sidebar-log')
+    if (log) log.scrollTop = log.scrollHeight
+    document.getElementById('ilma-sidebar-input')?.focus()
+  }, 340)
+}
+
+function closeIlmaSidebar() {
+  document.getElementById('ilma-sidebar').classList.remove('open')
+  document.getElementById('ilma-sidebar-scrim').classList.remove('open')
+  if (document._ilmaSidebarKey) {
+    document.removeEventListener('keydown', document._ilmaSidebarKey)
+    document._ilmaSidebarKey = null
+  }
+}
+
+function _ilmaSidebarRender() {
+  const log   = document.getElementById('ilma-sidebar-log')
+  const chips = document.getElementById('ilma-sidebar-chips')
+  if (!log) return
+
+  log.innerHTML = _ilmaSidebarLog.map(m => m.role === 'user'
+    ? `<div class="ilma-msg-user"><div>${m.text}</div></div>`
+    : `<div class="ilma-msg-ai"><div style="flex-shrink:0;margin-top:2px">${ILMA_SVG(16)}</div><div>${m.text}</div></div>`
+  ).join('')
+
+  if (chips && _ilmaSidebarChips.length) {
+    chips.innerHTML = _ilmaSidebarChips.map((c,i) => `
+      <button onclick="_ilmaSidebarQuickAsk(${i})"
+        style="font-size:11.5px;font-family:var(--font-ui);font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(124,58,237,0.18);background:rgba(245,243,255,0.85);color:#4C1D95;cursor:pointer;white-space:nowrap;transition:background 0.1s"
+        onmouseenter="this.style.background='rgba(237,233,254,0.95)'"
+        onmouseleave="this.style.background='rgba(245,243,255,0.85)'">${c}</button>
+    `).join('')
+  } else if (chips) {
+    chips.innerHTML = ''
+  }
+}
+
+function _ilmaSidebarQuickAsk(i) {
+  const q = _ilmaSidebarChips[i]
+  if (!q) return
+  document.getElementById('ilma-sidebar-input').value = q
+  _ilmaSidebarSend()
+}
+
+function _ilmaSidebarSend() {
+  const inp = document.getElementById('ilma-sidebar-input')
+  const log = document.getElementById('ilma-sidebar-log')
+  if (!inp || !log) return
+  const txt = inp.value.trim(); if (!txt) return
+  inp.value = ''
+  _ilmaSidebarLog.push({ role: 'user', text: txt })
+  _ilmaSidebarRender()
+  log.scrollTop = log.scrollHeight
+
+  // Typing indicator
+  const typing = document.createElement('div')
+  typing.className = 'ilma-msg-ai'
+  typing.id = 'ilma-typing'
+  typing.innerHTML = `<div style="flex-shrink:0;margin-top:2px">${ILMA_SVG(16)}</div><div style="color:#9CA3AF;font-style:italic">Thinking…</div>`
+  log.appendChild(typing)
+  log.scrollTop = log.scrollHeight
+
+  setTimeout(() => {
+    const reply = `I'm analyzing that across your current vendor and control data. Based on the Forge program state — with Snowflake at 45% questionnaire completion, two DP controls blocked, and audit in 12 days — the most actionable next step is getting the Snowflake BAA signed and assigning the questionnaire to a specific owner with a hard deadline. Want me to draft the BAA or compose the assignment email?`
+    document.getElementById('ilma-typing')?.remove()
+    _ilmaSidebarLog.push({ role: 'ai', text: reply })
+    _ilmaSidebarRender()
+    const l = document.getElementById('ilma-sidebar-log')
+    if (l) l.scrollTop = l.scrollHeight
+  }, 900)
 }
 
 // ── Ilma chat launcher — opens chat with pre-seeded prompt + response ─────────
