@@ -3412,9 +3412,8 @@ function openBUModal(slug, name, status, sColor, sBg, color, cardEl) {
   card.style.setProperty('--modal-sx', sx)
   card.style.setProperty('--modal-sy', sy)
 
-  // Load iframe (only if not already the right src)
-  const src_url = 'data-explorer.html?bu=' + slug
-  if (!iframe.src.includes('data-explorer')) iframe.src = 'data-explorer.html'
+  // Load iframe for this specific BU
+  iframe.src = 'bu-explorer.html?bu=' + slug
 
   // Show
   modal.style.display = 'block'
