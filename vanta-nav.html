@@ -507,6 +507,10 @@
     padding-top: 16vh;
   }
   #ilma-spotlight.open { display: flex; animation: spotlight-bg-in 0.14s ease forwards; }
+  @keyframes ilma-dot {
+    0%,80%,100% { opacity:0.25; transform:scale(0.85) }
+    40% { opacity:1; transform:scale(1.1) }
+  }
   @keyframes spotlight-bg-in {
     from { opacity: 0; } to { opacity: 1; }
   }
@@ -2009,6 +2013,65 @@ const VIEWS = {
           <button class="chat-send" id="chat-send">↑</button>
         </div>
       </div>
+      <script>
+      ;(function() {
+        // Seed reply fade-in
+        const seedEl = document.getElementById('ilma-seed-reply')
+        if (seedEl) setTimeout(() => { seedEl.style.opacity = '1' }, 80)
+
+        // Chat log for this view (separate from sidebar log)
+        let _chatLog = []
+        ${seed ? `_chatLog = [{ role:'user', text:${JSON.stringify(seed.prompt)} }, { role:'ai', text:${JSON.stringify(seed.reply)} }]` : ''}
+
+        function appendMsg(role, html) {
+          const msgs = document.getElementById('chat-msgs')
+          if (!msgs) return
+          const el = document.createElement('div')
+          el.className = role === 'user' ? 'msg-user' : 'msg-ai'
+          el.innerHTML = html
+          msgs.appendChild(el)
+          msgs.scrollTop = msgs.scrollHeight
+          return el
+        }
+
+        async function sendChat() {
+          const inp = document.getElementById('chat-input')
+          const btn = document.getElementById('chat-send')
+          const txt = inp?.value?.trim()
+          if (!txt || inp.disabled) return
+          inp.value = ''
+          inp.disabled = true
+          btn.disabled = true
+          _chatLog.push({ role:'user', text:txt })
+          appendMsg('user', txt)
+
+          const msgs = document.getElementById('chat-msgs')
+          const typing = document.createElement('div')
+          typing.className = 'msg-ai'
+          typing.id = 'chat-typing'
+          typing.innerHTML = '<div style="display:flex;gap:4px;align-items:center;padding:2px 0"><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0s"></span><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0.2s"></span><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0.4s"></span></div>'
+          msgs?.appendChild(typing)
+          if (msgs) msgs.scrollTop = msgs.scrollHeight
+
+          try {
+            const reply = await _ilmaApi(_chatLog)
+            document.getElementById('chat-typing')?.remove()
+            _chatLog.push({ role:'ai', text:reply })
+            appendMsg('ai', reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>'))
+          } catch(e) {
+            document.getElementById('chat-typing')?.remove()
+            appendMsg('ai', 'API error — make sure <code>ANTHROPIC_API_KEY</code> is set in Vercel.')
+          } finally {
+            inp.disabled = false
+            btn.disabled = false
+            inp.focus()
+          }
+        }
+
+        document.getElementById('chat-send')?.addEventListener('click', sendChat)
+        document.getElementById('chat-input')?.addEventListener('keydown', e => { if(e.key==='Enter') sendChat() })
+      })()
+      <\/script>
     </div>`
   },
 
@@ -4172,32 +4235,58 @@ function _ilmaSidebarQuickAsk(i) {
   _ilmaSidebarSend()
 }
 
+// ── Core API call — all Ilma chat goes through here ──────────────────────────
+async function _ilmaApi(messages, context) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, context })
+  })
+  if (!res.ok) throw new Error(`API ${res.status}`)
+  const data = await res.json()
+  return data.content || 'Something went wrong — try again.'
+}
+
+function _ilmaShowTyping(container) {
+  const el = document.createElement('div')
+  el.id = 'ilma-typing'
+  el.className = 'ilma-msg-ai'
+  el.innerHTML = `<div style="flex-shrink:0;margin-top:2px">${ILMA_SVG(16)}</div><div style="display:flex;gap:4px;align-items:center;padding:2px 0"><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0s"></span><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0.2s"></span><span style="width:5px;height:5px;border-radius:50%;background:#C0BDB8;animation:ilma-dot 1.2s infinite 0.4s"></span></div>`
+  container.appendChild(el)
+  container.scrollTop = container.scrollHeight
+  return el
+}
+
 function _ilmaSidebarSend() {
   const inp = document.getElementById('ilma-sidebar-input')
   const log = document.getElementById('ilma-sidebar-log')
   if (!inp || !log) return
   const txt = inp.value.trim(); if (!txt) return
   inp.value = ''
+  inp.disabled = true
   _ilmaSidebarLog.push({ role: 'user', text: txt })
   _ilmaSidebarRender()
   log.scrollTop = log.scrollHeight
 
-  // Typing indicator
-  const typing = document.createElement('div')
-  typing.className = 'ilma-msg-ai'
-  typing.id = 'ilma-typing'
-  typing.innerHTML = `<div style="flex-shrink:0;margin-top:2px">${ILMA_SVG(16)}</div><div style="color:#9CA3AF;font-style:italic">Thinking…</div>`
-  log.appendChild(typing)
-  log.scrollTop = log.scrollHeight
+  const typing = _ilmaShowTyping(log)
+  const ctx = document.getElementById('ilma-sidebar-ctx')?.textContent || ''
 
-  setTimeout(() => {
-    const reply = `I'm analyzing that across your current vendor and control data. Based on the Forge program state — with Snowflake at 45% questionnaire completion, two DP controls blocked, and audit in 12 days — the most actionable next step is getting the Snowflake BAA signed and assigning the questionnaire to a specific owner with a hard deadline. Want me to draft the BAA or compose the assignment email?`
-    document.getElementById('ilma-typing')?.remove()
-    _ilmaSidebarLog.push({ role: 'ai', text: reply })
-    _ilmaSidebarRender()
-    const l = document.getElementById('ilma-sidebar-log')
-    if (l) l.scrollTop = l.scrollHeight
-  }, 900)
+  _ilmaApi(_ilmaSidebarLog, ctx)
+    .then(reply => {
+      typing.remove()
+      inp.disabled = false
+      _ilmaSidebarLog.push({ role: 'ai', text: reply })
+      _ilmaSidebarRender()
+      const l = document.getElementById('ilma-sidebar-log')
+      if (l) l.scrollTop = l.scrollHeight
+      inp.focus()
+    })
+    .catch(err => {
+      typing.remove()
+      inp.disabled = false
+      _ilmaSidebarLog.push({ role: 'ai', text: `Couldn't reach the API right now (${err.message}). Check the Vercel environment variable is set.` })
+      _ilmaSidebarRender()
+    })
 }
 
 // ── Search query store ───────────────────────────────────────────────────────
