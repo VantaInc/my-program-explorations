@@ -3495,9 +3495,33 @@ function renderBUExplorer(slug) {
     return { bg:'rgba(0,0,0,0.04)', bd:'rgba(0,0,0,0.1)', tx:'#374151' }
   }
 
-  function buildSVG(data) {
-    const W=600, H=230, pL=52, pR=20, pT=18, pB=44
+  // Placeholder — real SVG drawn by drawChart() after DOM mount
+  function buildSVG() {
+    return `
+    <svg id="buChartSvg" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"></svg>
+    <div id="buHoverPill" style="display:none;position:absolute;pointer-events:none;z-index:20;background:${meta.color};padding:4px 10px 4px 9px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,0.22);white-space:nowrap;display:flex;align-items:center;gap:5px">
+      <span id="buPillScore" style="font-size:13px;font-family:'Fraunces','Inter',serif;font-weight:300;color:#fff;letter-spacing:-0.01em;line-height:1"></span>
+      <span id="buPillDate" style="font-size:9.5px;font-family:Inter,sans-serif;font-weight:500;color:rgba(255,255,255,0.75);letter-spacing:0.02em"></span>
+    </div>
+    <div id="buEndPill" style="position:absolute;right:4px;pointer-events:none;z-index:15;background:${meta.color};padding:4px 10px 4px 9px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.2);white-space:nowrap;transform:translateY(-50%);display:flex;align-items:center;gap:5px">
+      <span id="buEndScore" style="font-size:13px;font-family:'Fraunces','Inter',serif;font-weight:300;color:#fff;letter-spacing:-0.01em;line-height:1"></span>
+      <span style="font-size:9.5px;font-family:Inter,sans-serif;font-weight:500;color:rgba(255,255,255,0.75)">Score</span>
+    </div>`
+  }
+
+  // Draws the chart at actual pixel dimensions — no viewBox distortion
+  function drawChart(data) {
+    const svg  = document.getElementById('buChartSvg')
+    const wrap = document.getElementById('buChartWrap')
+    const endPill = document.getElementById('buEndPill')
+    const endScore = document.getElementById('buEndScore')
+    if (!svg || !wrap) return
+
+    const W = wrap.offsetWidth  || 600
+    const H = wrap.offsetHeight || 300
+    const pL=52, pR=56, pT=16, pB=44
     const cW=W-pL-pR, cH=H-pT-pB
+
     const scores = data.map(p=>p.score)
     const lo = Math.max(50, Math.min(...scores)-6)
     const hi = Math.min(100, Math.max(...scores)+5)
@@ -3519,11 +3543,12 @@ function renderBUExplorer(slug) {
     const n = data.length
     const solidPath = data.map((p,i)=>`${i===0?'M':'L'}${px(i).toFixed(1)},${py(p.score).toFixed(1)}`).join(' ')
     const areaD = `${solidPath} L${px(n-1).toFixed(1)},${(pT+cH).toFixed(1)} L${px(0).toFixed(1)},${(pT+cH).toFixed(1)}Z`
+    const ecx = px(n-1), ecy = py(data[n-1].score)
 
-    // Current (last) point for glow marker
-    const cx = px(n-1), cy = py(data[n-1].score)
-
-    return `<svg id="buChartSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:100%;overflow:visible;display:block">
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    svg.setAttribute('width', W)
+    svg.setAttribute('height', H)
+    svg.innerHTML = `
       <defs>
         <linearGradient id="buGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="${meta.color}" stop-opacity="0.13"/>
@@ -3535,35 +3560,32 @@ function renderBUExplorer(slug) {
         </filter>
         <clipPath id="buClip"><rect x="${pL}" y="${pT}" width="${cW}" height="${cH+1}"/></clipPath>
       </defs>
-
       ${yTicks.map(v=>`
         <line x1="${pL}" y1="${py(v).toFixed(1)}" x2="${pL+cW}" y2="${py(v).toFixed(1)}" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
         <text x="${pL-12}" y="${(py(v)+4).toFixed(1)}" text-anchor="end" font-size="11" font-family="Inter,sans-serif" font-weight="500" fill="#C0BDB8" letter-spacing="0.04em">${Math.round(v)}</text>
       `).join('')}
-
       <path d="${areaD}" fill="url(#buGrad)" clip-path="url(#buClip)"/>
       <path d="${solidPath}" fill="none" stroke="${meta.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#buClip)"/>
-
-      <!-- Forecast hint: dashed fade from last point rightward -->
-      <line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(pL+cW+28).toFixed(1)}" y2="${cy.toFixed(1)}"
-        stroke="${meta.color}" stroke-width="1.6" stroke-dasharray="5 5" stroke-opacity="0.3" stroke-linecap="round"/>
-
+      <line x1="${ecx.toFixed(1)}" y1="${ecy.toFixed(1)}" x2="${(pL+cW+4).toFixed(1)}" y2="${ecy.toFixed(1)}"
+        stroke="${meta.color}" stroke-width="1.6" stroke-dasharray="5 5" stroke-opacity="0.35" stroke-linecap="round"/>
       ${xTicks.map(t=>`<text x="${t.x.toFixed(1)}" y="${(pT+cH+22).toFixed(1)}" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" font-weight="500" fill="#C0BDB8" letter-spacing="0.02em">${t.label}</text>`).join('')}
-
-      <!-- Current / latest point: outer ring + glow dot -->
-      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="9" fill="rgba(${meta.rgb},0.10)"/>
-      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4.5" fill="${meta.color}" stroke="white" stroke-width="2.5" filter="url(#buGlow)"/>
-
+      <circle cx="${ecx.toFixed(1)}" cy="${ecy.toFixed(1)}" r="9" fill="rgba(${meta.rgb},0.10)"/>
+      <circle cx="${ecx.toFixed(1)}" cy="${ecy.toFixed(1)}" r="4.5" fill="${meta.color}" stroke="white" stroke-width="2.5" filter="url(#buGlow)"/>
       <rect id="buHoverZone" x="${pL}" y="${pT}" width="${cW}" height="${cH}" fill="transparent" style="cursor:crosshair"/>
       <g id="buTipG" style="display:none">
         <line id="buVline" x1="0" y1="${pT}" x2="0" y2="${pT+cH}" stroke="${meta.color}" stroke-width="1" stroke-dasharray="5 4" opacity="0.32"/>
         <circle id="buDot" r="5" fill="${meta.color}" stroke="white" stroke-width="2.5"/>
-      </g>
-    </svg>
-    <div id="buHoverPill" style="display:none;position:absolute;pointer-events:none;z-index:20;background:${meta.color};padding:4px 10px 4px 9px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,0.22);white-space:nowrap">
-      <span id="buPillScore" style="font-size:13px;font-family:'Fraunces','Inter',serif;font-weight:300;color:#fff;letter-spacing:-0.01em;line-height:1;margin-right:5px"></span>
-      <span id="buPillDate" style="font-size:9.5px;font-family:Inter,sans-serif;font-weight:500;color:rgba(255,255,255,0.75);letter-spacing:0.02em"></span>
-    </div>`
+      </g>`
+
+    // Position end-of-line score pill
+    if (endPill && endScore) {
+      endScore.textContent = data[n-1].score.toFixed(0)
+      endPill.style.top = ecy + 'px'
+      endPill.style.display = 'flex'
+    }
+
+    // Store draw state for hover handler
+    wrap._buState = { W, H, pL, pR, pT, pB, cW, cH, lo, rng, py, px, data }
   }
 
   function chatHTML() {
@@ -3607,9 +3629,9 @@ function renderBUExplorer(slug) {
           <span style="font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase">Compliance Health ›</span>
         </div>
 
-        <!-- SVG chart area — aspect-ratio scales with container width -->
-        <div id="buChartWrap" style="width:100%;aspect-ratio:600/230;flex-shrink:0;position:relative">
-          ${buildSVG(data)}
+        <!-- SVG chart area — flex:1 fills panel, drawChart() sizes to actual pixels -->
+        <div id="buChartWrap" style="flex:1;min-height:0;position:relative">
+          ${buildSVG()}
         </div>
 
         <!-- Stats row: Fraunces numbers, warm grey labels -->
@@ -3700,56 +3722,54 @@ function renderBUExplorer(slug) {
       </div>
     </div>`
 
-    requestAnimationFrame(() => attachHover(data))
+    requestAnimationFrame(() => { drawChart(data); attachHover(data) })
   }
 
   function attachHover(data) {
-    const svg  = document.getElementById('buChartSvg')
-    const zone = document.getElementById('buHoverZone')
-    const tipG = document.getElementById('buTipG')
-    const vln  = document.getElementById('buVline')
-    const dot  = document.getElementById('buDot')
+    // Re-query after drawChart() has populated the SVG
+    const wrap = document.getElementById('buChartWrap')
     const pill = document.getElementById('buHoverPill')
     const pillScore = document.getElementById('buPillScore')
     const pillDate  = document.getElementById('buPillDate')
-    if (!svg || !zone) return
+    if (!wrap) return
 
-    const W=600, H=230, pL=52, pR=20, pT=18, pB=44
-    const cW=W-pL-pR, cH=H-pT-pB
-    const scores=data.map(p=>p.score)
-    const lo=Math.max(50,Math.min(...scores)-6), hi=Math.min(100,Math.max(...scores)+5), rng=hi-lo||1
-    const py = s => pT+(1-(s-lo)/rng)*cH
+    wrap.addEventListener('mousemove', e => {
+      const st = wrap._buState; if (!st) return
+      const svg  = document.getElementById('buChartSvg')
+      const zone = document.getElementById('buHoverZone')
+      const tipG = document.getElementById('buTipG')
+      const vln  = document.getElementById('buVline')
+      const dot  = document.getElementById('buDot')
+      if (!svg || !zone || !tipG) return
 
-    zone.addEventListener('mousemove', e => {
       const rect = svg.getBoundingClientRect()
-      const scX  = W/rect.width
-      const scY  = H/rect.height
-      const mx   = (e.clientX-rect.left)*scX
-      const frac = Math.max(0,Math.min(1,(mx-pL)/cW))
-      const idx  = Math.round(frac*(data.length-1))
-      const pt   = data[idx]; if(!pt) return
-      const svgX = pL+(idx/(data.length-1))*cW
-      const svgY = py(pt.score)
-      vln.setAttribute('x1',svgX); vln.setAttribute('x2',svgX)
-      dot.setAttribute('cx',svgX); dot.setAttribute('cy',svgY)
-      tipG.style.display='block'
+      const mx   = e.clientX - rect.left
+      const frac = Math.max(0, Math.min(1, (mx - st.pL) / st.cW))
+      const idx  = Math.round(frac * (st.data.length - 1))
+      const pt   = st.data[idx]; if (!pt) return
 
-      // Floating pill in CSS pixels
-      const csX = svgX/scX
-      const csY = svgY/scY
-      const dStr = pt.date.toLocaleDateString('en-US',{month:'short',day:'numeric'})
+      const svgX = st.px(idx)
+      const svgY = st.py(pt.score)
+      vln.setAttribute('x1', svgX); vln.setAttribute('x2', svgX)
+      dot.setAttribute('cx', svgX); dot.setAttribute('cy', svgY)
+      tipG.style.display = 'block'
+
+      const dStr = pt.date.toLocaleDateString('en-US', { month:'short', day:'numeric' })
       pillScore.textContent = pt.score.toFixed(1)
       pillDate.textContent  = dStr
-      pill.style.display = 'block'
-      // Brief delay to get pill width after paint
+      pill.style.display = 'flex'
       requestAnimationFrame(() => {
-        const pw = pill.offsetWidth||80
-        const flip = csX + 14 + pw > rect.width - 12
-        pill.style.left = (flip ? csX-14-pw : csX+14) + 'px'
-        pill.style.top  = (csY-14) + 'px'
+        const pw   = pill.offsetWidth || 80
+        const flip = svgX + 14 + pw > rect.width - 12
+        pill.style.left = (flip ? svgX - 14 - pw : svgX + 14) + 'px'
+        pill.style.top  = (svgY - 14) + 'px'
       })
     })
-    zone.addEventListener('mouseleave', () => { tipG.style.display='none'; pill.style.display='none' })
+    wrap.addEventListener('mouseleave', () => {
+      const tipG = document.getElementById('buTipG')
+      if (tipG) tipG.style.display = 'none'
+      if (pill) pill.style.display = 'none'
+    })
   }
 
   // Global handlers scoped to this modal instance
