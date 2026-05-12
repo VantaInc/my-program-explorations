@@ -463,7 +463,7 @@
   .check-meta { font-size: 11px; color: #9CA3AF; }
 
   /* ilma chat */
-  .chat-wrap { background: #fff; border: 1px solid #E9E9E7; border-radius: 12px; overflow: hidden; }
+  .chat-wrap { background: rgba(255,255,255,0.82); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.95); border-radius: 16px; overflow: hidden; }
   .chat-header { padding: 14px 20px; border-bottom: 1px solid #F3F3F1; display: flex; align-items: center; gap: 10px; }
   .chat-avatar { width: 30px; height: 30px; border-radius: 50%; background: transparent; display:flex;align-items:center;justify-content:center;flex-shrink:0; overflow: hidden; }
   /* Chat name: Outfit — feels like a product name */
@@ -471,12 +471,13 @@
   .chat-status { font-family: var(--font-body); font-size: 11px; color: #059669; margin-top: 1px; }
   .chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 260px; max-height: 340px; overflow-y: auto; }
   .chat-messages::-webkit-scrollbar { width: 3px; }
-  .msg-ai { background: #F5F3FF; border-radius: 10px 10px 10px 2px; padding: 10px 14px; font-size: 13px; color: #374151; line-height: 1.55; max-width: 82%; }
-  .msg-user { background: #F3F4F6; border-radius: 10px 10px 2px 10px; padding: 10px 14px; font-size: 13px; color: #374151; line-height: 1.55; max-width: 75%; align-self: flex-end; }
-  .chat-input-wrap { padding: 12px 16px; border-top: 1px solid #F3F3F1; display: flex; gap: 8px; }
-  .chat-input-wrap input { flex: 1; padding: 8px 12px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 13px; outline: none; background: #F9FAFB; font-family: inherit; }
-  .chat-input-wrap input:focus { border-color: rgba(109,40,217,0.4); background: #fff; }
-  .chat-send { padding: 8px 13px; background: #5B21B6; color: #fff; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; }
+  .msg-ai { background: rgba(245,243,255,0.7); border: 1px solid rgba(109,40,217,0.08); border-radius: 12px 12px 12px 3px; padding: 12px 16px; font-family: var(--font-body); font-size: 13px; color: #374151; line-height: 1.65; max-width: 84%; }
+  .msg-user { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.06); border-radius: 12px 12px 3px 12px; padding: 12px 16px; font-family: var(--font-body); font-size: 13px; color: #374151; line-height: 1.65; max-width: 75%; align-self: flex-end; }
+  .chat-input-wrap { padding: 12px 16px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; }
+  .chat-input-wrap input { flex: 1; padding: 9px 14px; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; font-size: 13px; outline: none; background: rgba(255,255,255,0.8); font-family: var(--font-ui); color: #111827; }
+  .chat-input-wrap input:focus { border-color: rgba(109,40,217,0.35); background: #fff; box-shadow: 0 0 0 3px rgba(109,40,217,0.06); }
+  .chat-send { padding: 9px 14px; background: #5B21B6; color: #fff; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; transition: background 0.15s; }
+  .chat-send:hover { background: #4C1D95; }
 
   /* vendor card grid */
   .vendor-grid { display: flex; flex-direction: column; gap: 0; }
@@ -1995,16 +1996,14 @@ const VIEWS = {
           Here's a breakdown of where each program stands today across all control domains.
 
           <!-- ── Inline chart ── -->
-          <div style="margin:16px 0;background:#FAFAF9;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:20px 20px 16px;font-family:var(--font-ui)">
+          <div style="margin:16px 0;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:22px 24px 18px;font-family:var(--font-ui)">
 
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-              <span style="font-size:11px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase">Control pass rate by program</span>
-              <div style="display:flex;gap:6px">
-                <button onclick="showGenerating('Cross-BU Control Report')" style="font-size:10px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(124,58,237,0.15);border-radius:6px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px">
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#7C3AED" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6" y2="8" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/></svg>
-                  Export
-                </button>
-              </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+              <span style="font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase">Control pass rate by program</span>
+              <button onclick="showGenerating('Cross-BU Control Report')" style="font-size:10px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(124,58,237,0.15);border-radius:6px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px">
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#7C3AED" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6" y2="8" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/></svg>
+                Export
+              </button>
             </div>
 
             <!-- Grouped bar chart -->
@@ -2016,47 +2015,49 @@ const VIEWS = {
                 { name:'Vendor Risk',   forge:91, atlas:60, orbit:90 },
                 { name:'Incident Resp', forge:100,atlas:83, orbit:70 },
               ]
-              const barW = 14, gap = 5, groupGap = 22, h = 110, padding = 36
+              const barW = 22, gap = 7, groupGap = 36, h = 160, pL = 8, pR = 8, pT = 44, pB = 52
               const groupW = barW*3 + gap*2
-              const totalW = domains.length * (groupW + groupGap) - groupGap + padding*2
+              const totalW = domains.length * (groupW + groupGap) - groupGap + pL + pR
+              const vbH = pT + h + pB
               const colors = { forge:'#5B21B6', atlas:'#D97706', orbit:'#DC2626' }
 
               const bars = domains.map((d, gi) => {
-                const gx = padding + gi * (groupW + groupGap)
+                const gx = pL + gi * (groupW + groupGap)
                 return `
                   <g>
                     ${['forge','atlas','orbit'].map((bu, bi) => {
                       const pct = d[bu]
                       const barH = Math.round((pct / 100) * h)
                       const x = gx + bi * (barW + gap)
-                      const y = h - barH + 4
+                      const y = pT + (h - barH)
                       const color = colors[bu]
                       return `
-                        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="${color}" opacity="${pct < 75 ? '1' : '0.85'}"/>
-                        <text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-family="var(--font-ui)" font-size="9" fill="${color}" font-weight="600">${pct}</text>
+                        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="5" fill="${color}" opacity="${pct < 75 ? '1' : '0.82'}"/>
+                        <text x="${x + barW/2}" y="${y - 8}" text-anchor="middle" font-family="'Fraunces',serif" font-size="15" fill="${color}" font-weight="300">${pct}</text>
                       `
                     }).join('')}
-                    <text x="${gx + groupW/2}" y="${h + 20}" text-anchor="middle" font-family="var(--font-ui)" font-size="9.5" fill="#9CA3AF">${d.name}</text>
+                    <text x="${gx + groupW/2}" y="${pT + h + 28}" text-anchor="middle" font-family="var(--font-ui)" font-size="11" fill="#C0BDB8" letter-spacing="0.01em">${d.name}</text>
                   </g>
                 `
               }).join('')
 
-              return `<svg width="100%" viewBox="0 0 ${totalW} ${h + 30}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
-                <!-- Gridlines -->
-                ${[25,50,75,100].map(v => {
-                  const y = h - Math.round((v/100)*h) + 4
-                  return `<line x1="${padding}" y1="${y}" x2="${totalW - padding}" y2="${y}" stroke="#E5E7EB" stroke-width="0.8" stroke-dasharray="${v===100?'0':'3,3'}"/>`
-                }).join('')}
+              const gridLines = [25,50,75].map(v => {
+                const y = pT + h - Math.round((v/100)*h)
+                return `<line x1="${pL}" y1="${y}" x2="${totalW - pR}" y2="${y}" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>`
+              }).join('')
+
+              return `<svg width="100%" viewBox="0 0 ${totalW} ${vbH}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                ${gridLines}
                 ${bars}
               </svg>`
             })()}
 
             <!-- Legend -->
-            <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
+            <div style="display:flex;gap:18px;margin-top:4px;justify-content:center">
               ${[['Forge','#5B21B6'],['Atlas','#D97706'],['Orbit','#DC2626']].map(([name,color])=>`
                 <div style="display:flex;align-items:center;gap:5px">
                   <div style="width:8px;height:8px;border-radius:2px;background:${color}"></div>
-                  <span style="font-size:10px;color:#6B7280;font-weight:500">${name}</span>
+                  <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;font-weight:500">${name}</span>
                 </div>
               `).join('')}
             </div>
@@ -2071,30 +2072,30 @@ const VIEWS = {
           Orbit's Access Management score of 55% is driven by 5 failing controls out of 11. Here's the full picture:
 
           <!-- ── Control status table ── -->
-          <div style="margin:16px 0;background:#FAFAF9;border:1px solid rgba(0,0,0,0.06);border-radius:14px;overflow:hidden;font-family:var(--font-ui)">
-            <div style="display:grid;grid-template-columns:60px 1fr 80px 90px;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,0.05)">
-              ${['ID','Control','Owner','Status'].map(h=>`<span style="font-size:9.5px;font-weight:700;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase">${h}</span>`).join('')}
+          <div style="margin:16px 0;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;overflow:hidden;font-family:var(--font-ui)">
+            <div style="display:grid;grid-template-columns:56px 1fr 90px 100px;padding:10px 18px;border-bottom:1px solid rgba(0,0,0,0.05)">
+              ${['ID','Control','Owner','Status'].map(h=>`<span style="font-size:9.5px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase">${h}</span>`).join('')}
             </div>
             ${[
-              { id:'AC-1', name:'Access control policy',      owner:'Pam',    status:'pass',    label:'Passing' },
-              { id:'AC-2', name:'Account management',         owner:'—',      status:'fail',    label:'Failing' },
-              { id:'AC-3', name:'Access enforcement',         owner:'—',      status:'fail',    label:'Failing' },
-              { id:'AC-4', name:'Information flow control',   owner:'Pam',    status:'pass',    label:'Passing' },
-              { id:'AC-5', name:'Separation of duties',       owner:'Marcus', status:'pass',    label:'Passing' },
-              { id:'AC-6', name:'Least privilege',            owner:'—',      status:'fail',    label:'Failing' },
-              { id:'AC-7', name:'Unsuccessful login attempts',owner:'Pam',    status:'pass',    label:'Passing' },
-              { id:'AC-8', name:'System use notification',    owner:'Marcus', status:'pass',    label:'Passing' },
-              { id:'AC-9', name:'Previous logon notification',owner:'—',      status:'fail',    label:'Failing' },
-              { id:'AC-10',name:'Concurrent session control', owner:'—',      status:'fail',    label:'Failing' },
-              { id:'AC-11',name:'Session lock',               owner:'Pam',    status:'pass',    label:'Passing' },
+              { id:'AC-1', name:'Access control policy',       owner:'Pam',    status:'pass' },
+              { id:'AC-2', name:'Account management',          owner:'—',      status:'fail' },
+              { id:'AC-3', name:'Access enforcement',          owner:'—',      status:'fail' },
+              { id:'AC-4', name:'Information flow control',    owner:'Pam',    status:'pass' },
+              { id:'AC-5', name:'Separation of duties',        owner:'Marcus', status:'pass' },
+              { id:'AC-6', name:'Least privilege',             owner:'—',      status:'fail' },
+              { id:'AC-7', name:'Unsuccessful login attempts', owner:'Pam',    status:'pass' },
+              { id:'AC-8', name:'System use notification',     owner:'Marcus', status:'pass' },
+              { id:'AC-9', name:'Previous logon notification', owner:'—',      status:'fail' },
+              { id:'AC-10',name:'Concurrent session control',  owner:'—',      status:'fail' },
+              { id:'AC-11',name:'Session lock',                owner:'Pam',    status:'pass' },
             ].map((c,i,arr)=>`
-              <div style="display:grid;grid-template-columns:60px 1fr 80px 90px;padding:11px 16px;border-bottom:${i<arr.length-1?'1px solid rgba(0,0,0,0.04)':'none'};background:${c.status==='fail'?'rgba(254,242,242,0.5)':'transparent'}">
-                <span style="font-size:11px;font-weight:600;color:#9CA3AF">${c.id}</span>
-                <span style="font-size:12px;color:#111827">${c.name}</span>
-                <span style="font-size:11px;color:${c.owner==='—'?'#DC2626':'#6B7280'}">${c.owner}</span>
-                <span style="display:inline-flex;align-items:center;gap:4px">
+              <div style="display:grid;grid-template-columns:56px 1fr 90px 100px;padding:12px 18px;border-bottom:${i<arr.length-1?'1px solid rgba(0,0,0,0.04)':'none'};background:${c.status==='fail'?'rgba(254,242,242,0.35)':'transparent'};align-items:center">
+                <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.04em">${c.id}</span>
+                <span style="font-family:var(--font-body);font-size:13px;color:#111827">${c.name}</span>
+                <span style="font-family:var(--font-ui);font-size:12px;color:${c.owner==='—'?'#DC2626':'#6B7280'}">${c.owner}</span>
+                <span style="display:inline-flex;align-items:center;gap:5px">
                   <span style="width:5px;height:5px;border-radius:50%;background:${c.status==='pass'?'#059669':'#DC2626'};flex-shrink:0"></span>
-                  <span style="font-size:10px;font-weight:600;color:${c.status==='pass'?'#059669':'#DC2626'}">${c.label}</span>
+                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:${c.status==='pass'?'#059669':'#DC2626'}">${c.status==='pass'?'Passing':'Failing'}</span>
                 </span>
               </div>
             `).join('')}
@@ -2109,19 +2110,23 @@ const VIEWS = {
           Here's a draft — keeping it direct, gives him the full context without needing to dig.
 
           <!-- ── Draft message card ── -->
-          <div style="margin:16px 0;background:#F0F9FF;border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:18px 20px;font-family:var(--font-ui)">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="margin:16px 0;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:20px 22px;font-family:var(--font-ui)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
               <div style="display:flex;align-items:center;gap:8px">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0EA5E9" stroke-width="1.5"><path d="M14 5H2a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1z"/><path d="M2 5l6 4.5L14 5"/></svg>
-                <span style="font-size:10px;font-weight:700;color:#0369A1;letter-spacing:0.06em;text-transform:uppercase">Draft — Slack DM to Marcus Webb</span>
+                <div style="width:28px;height:28px;border-radius:8px;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#7C3AED" stroke-width="1.5"><path d="M14 5H2a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1z"/><path d="M2 5l6 4.5L14 5"/></svg>
+                </div>
+                <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.08em;text-transform:uppercase">Draft — Slack DM to Marcus Webb</span>
               </div>
-              <button style="font-size:10px;font-weight:600;color:#0369A1;background:#E0F2FE;border:none;border-radius:6px;padding:4px 10px;cursor:pointer">Send now →</button>
+              <button style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;background:#5B21B6;border:none;border-radius:8px;padding:5px 12px;cursor:pointer">Send now →</button>
             </div>
-            <div style="font-size:13px;color:#1E3A5F;line-height:1.7;white-space:pre-wrap">Hey Marcus — quick heads up. The Orbit IdP sync failure is causing 5 AC controls to fail (AC-2, AC-3, AC-6, AC-9, AC-10). I've assigned them to you with a due date of May 14.
+            <div style="background:rgba(245,243,255,0.5);border-radius:10px;padding:14px 16px">
+              <div style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.75;white-space:pre-wrap">Hey Marcus — quick heads up. The Orbit IdP sync failure is causing 5 AC controls to fail (AC-2, AC-3, AC-6, AC-9, AC-10). I've assigned them to you with a due date of May 14.
 
 Once the Okta integration is reconnected the evidence should auto-populate. Estimated time is ~30 min for the reconnect + verification.
 
 Let me know if you hit anything unexpected.</div>
+            </div>
           </div>
 
           I've also queued the 5 control assignments in Orbit. They'll show in your team view once you confirm.
