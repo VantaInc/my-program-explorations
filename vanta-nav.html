@@ -615,7 +615,7 @@
   <div class="spotlight-box" id="spotlight-box">
     <div class="spotlight-input-row">
       <div class="spotlight-avatar" id="spotlight-avatar"></div>
-      <input id="spotlight-input" type="text" placeholder="Ask anything…" autocomplete="off" spellcheck="false" />
+      <input id="spotlight-input" type="text" placeholder="Search or ask Ilma anything…" autocomplete="off" spellcheck="false" />
       <span class="spotlight-kbd">esc</span>
     </div>
     <div class="spotlight-suggestions" id="spotlight-suggestions">
@@ -1888,6 +1888,92 @@ const VIEWS = {
             </div>
           </div>
         `).join('')}
+
+      </div>
+    </div>`
+  },
+
+  // ── SEARCH RESULTS ──
+  'search-results': () => {
+    const q = _lastSearchQuery || 'program health'
+    const c = _getSearchContent(q)
+    return `<div class="page">
+      <div class="page-hero">
+        <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#C0BDB8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px">${c.ctx}</div>
+        <h1 style="font-family:var(--font-display);font-size:38px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.1;margin-bottom:28px">${q}</h1>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:flex-start">
+
+        <!-- Left: AI Overview + results -->
+        <div>
+
+          <!-- AI Overview card -->
+          <div style="background:rgba(245,243,255,0.55);border:1px solid rgba(109,40,217,0.1);border-radius:18px;padding:22px 26px;margin-bottom:24px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L9.5 6H14.5L10.5 9L12 14L8 11L4 14L5.5 9L1.5 6H6.5Z" fill="#7C3AED" opacity="0.9"/></svg>
+              <span style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:#7C3AED;letter-spacing:-0.01em">AI Overview</span>
+            </div>
+
+            <p style="font-family:var(--font-body);font-size:14px;color:#374151;line-height:1.7;margin-bottom:16px">
+              <span style="background:rgba(109,40,217,0.1);border-radius:4px;padding:1px 3px;color:#4C1D95">${c.highlight}</span>
+              ${c.summary !== c.highlight ? ' ' + c.summary : ''}
+            </p>
+
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px">
+              ${c.bullets.map(b=>`
+                <div style="display:flex;gap:10px">
+                  <div style="width:4px;border-radius:2px;background:rgba(109,40,217,0.2);flex-shrink:0;margin-top:3px"></div>
+                  <p style="font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.65;margin:0"><strong style="color:#111827">${b.label}:</strong> ${b.body}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Source chips + continue -->
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:14px;border-top:1px solid rgba(109,40,217,0.08)">
+              <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">Sources:</span>
+              ${c.sources.map(s=>`
+                <button onclick="renderView('${s.view}')" style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#7C3AED;background:rgba(255,255,255,0.8);border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:3px 10px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='rgba(109,40,217,0.06)'" onmouseleave="this.style.background='rgba(255,255,255,0.8)'">${s.label}</button>
+              `).join('')}
+              <div style="margin-left:auto">
+                <button onclick="openIlmaSidebar(${JSON.stringify(c.ctx)},${JSON.stringify(q)},${JSON.stringify(c.highlight)},${JSON.stringify(c.chips)})" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:transparent;border:1px solid rgba(109,40,217,0.22);border-radius:8px;padding:6px 14px;cursor:pointer;transition:background 0.1s" onmouseenter="this.style.background='rgba(109,40,217,0.04)'" onmouseleave="this.style.background='transparent'">
+                  ${ILMA_SVG(13)} Ask Ilma to dig deeper
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Follow-up input -->
+          <div style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px">
+            <div style="flex-shrink:0">${ILMA_SVG(18)}</div>
+            <input id="search-followup" type="text" placeholder="Ask a follow-up about ${q.toLowerCase()}…" style="flex:1;border:none;outline:none;font-family:var(--font-ui);font-size:13px;color:#111827;background:transparent;min-width:0" />
+            <button onclick="_searchFollowUp()" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#fff;background:#5B21B6;border:none;border-radius:8px;padding:7px 14px;cursor:pointer">Ask →</button>
+          </div>
+          <script>
+          function _searchFollowUp() {
+            const inp = document.getElementById('search-followup')
+            const q2 = inp?.value?.trim()
+            if (!q2) return
+            const ctx = ${JSON.stringify(c.ctx)}
+            const chips = ${JSON.stringify(c.chips)}
+            openIlmaSidebar(ctx, q2, null, chips)
+          }
+          document.getElementById('search-followup')?.addEventListener('keydown', e => { if(e.key==='Enter') _searchFollowUp() })
+          <\/script>
+        </div>
+
+        <!-- Right: source cards -->
+        <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:24px">
+          ${c.sources.map(s=>`
+            <button onclick="renderView('${s.view}')" style="text-align:left;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:14px;padding:16px 18px;cursor:pointer;transition:background 0.15s;width:100%" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='rgba(255,255,255,0.88)'">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED">${s.label}</span>
+                <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#9CA3AF">${s.meta}</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">Jump to this section →</div>
+            </button>
+          `).join('')}
+        </div>
 
       </div>
     </div>`
@@ -4114,6 +4200,94 @@ function _ilmaSidebarSend() {
   }, 900)
 }
 
+// ── Search query store ───────────────────────────────────────────────────────
+let _lastSearchQuery = ''
+
+// ── Search result content bank ───────────────────────────────────────────────
+function _getSearchContent(q) {
+  const lq = q.toLowerCase()
+  const hit = (...terms) => terms.some(t => lq.includes(t))
+
+  if (hit('vendor','snowflake','datadog','slack','baa','questionnaire','vm-')) return {
+    highlight: 'Snowflake is the highest-risk vendor — the BAA is unsigned and PII is in scope, directly blocking DP-07 and DP-08.',
+    summary: 'Forge has 3 vendors requiring action before the May 18 audit: Snowflake (At risk), Datadog, and Slack (Needs review). Snowflake is the only one that can block the audit if not resolved this week.',
+    bullets: [
+      { label:'Snowflake', body:'BAA unsigned · questionnaire at 45% · blocks DP-07, DP-08 · due this week' },
+      { label:'Datadog', body:'Annual review overdue since Nov 2024 · questionnaire at 72% · BAA pending' },
+      { label:'Slack', body:'DLP controls section outstanding · questionnaire at 80% · review due Aug 2025' },
+    ],
+    sources: [{ label:'Forge · Vendors', view:'forge-vendors', meta:'3 flagged' },{ label:'Vendor Risk · DP-07', view:'controls', meta:'Blocked' },{ label:'Ilma · Vendor deep-dive', view:'ilma-viz', meta:'Today' }],
+    chips:['Why is Snowflake highest risk?','Draft the Snowflake BAA','Who should own the questionnaire?'],
+    ctx:'Search · Vendor Risk'
+  }
+
+  if (hit('audit','readiness','may 18','timeline','soc 2','deadline')) return {
+    highlight: 'Forge is 12 days from the audit window with 91% health — Snowflake BAA and 2 unassigned vendor tasks are the remaining blockers.',
+    summary: 'The May 18 audit window is 12 days away. Forge leads at 91%, Atlas is stable at 84%, and Orbit is at risk at 71% due to the IdP sync failure. All three programs have open action items.',
+    bullets: [
+      { label:'Forge', body:'91% health · Snowflake BAA + vendor questionnaires are the last blockers' },
+      { label:'Atlas', body:'84% health · Okta vendor questionnaire overdue · Vendor Risk at 60%' },
+      { label:'Orbit', body:'71% health · 5 AC controls failing due to IdP sync failure · unowned' },
+    ],
+    sources:[{ label:'Audit Timeline', view:'audit-timeline', meta:'May 18' },{ label:'Forge Overview', view:'forge', meta:'91%' },{ label:'Orbit Overview', view:'orbit', meta:'71% ⚠' }],
+    chips:['What can still block the audit?','Generate pre-audit checklist','What does Orbit need to clear?'],
+    ctx:'Search · Audit Readiness'
+  }
+
+  if (hit('access','idp','okta','orbit','stale','ac-','failing control','sync')) return {
+    highlight: 'Orbit\'s Access Management is at 55% — 5 controls are failing because the Okta IdP connector has been down for 47 days.',
+    summary: 'The Orbit IdP sync failure is the single most urgent item before the audit. AC-2, AC-3, AC-6, AC-9, and AC-10 are all failing with no evidence and no assigned owner. Marcus Webb owns the integration.',
+    bullets: [
+      { label:'Root cause', body:'Okta IdP connector offline for 47 days — no active session data, no evidence' },
+      { label:'Blocked controls', body:'AC-2, AC-3, AC-6, AC-9, AC-10 — all unowned, all failing' },
+      { label:'Fix path', body:'Marcus reconnects Okta → controls auto-remediate within 24h' },
+    ],
+    sources:[{ label:'Orbit Overview', view:'orbit', meta:'71%' },{ label:'Controls · Access Mgmt', view:'controls', meta:'5 failing' },{ label:'Ilma · Access analysis', view:'ilma-viz', meta:'Today' }],
+    chips:['Assign the 5 controls to Marcus','Draft a Slack message to Marcus','Will this block the audit?'],
+    ctx:'Search · Access Management'
+  }
+
+  if (hit('control','pass rate','failing','evidence','theme','domain')) return {
+    highlight: 'Access Management is the weakest cross-program domain — Orbit is at 55%, and Vendor Risk is the second gap with Atlas at 60%.',
+    summary: 'Across all three programs, Access Management and Vendor Risk are the two domains with the most critical gaps. Incident Response is the strongest. Forge leads in 4 of 5 domains.',
+    bullets: [
+      { label:'Access Management', body:'Forge 94 · Atlas 88 · Orbit 55 — Orbit is the outlier due to IdP failure' },
+      { label:'Vendor Risk', body:'Forge 91 · Atlas 60 · Orbit 90 — Atlas lagging on Okta questionnaire' },
+      { label:'Incident Response', body:'Forge 100 · Atlas 83 · Orbit 70 — Forge fully passed' },
+    ],
+    sources:[{ label:'Ilma · Control pass rates', view:'ilma-viz', meta:'Chart' },{ label:'Controls · All programs', view:'controls', meta:'48 total' },{ label:'Orbit · Access Mgmt', view:'orbit', meta:'55%' }],
+    chips:['Show control pass rate chart','What\'s blocking Atlas Vendor Risk?','Which controls can Ilma fix?'],
+    ctx:'Search · Controls'
+  }
+
+  if (hit('forge','atlas','orbit','nexus','sentinel','program','health','score','bu ')) return {
+    highlight: 'Forge leads at 91%, Atlas is stable at 84% with a Vendor Risk gap, and Orbit is at risk at 71% due to the ongoing IdP sync failure.',
+    summary: 'All three programs are active with SOC 2 and ISO 27001 in scope. The audit window opens May 18. Forge is closest to ready; Orbit needs immediate action on Access Management.',
+    bullets: [
+      { label:'Forge', body:'91% · Engineering · 12 days to audit · Snowflake is the last blocker' },
+      { label:'Atlas', body:'84% · Finance · Vendor Risk gap at 60% · Okta questionnaire overdue' },
+      { label:'Orbit', body:'71% · Product · Access Management at 55% · IdP sync failure since March' },
+    ],
+    sources:[{ label:'Forge Overview', view:'forge', meta:'91%' },{ label:'Atlas Overview', view:'atlas', meta:'84%' },{ label:'Orbit Overview', view:'orbit', meta:'71%' }],
+    chips:['Compare all program health','What\'s Forge\'s biggest risk?','Show me Orbit\'s blockers'],
+    ctx:'Search · Programs'
+  }
+
+  // Default — general
+  return {
+    highlight: 'Forge is leading at 91% with the audit in 12 days. Orbit has the most critical open items — 5 failing Access Management controls tied to an IdP sync failure.',
+    summary: `Searching "${q}" across Forge, Atlas, and Orbit — here's what's most relevant based on current program state and open items.`,
+    bullets: [
+      { label:'Most urgent', body:'Orbit IdP sync failure → 5 AC controls failing, unowned, audit in 12 days' },
+      { label:'Vendor risk', body:'Snowflake BAA unsigned in Forge · blocks DP-07, DP-08 · Ilma can draft' },
+      { label:'Program health', body:'Forge 91% · Atlas 84% · Orbit 71% — cross-program trend improving' },
+    ],
+    sources:[{ label:'Ask Ilma', view:'ilma-new', meta:'Follow up' },{ label:'Forge Overview', view:'forge', meta:'91%' },{ label:'Orbit Overview', view:'orbit', meta:'71%' }],
+    chips:['What should I do right now?','Show me all failing controls','Summarize audit readiness'],
+    ctx:`Search · "${q}"`
+  }
+}
+
 // ── Ilma chat launcher — opens chat with pre-seeded prompt + response ─────────
 let _ilmaChat = null
 function openIlmaChat(prompt, reply) {
@@ -4293,8 +4467,29 @@ function wireNavClicks() {
   const suggs    = document.getElementById('spotlight-suggestions')
   const avatar   = document.getElementById('spotlight-avatar')
 
-  // inject llama avatar
+  // inject Ilma avatar
   avatar.innerHTML = ILMA_SVG(28)
+
+  // Snapshot the default suggestions HTML so we can restore it
+  let defaultSuggsHTML = null  // filled after init
+
+  // Nav index — all searchable destinations
+  const NAV_INDEX = [
+    { text:'Forge overview',             view:'forge',          meta:'91%',       iconBg:'#EDE9FE', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M4 7h6M4 5h6M4 9h4"/></svg>' },
+    { text:'Atlas overview',             view:'atlas',          meta:'84%',       iconBg:'#FEF3C7', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#D97706" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M4 7h6M4 5h6M4 9h4"/></svg>' },
+    { text:'Orbit overview',             view:'orbit',          meta:'71%',       iconBg:'#FEE2E2', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#DC2626" stroke-width="1.5"><rect x="1" y="1" width="12" height="12" rx="2"/><path d="M4 7h6M4 5h6M4 9h4"/></svg>' },
+    { text:'Forge vendors',              view:'forge-vendors',  meta:'3 flagged', iconBg:'#F5F3FF', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.5"><circle cx="7" cy="5" r="3"/><path d="M1 13c0-2.8 2.7-4.5 6-4.5s6 1.7 6 4.5"/></svg>' },
+    { text:'Controls',                   view:'controls',       meta:'48 total',  iconBg:'#F5F3FF', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.5"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>' },
+    { text:'Audit timeline',             view:'audit-timeline', meta:'May 18',    iconBg:'#FEF3C7', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#D97706" stroke-width="1.5"><path d="M7 1l6 2.5V7c0 3.5-3 5.5-6 6.5C4 12.5 1 10.5 1 7V3.5L7 1Z"/></svg>' },
+    { text:'Forge team',                 view:'forge-team',     meta:'',          iconBg:'#F5F3FF', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.5"><circle cx="7" cy="4" r="2.5"/><circle cx="3" cy="10" r="2"/><circle cx="11" cy="10" r="2"/></svg>' },
+    { text:'Vendor risk · Snowflake',    view:'forge-vendors',  meta:'At risk',   iconBg:'#FEE2E2', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#DC2626" stroke-width="1.5"><path d="M7 1L13 4V10L7 13L1 10V4L7 1Z"/></svg>' },
+    { text:'Access management · Orbit',  view:'orbit',          meta:'55%',       iconBg:'#FEE2E2', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#DC2626" stroke-width="1.5"><rect x="3" y="6" width="8" height="7" rx="1"/><path d="M5 6V4a2 2 0 014 0v2"/></svg>' },
+    { text:'Control pass rates chart',   view:'ilma-viz',       meta:'Chart',     iconBg:'#F5F3FF', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#7C3AED" stroke-width="1.5"><rect x="1" y="6" width="3" height="7"/><rect x="5.5" y="3" width="3" height="10"/><rect x="10" y="1" width="3" height="12"/></svg>' },
+    { text:'Ilma · Program health',      view:'ilma-health',    meta:'2h ago',    iconBg:'#F5F3FF', icon:'' },
+    { text:'Inbox · Stale accounts',     view:'inbox-stale',    meta:'Critical',  iconBg:'#FEE2E2', icon:'<svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#DC2626" stroke-width="1.5"><path d="M2 3h10l-1 6H3L2 3Z"/><path d="M2 3L1 1H0"/><circle cx="4.5" cy="12" r="1"/><circle cx="9.5" cy="12" r="1"/></svg>' },
+    { text:'Vendor · BAA · questionnaire',view:'forge-vendors', meta:'',          iconBg:'#F5F3FF', icon:'' },
+    { text:'IdP sync failure Okta',      view:'orbit',          meta:'',          iconBg:'#FEE2E2', icon:'' },
+  ]
 
   let focusIdx = -1
 
@@ -4306,11 +4501,37 @@ function wireNavClicks() {
     focusIdx = idx
   }
 
+  function renderDynamic(q) {
+    if (!q) { suggs.innerHTML = defaultSuggsHTML; focusIdx = -1; return }
+    const lq = q.toLowerCase()
+    const matches = NAV_INDEX.filter(n => n.text.toLowerCase().includes(lq)).slice(0, 5)
+
+    const searchRow = `
+      <button class="spotlight-row" data-spotlight-view="search-results" data-search-query="${q.replace(/"/g,'&quot;')}">
+        <div class="spotlight-row-icon" style="background:#F5F3FF">${ILMA_SVG(13)}</div>
+        <span class="spotlight-row-text">Search — <em style="color:#7C3AED;font-style:normal">${q}</em></span>
+        <span class="spotlight-row-meta" style="color:#7C3AED;font-weight:600">AI Overview ↵</span>
+      </button>`
+
+    const matchRows = matches.map(n => `
+      <button class="spotlight-row" data-spotlight-view="${n.view}">
+        <div class="spotlight-row-icon" style="background:${n.iconBg}">${n.icon || ILMA_SVG(13)}</div>
+        <span class="spotlight-row-text">${n.text}</span>
+        <span class="spotlight-row-meta">${n.meta}</span>
+      </button>`).join('')
+
+    suggs.innerHTML = `
+      <div class="spotlight-section-label">Ask Ilma</div>
+      ${searchRow}
+      ${matches.length ? `<div class="spotlight-section-label" style="margin-top:4px">Jump to</div>${matchRows}` : ''}`
+    focusIdx = -1
+  }
+
   function openSpotlight() {
     overlay.classList.add('open')
     input.value = ''
     focusIdx = -1
-    setFocus(-1)
+    suggs.innerHTML = defaultSuggsHTML
     setTimeout(() => input.focus(), 40)
   }
 
@@ -4320,11 +4541,24 @@ function wireNavClicks() {
   }
 
   function activateRow(row) {
+    const view = row.dataset.spotlightView || 'search-results'
+    const query = row.dataset.searchQuery || input.value.trim()
+    if (query) _lastSearchQuery = query
     closeSpotlight()
-    const view = row.dataset.spotlightView || 'ilma-new'
-    const prompt = row.dataset.prompt
+    // Nav toggle
+    if (view !== 'forge' && view !== 'atlas' && view !== 'orbit' && view !== 'controls' && view !== 'audit-timeline') {
+      if (activePill !== 'ilma') {
+        activePill = 'ilma'
+        document.getElementById('pill-ilma').classList.add('active')
+        document.getElementById('pill-inbox').classList.remove('active')
+        const navBody = document.getElementById('nav-body')
+        navBody.innerHTML = TABS['ilma'] ? TABS['ilma']() : ''
+        wireNavClicks()
+      }
+    }
     renderView(view)
-    // if there's a prompt and a chat input, pre-fill it
+    setActive(view)
+    const prompt = row.dataset.prompt
     if (prompt) {
       setTimeout(() => {
         const ci = document.getElementById('chat-input')
@@ -4333,10 +4567,26 @@ function wireNavClicks() {
     }
   }
 
+  function submitSearch() {
+    const q = input.value.trim()
+    if (!q) return
+    _lastSearchQuery = q
+    closeSpotlight()
+    if (activePill !== 'ilma') {
+      activePill = 'ilma'
+      document.getElementById('pill-ilma').classList.add('active')
+      document.getElementById('pill-inbox').classList.remove('active')
+      document.getElementById('nav-body').innerHTML = TABS['ilma'] ? TABS['ilma']() : ''
+      wireNavClicks()
+    }
+    renderView('search-results')
+    setActive('search-results')
+  }
+
   // keyboard nav
   document.addEventListener('keydown', e => {
-    // open
-    if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
+    // open with Cmd/Ctrl+K or Cmd/Ctrl+I
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'i')) {
       e.preventDefault()
       if (overlay.classList.contains('open')) closeSpotlight()
       else openSpotlight()
@@ -4351,10 +4601,19 @@ function wireNavClicks() {
       e.preventDefault(); setFocus(Math.max(focusIdx - 1, -1))
     } else if (e.key === 'Enter') {
       e.preventDefault()
-      const row = focusIdx >= 0 ? rows[focusIdx] : rows[0]
-      if (row) activateRow(row)
+      if (focusIdx >= 0 && rows[focusIdx]) {
+        activateRow(rows[focusIdx])
+      } else {
+        // typed but no selection → submit as search
+        const q = input.value.trim()
+        if (q) submitSearch()
+        else if (rows[0]) activateRow(rows[0])
+      }
     }
   })
+
+  // input: live filter
+  input.addEventListener('input', () => renderDynamic(input.value.trim()))
 
   // click outside to close
   overlay.addEventListener('click', e => {
@@ -4366,6 +4625,9 @@ function wireNavClicks() {
     const row = e.target.closest('.spotlight-row')
     if (row) activateRow(row)
   })
+
+  // Capture default HTML after icons are injected (deferred)
+  setTimeout(() => { defaultSuggsHTML = suggs.innerHTML }, 100)
 })()
 
 
