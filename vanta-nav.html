@@ -759,6 +759,7 @@
     </button>
     <button class="action-pill ilma" id="pill-ilma" onclick="triggerActionPill('ilma')" title="Ask Ilma">
       <span id="pill-ilma-icon"></span>
+      <span id="pill-ilma-badge" style="display:none;background:#7C3AED;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:14px;text-align:center;line-height:1.6;margin-left:-2px">0</span>
     </button>
     <button class="action-pill inbox" id="pill-inbox" onclick="triggerActionPill('inbox')" title="Inbox">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4C2 3.4 2.4 3 3 3H13C13.6 3 14 3.4 14 4V11C14 11.6 13.6 12 13 12H3C2.4 12 2 11.6 2 11V4Z"/><path d="M2 4L8 8.5L14 4"/></svg>
@@ -2653,7 +2654,7 @@ Let me know if you hit anything unexpected.</div>
             <!-- Actions -->
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
               ${s.canAgent ? `
-                <button onclick="document.getElementById('sug-${si}').style.opacity='0.4'" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:7px 13px;cursor:pointer;white-space:nowrap">Let Ask Ilma handle it</button>
+                <button onclick="delegateToIlma(${si},${JSON.stringify(s.title)},${JSON.stringify(s.control)})" style="display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#EDE9FE;border:none;border-radius:8px;padding:7px 13px;cursor:pointer;white-space:nowrap">${ILMA_SVG(13)} Let Ask Ilma handle it</button>
               ` : s.recommended ? `
                 <div style="display:flex;align-items:center;gap:6px">
                   <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">Suggested:</div>
@@ -4159,6 +4160,61 @@ function goHome() {
   setActive(CTX_META[currentCtx].homeView)
 }
 
+// ── Delegate to Ilma: animate row out, badge pill, inject thread ─────────────
+let _ilmaAgentCount = 0
+const _ilmaAgentTasks = []
+
+function delegateToIlma(si, title, control) {
+  const row = document.getElementById('sug-' + si)
+  if (!row || row.dataset.delegated) return
+  row.dataset.delegated = '1'
+
+  // Animate row: fade + slide up
+  row.style.transition = 'opacity 0.25s ease, transform 0.3s ease, max-height 0.35s ease, padding 0.35s ease, margin 0.35s ease'
+  row.style.overflow = 'hidden'
+  row.style.maxHeight = row.offsetHeight + 'px'
+  row.style.opacity = '1'
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      row.style.opacity = '0'
+      row.style.transform = 'translateY(-6px) scale(0.98)'
+      row.style.maxHeight = '0'
+      row.style.padding = '0'
+      row.style.margin = '0'
+    })
+  })
+  setTimeout(() => { row.style.display = 'none' }, 380)
+
+  // Track task
+  _ilmaAgentTasks.push({ title, control, ts: Date.now() })
+  _ilmaAgentCount++
+
+  // Bump badge on pill-ilma
+  const badge = document.getElementById('pill-ilma-badge')
+  if (badge) {
+    badge.textContent = _ilmaAgentCount
+    badge.style.display = 'inline-block'
+    // Pop animation
+    badge.style.transition = 'transform 0.15s ease'
+    badge.style.transform = 'scale(1.4)'
+    setTimeout(() => { badge.style.transform = 'scale(1)' }, 150)
+  }
+
+  // If the Ilma nav is currently open, inject a new thread row at the top
+  if (activePill === 'ilma') {
+    const navBody = document.getElementById('nav-body')
+    const firstSection = navBody.querySelector('.nav-section')
+    if (firstSection) {
+      const newRow = document.createElement('button')
+      newRow.className = 'nav-row'
+      newRow.dataset.view = 'ilma-new'
+      newRow.innerHTML = `<span class="row-icon" style="color:#7C3AED">${ILMA_SVG(13)}</span><span class="row-text">${title}</span><span class="row-meta" style="color:#7C3AED;font-weight:600">In progress</span>`
+      newRow.addEventListener('click', () => { renderView('ilma-new'); setActive('ilma-new') })
+      firstSection.insertBefore(newRow, firstSection.querySelector('.nav-row'))
+    }
+  }
+}
+
 // ── Option B: action pill handler (Ilma / Inbox) ──────────────────────────────
 let activePill = null
 function triggerActionPill(type) {
@@ -4178,7 +4234,12 @@ function triggerActionPill(type) {
   const navBody = document.getElementById('nav-body')
   navBody.innerHTML = TABS[type] ? TABS[type]() : ''
   wireNavClicks()
-  if (type === 'ilma') renderView('ilma-health')
+  if (type === 'ilma') {
+    renderView('ilma-health')
+    // Clear badge when opening the Ilma panel (viewed = seen)
+    const badge = document.getElementById('pill-ilma-badge')
+    if (badge) { _ilmaAgentCount = 0; badge.style.display = 'none' }
+  }
   if (type === 'inbox') renderView('inbox-stale')
 }
 
