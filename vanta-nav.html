@@ -1797,6 +1797,51 @@ const VIEWS = {
     </div>
   </div>`,
 
+  // ── ILMA: HEALTH TREND CHART ──
+  'ilma-chart-demo': () => `<div class="page" style="padding-bottom:0">
+    <div class="page-header" style="margin-bottom:0;padding-bottom:20px">
+      <div class="page-breadcrumb">Ask Ilma &nbsp;›&nbsp; Recent conversations</div>
+      <h1 class="page-title">Program health trend — all BUs</h1>
+      <p class="page-sub" style="margin-top:4px">Today</p>
+    </div>
+    <div class="chat-wrap" style="display:flex;flex-direction:column;gap:0;padding:0">
+      <div class="chat-messages" style="max-height:none;padding-bottom:0">
+
+        <div class="msg-user">Show me how our program health score has trended over time — I want to see each BU separately too.</div>
+
+        <div class="msg-ai" style="padding:0;background:none;border:none;box-shadow:none">
+          <p style="padding:16px 18px 12px;margin:0;font-family:var(--font-body);font-size:13px;color:#374151;line-height:1.65">Here's the full health trend across all three programs. You're looking at daily scores back to March 2024 — use the time controls to zoom in, toggle BUs on and off in the sidebar, or <strong>click any point</strong> to get an AI read on what drove the change. You can also <strong>drag to select a range</strong> for a window summary, or hit the forecast zone on the right edge to see where you're projected to land.</p>
+
+          <!-- Embedded chart -->
+          <div style="position:relative;margin:0 0 0;border-radius:0 0 16px 16px;overflow:hidden;border-top:1px solid rgba(0,0,0,0.05)">
+            <iframe
+              src="data-explorer.html"
+              style="width:100%;height:520px;border:none;display:block"
+              title="Program health data explorer"
+            ></iframe>
+            <a href="data-explorer.html" target="_blank" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:5px 12px;text-decoration:none;letter-spacing:0.04em;text-transform:uppercase;display:flex;align-items:center;gap:5px;opacity:0.7;transition:opacity 0.15s" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.7'">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H4M9 1V6" stroke="#7C3AED" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Open full screen
+            </a>
+          </div>
+        </div>
+
+        <div class="msg-user">The Orbit dip in April — what happened?</div>
+
+        <div class="msg-ai">
+          That drop on April 21 was a sync failure. Two Orbit controls — AC-2 (Account Management) and VM-03 (Vendor Monitoring) — had their evidence go stale when the IdP integration stopped completing.<br><br>
+          The score fell 4 points in 3 days because Vanta flagged both controls as failing without fresh evidence. The fix requires reconnecting the Okta integration, which also resolves the 12 stale accounts you're seeing in the current alert.<br><br>
+          <strong>Nothing has been done yet.</strong> The controls are still failing and the dip you see is the current state, not a past event — which is why it's showing as a critical alert in your inbox.
+        </div>
+
+      </div>
+      <div class="chat-input-wrap" style="margin-top:0">
+        <input type="text" placeholder="Ask a follow-up about the trend…" />
+        <button class="chat-send">↑</button>
+      </div>
+    </div>
+  </div>`,
+
   // ── ILMA: DATA VIZ CONVERSATION ──
   'ilma-viz': () => `<div class="page">
     <div class="page-header"><div class="page-breadcrumb">Ask Ilma &nbsp;›&nbsp; Recent conversations</div><h1 class="page-title">Control pass rates — all programs</h1><p class="page-sub" style="margin-top:4px">Today</p></div>
@@ -3211,6 +3256,7 @@ const TABS = {
     <div class="nav-section">
       <span class="sec-label">Recent conversations</span>
       <button class="nav-row" data-view="ilma-health"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Program health — all 3</span><span class="row-meta">2h</span></button>
+      <button class="nav-row" data-view="ilma-chart-demo"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Health trend over time</span><span class="row-meta">3h</span></button>
       <button class="nav-row" data-view="ilma-viz"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Control pass rates — all programs</span><span class="row-meta">4h</span></button>
       <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">What's blocking Atlas ISO 27001?</span><span class="row-meta">1d</span></button>
       <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Forge pre-audit checklist</span><span class="row-meta">3d</span></button>

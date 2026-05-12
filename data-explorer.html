@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vanta · Data Explorer — Meridian</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+    body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.16s ease forwards; }
+    input::placeholder { color: #C0BDB8; }
+    input:focus { outline: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect, useCallback } = React;
+
+    // ─── BUSINESS UNITS ──────────────────────────────────────────────────────────
+
+    const BUS = {
+      forge: { label: 'Forge', sub: 'Dev Tools',    color: '#F97316', status: 'on_track'        },
+      atlas: { label: 'Atlas', sub: 'Project Mgmt', color: '#3B82F6', status: 'needs_attention' },
+      orbit: { label: 'Orbit', sub: 'Cloud Storage',color: '#06B6D4', status: 'at_risk'         },
+    };
+
+    const STATUS_META = {
+      on_track:        { label: 'On Track',        dot: '#10B981' },
+      needs_attention: { label: 'Needs Attention', dot: '#F59E0B' },
+      at_risk:         { label: 'At Risk',          dot: '#EF4444' },
+    };
+
+    // ─── CONTINUOUS DAILY SERIES ─────────────────────────────────────────────────
+
+    const TODAY_DATE = new Date(2025, 4, 6); // May 6 2025
+
+    // Generate ~430 days of daily history + ~90 days of forecast
+    const SERIES = (() => {
+      const out = [];
+      const start = new Date(2024, 2, 2); // Mar 2 2024
+      const fxEnd = new Date(2025, 7, 3); // Aug 3 2025
+      let d = new Date(start);
+      while (d <= fxEnd) {
+        const t      = (d - start) / 86400000;
+        const isFx   = d > TODAY_DATE;
+        const isToday = d.toDateString() === TODAY_DATE.toDateString();
+        // S-curve trend + slow noise
+        const trend  = 70 + 24 * (1 - Math.exp(-t / 230)) + (isFx ? (t - 430) * 0.04 : 0);
+        const noise  = Math.sin(t * 0.21) * 1.7 + Math.sin(t * 0.08) * 1.3 + Math.cos(t * 0.43) * 0.8;
+        const score  = Math.round(Math.max(64, Math.min(97, trend + noise)));
+        out.push({
+          date: new Date(d), score, isForecast: isFx, isToday,
+          forge: Math.round(Math.min(99, score + 2 + Math.sin(t * 0.19) * 1.3)),
+          atlas: Math.round(Math.max(60, score - 7 + Math.sin(t * 0.13) * 2.2)),
+          orbit: Math.round(Math.max(55, score - 20 + Math.sin(t * 0.17) * 2.9)),
+        });
+        d = new Date(d); d.setDate(d.getDate() + 1);
+      }
+      return out;
+    })();
+
+    const TODAY_IDX = SERIES.findIndex(d => d.isToday);
+
+    // Window sizes in days
+    const WIN_DAYS = { '1W': 7, '1M': 30, '3M': 90, '1Y': 365 };
+
+    function fmtDate(date, windowSize) {
+      if (windowSize === '1Y') return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // windowOffset: 0 = current (end = today), 1 = prev window, -1 = forecast
+    function getWindowSlice(windowSize, windowOffset) {
+      const size = WIN_DAYS[windowSize];
+      if (windowOffset < 0) {
+        const start = TODAY_IDX;
+        const end   = Math.min(SERIES.length - 1, TODAY_IDX + size - 1);
+        return SERIES.slice(start, end + 1);
+      }
+      const endIdx   = Math.min(SERIES.length - 1, TODAY_IDX - windowOffset * size);
+      const startIdx = Math.max(0, endIdx - size + 1);
+      return SERIES.slice(startIdx, endIdx + 1);
+    }
+
+    function sliceToChartData(slice, windowSize, windowOffset) {
+      const isFx   = windowOffset < 0;
+      const lastPt = slice[slice.length - 1];
+      const delta  = lastPt.score - slice[0].score;
+      const wLabel = { '1W': 'week', '1M': 'month', '3M': '3 mo', '1Y': 'year' }[windowSize];
+      return {
+        points: slice.map(d => ({
+          x: fmtDate(d.date, windowSize),
+          y: d.score, date: d.date,
+          current: d.isToday,
+          forecast: d.isForecast,
+        })),
+        yMin: 50, yMax: 100,
+        stat: {
+          score: String(lastPt.score),
+          sub:   isFx ? `Projected · ${fmtDate(lastPt.date, windowSize)}`
+                      : `${delta >= 0 ? '↑' : '↓'} ${Math.abs(delta)} pts · ${wLabel}`,
+          label: isFx ? 'PROJECTED ›' : 'HEALTH SCORE ›',
+        },
+        bu: {
+          forge: slice.map(d => d.forge),
+          atlas: slice.map(d => d.atlas),
+          orbit: slice.map(d => d.orbit),
+        },
+      };
+    }
+
+    // ─── INSIGHT EVENTS (date-keyed) ─────────────────────────────────────────────
+
+    const EVENTS_RAW = [
+      { date: new Date(2024, 5, 3),  label: 'ISO 27001 gap',  bu: 'atlas', detail: 'Critical gap in Atlas ISO 27001 controls found during quarterly review. Score dropped 3 pts.',                                  chips: ['What controls failed?', 'How did Atlas recover?', 'Compare Atlas vs Forge'] },
+      { date: new Date(2024, 8, 9),  label: 'SOC 2 audit',    bu: 'forge', detail: 'SOC 2 Type II audit launched for Forge. Temporary dip during evidence collection window.',                                       chips: ['Show audit timeline', 'Which controls were reviewed?', 'When did Forge recover?'] },
+      { date: new Date(2025, 2, 10), label: 'Vendor risk',    bu: 'orbit', detail: '3 vendors flagged in Orbit review. Integration cleanup triggered across cloud storage controls.',                                chips: ['Which vendors were flagged?', 'Is Orbit still at risk?', 'Show vendor history'] },
+      { date: new Date(2025, 3, 21), label: 'Orbit dip',      bu: 'orbit', detail: 'Orbit score dropped Apr 21 — 2 controls showing stale evidence from a failed sync.',                                           chips: ['Show stale controls', 'Has this been fixed?', 'What caused the sync failure?'] },
+      { date: new Date(2025, 8, 15), label: 'SOC 2 renewals', bu: 'forge', detail: 'Forge and Atlas SOC 2 renewals due Sep 2025. Evidence window opens Aug 1.',                                                     chips: ['What needs to be ready?', 'Show renewal checklist', 'Risk if we slip the deadline?'] },
+    ];
+
+    // Match events to a slice — returns events with `idx` into the slice
+    function findEventsInSlice(slice) {
+      return EVENTS_RAW.map(ev => {
+        let best = -1, bestDiff = Infinity;
+        slice.forEach((d, i) => {
+          const diff = Math.abs(d.date - ev.date) / 86400000;
+          if (diff < bestDiff) { bestDiff = diff; best = i; }
+        });
+        if (bestDiff > 5) return null;
+        return { ...ev, idx: best };
+      }).filter(Boolean);
+    }
+
+    const QUICK_CHIPS = ["Why is Orbit still at risk?", "What's blocking Atlas?", 'Show all failing tests'];
+
+    // ─── SIDEBAR / PROGRAMS PANEL ────────────────────────────────────────────────
+
+    function Sidebar({ buScores, overlays, onToggle }) {
+      return (
+        <div style={{
+          width: 212,
+          background: 'transparent',
+          borderRight: '1px solid rgba(0,0,0,0.06)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '20px 0 24px',
+          flexShrink: 0,
+          zIndex: 20,
+        }}>
+          {/* Logo + wordmark */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 18px', marginBottom: 28 }}>
+            <div style={{ width: 28, height: 28, background: '#5B21B6', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 600, flexShrink: 0, userSelect: 'none' }}>V</div>
+            <span style={{ fontSize: 13, fontFamily: 'Inter', fontWeight: 600, color: '#1E1B4B', letterSpacing: '-0.01em' }}>Meridian</span>
+          </div>
+
+          {/* Section label */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 18px', marginBottom: 10 }}>
+            <span style={{ fontSize: 10, fontFamily: 'Inter', fontWeight: 500, color: '#C0BDB8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>PROGRAMS ›</span>
+            <span style={{ fontSize: 10, fontFamily: 'Inter', color: '#C0BDB8' }}>3 active</span>
+          </div>
+
+          {/* BU Cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, padding: '0 10px' }}>
+            {Object.entries(BUS).map(([id, bu]) => {
+              const on    = overlays.includes(id);
+              const sm    = STATUS_META[bu.status];
+              const score = buScores[id];
+              return (
+                <button
+                  key={id}
+                  onClick={() => onToggle(id)}
+                  style={{
+                    display: 'flex', alignItems: 'stretch',
+                    border: 'none', background: 'transparent',
+                    borderRadius: 10, overflow: 'hidden', cursor: 'pointer',
+                    opacity: on ? 1 : 0.38,
+                    transition: 'opacity 0.18s ease, box-shadow 0.18s ease',
+                    boxShadow: on ? '0 1px 6px rgba(0,0,0,0.06)' : 'none',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = on ? '1' : '0.55'; }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = on ? '1' : '0.38'; }}
+                >
+                  {/* Left color strip */}
+                  <div style={{
+                    width: 3, flexShrink: 0,
+                    background: on ? bu.color : '#E5E7EB',
+                    borderRadius: '10px 0 0 10px',
+                    transition: 'background 0.18s ease',
+                  }} />
+
+                  {/* Card body */}
+                  <div style={{
+                    flex: 1,
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '11px 12px 11px 11px',
+                    background: on ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.20)',
+                    borderRadius: '0 10px 10px 0',
+                    transition: 'background 0.18s ease',
+                  }}>
+                    {/* Name + sub */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span style={{
+                        fontSize: 13, fontFamily: 'Inter', fontWeight: 600,
+                        color: on ? '#111827' : '#6B7280',
+                        letterSpacing: '-0.01em',
+                        transition: 'color 0.18s',
+                      }}>{bu.label}</span>
+                      <span style={{
+                        fontSize: 10, fontFamily: 'Inter',
+                        color: '#9CA3AF',
+                        letterSpacing: '0.01em',
+                      }}>{bu.sub}</span>
+                    </div>
+
+                    {/* Score + status */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
+                        <span style={{
+                          fontSize: 22, fontFamily: 'Fraunces', fontWeight: 300,
+                          color: on ? bu.color : '#C0BDB8',
+                          letterSpacing: '-0.02em', lineHeight: 1,
+                          transition: 'color 0.18s',
+                        }}>{score}</span>
+                        <span style={{
+                          fontSize: 8.5, fontFamily: 'Inter', fontWeight: 500,
+                          color: on ? '#C0BDB8' : '#D1D5DB',
+                          letterSpacing: '0.05em', textTransform: 'uppercase',
+                          transition: 'color 0.18s',
+                        }}>Trust Score</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <span style={{
+                          width: 5, height: 5, borderRadius: '50%',
+                          background: on ? sm.dot : '#D1D5DB',
+                          display: 'inline-block', flexShrink: 0,
+                          transition: 'background 0.18s',
+                        }} />
+                        <span style={{
+                          fontSize: 9.5, fontFamily: 'Inter', fontWeight: 500,
+                          color: on ? sm.dot : '#C0BDB8',
+                          letterSpacing: '0.02em', whiteSpace: 'nowrap',
+                          transition: 'color 0.18s',
+                        }}>{sm.label}</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ flex: 1 }} />
+
+          {/* Avatar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '0 16px' }}>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#EDE9FE,#C4B5FD)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: '#5B21B6', flexShrink: 0, userSelect: 'none' }}>P</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <span style={{ fontSize: 11.5, fontFamily: 'Inter', fontWeight: 500, color: '#374151' }}>Pam Nguyen</span>
+              <span style={{ fontSize: 10, fontFamily: 'Inter', color: '#9CA3AF' }}>GRC Program Manager</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── TIME NAV ────────────────────────────────────────────────────────────────
+
+    function TimeNav({ windowOffset, onBack, onForward, onToday }) {
+      const isForecast = windowOffset < 0;
+      const Arr = ({ dir, onClick }) => (
+        <button onClick={onClick} style={{
+          width: 34, height: 34, borderRadius: 32, border: 'none', background: 'transparent',
+          color: '#4B5563', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', flexShrink: 0, transition: 'background 0.15s',
+        }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.05)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+        >
+          {dir === '←'
+            ? <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8.5 2L4 6.5l4.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            : <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M4.5 2L9 6.5 4.5 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          }
+        </button>
+      );
+      return (
+        <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.9)', borderRadius: 40, padding: '4px', gap: 0, boxShadow: '0 4px 24px rgba(30,27,75,0.10),0 1px 4px rgba(0,0,0,0.05)' }}>
+          <Arr dir="←" onClick={onBack}/>
+          <button onClick={onToday} style={{
+            padding: '8px 20px', borderRadius: 36, border: 'none',
+            background: windowOffset === 0 ? '#1E1B4B' : 'transparent',
+            color: windowOffset === 0 ? '#fff' : '#9CA3AF',
+            fontSize: 13, fontFamily: 'Inter', fontWeight: 500, cursor: 'pointer',
+            transition: 'background 0.18s,color 0.18s', letterSpacing: '0.01em', lineHeight: 1,
+          }}>Today</button>
+          <Arr dir="→" onClick={onForward}/>
+        </div>
+      );
+    }
+
+    // ─── WINDOW SIZE PICKER ──────────────────────────────────────────────────────
+
+    function WindowPicker({ value, onChange }) {
+      const opts = ['1W', '1M', '3M', '1Y'];
+      return (
+        <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.9)', borderRadius: 32, padding: '4px', gap: 0, boxShadow: '0 2px 12px rgba(30,27,75,0.08)' }}>
+          {opts.map(o => (
+            <button key={o} onClick={() => onChange(o)} style={{
+              padding: '7px 14px', borderRadius: 28, border: 'none',
+              background: value === o ? '#1E1B4B' : 'transparent',
+              color: value === o ? '#fff' : '#9CA3AF',
+              fontSize: 12, fontFamily: 'Inter', fontWeight: 500, cursor: 'pointer',
+              transition: 'background 0.15s,color 0.15s', letterSpacing: '0.02em', lineHeight: 1,
+            }}
+              onMouseEnter={e => { if (value !== o) e.currentTarget.style.color = '#4B5563'; }}
+              onMouseLeave={e => { if (value !== o) e.currentTarget.style.color = '#9CA3AF'; }}
+            >{o}</button>
+          ))}
+        </div>
+      );
+    }
+
+
+    // ─── AI ASK BAR ──────────────────────────────────────────────────────────────
+
+    function AskBar({ chips, pendingQuery, onClearPending }) {
+      const [focused, setFocused] = useState(false);
+      const [value, setValue] = useState('');
+      const inputRef = useRef(null);
+
+      useEffect(() => {
+        if (pendingQuery) {
+          setValue(pendingQuery);
+          onClearPending();
+          // Small delay so the bar is visible before focusing
+          setTimeout(() => inputRef.current?.focus(), 60);
+        }
+      }, [pendingQuery]);
+
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width: '100%', maxWidth: 540 }}>
+          {(focused || value.length > 0) && (
+            <div className="fade-up" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+              {chips.map((c, i) => (
+                <button key={i}
+                  onMouseDown={e => { e.preventDefault(); setValue(c); inputRef.current?.focus(); }}
+                  style={{ padding: '5px 12px', borderRadius: 20, border: '1px solid rgba(91,33,182,0.15)', background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', color: '#5B21B6', fontSize: 11.5, fontFamily: 'Inter', fontWeight: 500, cursor: 'pointer', letterSpacing: '0.01em', whiteSpace: 'nowrap', transition: 'background 0.1s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(237,233,254,0.9)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.88)'}
+                >{c}</button>
+              ))}
+            </div>
+          )}
+          <div onClick={() => inputRef.current?.focus()} style={{
+            width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+            background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+            border: focused ? '1px solid rgba(91,33,182,0.28)' : '1px solid rgba(255,255,255,0.90)',
+            borderRadius: 32, padding: '12px 14px 12px 18px', cursor: 'text',
+            boxShadow: focused ? '0 8px 32px rgba(30,27,75,0.12),0 0 0 3px rgba(91,33,182,0.06)' : '0 4px 20px rgba(30,27,75,0.08)',
+            transition: 'box-shadow 0.18s ease, border-color 0.18s ease',
+          }}>
+            <span style={{ color: focused ? '#7C3AED' : '#C0BDB8', flexShrink: 0, display: 'flex', alignItems: 'center', transition: 'color 0.18s' }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l1.3 4H14l-3.6 2.6 1.4 4.3L8 9.8l-3.8 2.6 1.4-4.3L2 5.5h4.7L8 1.5z" fill="currentColor" opacity="0.75"/></svg>
+            </span>
+            <input ref={inputRef} value={value} onChange={e => setValue(e.target.value)}
+              onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+              placeholder="Ask about your programs…"
+              style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 13.5, fontFamily: 'Inter', fontWeight: 400, color: '#1E1B4B', letterSpacing: '0.005em', lineHeight: 1 }}
+            />
+            <button onClick={() => value.length > 0 && setValue('')} style={{
+              width: 28, height: 28, borderRadius: '50%', border: 'none', flexShrink: 0,
+              background: value.length > 0 ? '#1E1B4B' : 'transparent',
+              color: value.length > 0 ? '#fff' : '#C0BDB8',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: value.length > 0 ? 'pointer' : 'default',
+              transition: 'background 0.15s, color 0.15s',
+            }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 6 2 2v3.5l5 .5-5 .5V10z" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── POINT INSIGHTS ─────────────────────────────────────────────────────────
+
+    function getPointInsight(data, idx, windowOffset) {
+      const { points } = data;
+      const pt         = points[idx];
+      const events     = data.events || [];
+      const event      = events.find(ev => ev.idx === idx);
+      if (event) return { obs: event.detail, chips: event.chips };
+      const score     = pt.y;
+      const prevScore = idx > 0 ? points[idx - 1].y : score;
+      const delta     = score - prevScore;
+      let obs;
+      if (pt.forecast) {
+        obs = `Projected at ${score} — based on current remediation velocity and control coverage trends across all three BUs.`;
+      } else if (delta >= 3) {
+        obs = `Program health improved ${delta} pts — compliance posture strengthening. Evidence refresh and control closures drove the gain.`;
+      } else if (delta <= -2) {
+        obs = `Score dipped ${Math.abs(delta)} pts this period — evidence gaps or stale controls likely contributed. Orbit and Atlas most exposed.`;
+      } else if (pt.current) {
+        const f = data.bu.forge[idx], a = data.bu.atlas[idx], o = data.bu.orbit[idx];
+        obs = `Current score as of today. Forge is on track at ${f}, Atlas has open risk items at ${a}, and Orbit's integration cleanup is underway at ${o}.`;
+      } else {
+        obs = `Program held steady at ${score} — no anomalies detected. Vanta AI completed evidence refreshes automatically this period.`;
+      }
+      return { obs, chips: QUICK_CHIPS };
+    }
+
+    // ─── FREEFORM ASK (inside panel) ────────────────────────────────────────────
+
+    function FreeformAsk({ date, onSubmit }) {
+      const [value, setValue]   = useState('');
+      const [focused, setFocused] = useState(false);
+      const inputRef = useRef(null);
+      const submit = () => { if (value.trim()) { onSubmit(value.trim()); setValue(''); } };
+      return (
+        <div style={{ padding: '10px 12px 12px' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: focused ? 'rgba(245,243,255,0.9)' : 'rgba(0,0,0,0.025)',
+            border: focused ? '1px solid rgba(91,33,182,0.25)' : '1px solid rgba(0,0,0,0.06)',
+            borderRadius: 12, padding: '8px 8px 8px 12px',
+            transition: 'all 0.15s ease',
+          }}>
+            <input ref={inputRef} value={value}
+              onChange={e => setValue(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={e => e.key === 'Enter' && submit()}
+              placeholder={`Ask about ${date}…`}
+              style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 12, fontFamily: 'Inter', color: '#1E1B4B', letterSpacing: '0.005em' }}
+            />
+            <button onClick={submit} style={{
+              width: 26, height: 26, borderRadius: 8, border: 'none', flexShrink: 0,
+              background: value.trim() ? '#5B21B6' : 'transparent',
+              color: value.trim() ? '#fff' : '#C0BDB8',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: value.trim() ? 'pointer' : 'default',
+              transition: 'background 0.15s, color 0.15s',
+            }}>
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 6 2 2v3.5l5 .5-5 .5V10z" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── CHART ───────────────────────────────────────────────────────────────────
+
+    function Chart({ data, windowSize, windowOffset, overlays, onChipClick, onGoForecast }) {
+      const containerRef = useRef(null);
+      const [size, setSize]         = useState({ w: 900, h: 600 });
+      const [hovered, setHovered]   = useState(null);
+      const [activeEvent, setActiveEvent] = useState(null);
+      const [pinnedIdx, setPinnedIdx]     = useState(null);
+      const [panelOpen, setPanelOpen]     = useState(false);
+      const [rangeSelection, setRangeSelection] = useState(null); // { a, b } committed
+      const [dragAnchor, setDragAnchor]   = useState(null);
+      const [dragLive, setDragLive]       = useState(null);
+      const [panelMode, setPanelMode]     = useState('point'); // 'point' | 'range'
+      // Drag refs — stable across renders, used inside document-level handlers
+      const dragAnchorRef  = useRef(null);
+      const dragLiveRef    = useRef(null);
+      const isDraggingRef  = useRef(false);
+      const mousedownXRef  = useRef(null);
+      const justDraggedRef = useRef(false);
+      const [fxHover, setFxHover] = useState(false);
+
+      useEffect(() => {
+        const ro = new ResizeObserver(([e]) => {
+          const { width, height } = e.contentRect;
+          setSize({ w: Math.round(width), h: Math.round(height) });
+        });
+        if (containerRef.current) ro.observe(containerRef.current);
+        return () => ro.disconnect();
+      }, []);
+
+      // Document-level mouseup: commit drag range or do nothing
+      useEffect(() => {
+        const onMouseUp = () => {
+          if (isDraggingRef.current && dragAnchorRef.current !== null && dragLiveRef.current !== null) {
+            const a = Math.min(dragAnchorRef.current, dragLiveRef.current);
+            const b = Math.max(dragAnchorRef.current, dragLiveRef.current);
+            if (a !== b) {
+              justDraggedRef.current = true;
+              setRangeSelection({ a, b });
+              setPinnedIdx(null);
+              setPanelOpen(true);
+              setPanelMode('range');
+            }
+          }
+          isDraggingRef.current = false;
+          mousedownXRef.current = null;
+          dragAnchorRef.current = null;
+          dragLiveRef.current   = null;
+          setDragAnchor(null);
+          setDragLive(null);
+        };
+        document.addEventListener('mouseup', onMouseUp);
+        return () => document.removeEventListener('mouseup', onMouseUp);
+      }, []); // refs only — no stale closure risk
+
+      // On window change: clear all selection state
+      useEffect(() => {
+        setPinnedIdx(null);
+        setPanelOpen(false);
+        setHovered(null);
+        setActiveEvent(null);
+        setRangeSelection(null);
+        setDragAnchor(null);
+        setDragLive(null);
+        setPanelMode('point');
+        isDraggingRef.current = false;
+        mousedownXRef.current = null;
+        dragAnchorRef.current = null;
+        dragLiveRef.current   = null;
+      }, [windowSize, windowOffset]);
+
+      const { points, yMin, yMax } = data;
+      const { w, h } = size;
+      const PAD = { left: 56, right: 52, top: 96, bottom: 140 };
+      const CW  = w - PAD.left - PAD.right;
+      const CH  = h - PAD.top  - PAD.bottom;
+
+      const sx = i => PAD.left + (i / (points.length - 1)) * CW;
+      const sy = v => PAD.top  + CH - ((v - yMin) / (yMax - yMin)) * CH;
+
+      const mkPath = idxs =>
+        idxs.map((i, n) => `${n===0?'M':'L'}${sx(i).toFixed(1)},${sy(points[i].y).toFixed(1)}`).join(' ');
+
+      const solidIdxs = points.map((_,i) => i).filter(i => !points[i].forecast);
+      const splitIdx  = points.findIndex(p => p.current);
+
+      const solidPath  = mkPath(solidIdxs);
+      const fxIdxs     = splitIdx >= 0 ? points.map((_,i) => i).slice(splitIdx) : [];
+      const fxPath     = fxIdxs.length > 1 ? fxIdxs.map((i,n) => `${n===0?'M':'L'}${sx(i).toFixed(1)},${sy(points[i].y).toFixed(1)}`).join(' ') : '';
+
+      const areaPath = solidIdxs.length > 1 ? [
+        solidPath,
+        `L${sx(solidIdxs[solidIdxs.length-1]).toFixed(1)},${(PAD.top+CH).toFixed(1)}`,
+        `L${sx(solidIdxs[0]).toFixed(1)},${(PAD.top+CH).toFixed(1)} Z`,
+      ].join(' ') : '';
+
+      const fxAreaPath = fxIdxs.length > 1 ? [
+        fxIdxs.map((i,n) => `${n===0?'M':'L'}${sx(i).toFixed(1)},${sy(points[i].y).toFixed(1)}`).join(' '),
+        `L${sx(fxIdxs[fxIdxs.length-1]).toFixed(1)},${(PAD.top+CH).toFixed(1)}`,
+        `L${sx(fxIdxs[0]).toFixed(1)},${(PAD.top+CH).toFixed(1)} Z`,
+      ].join(' ') : '';
+
+      // Y grid
+      const step   = (yMax - yMin) / 4;
+      const yTicks = Array.from({ length: 5 }, (_, i) => Math.round(yMin + i * step));
+
+      const currentPt  = points.find(p => p.current);
+      const currentIdx = currentPt ? points.indexOf(currentPt) : -1;
+
+      // BU overlay paths
+      const buLines = overlays.map(id => {
+        const bu   = BUS[id];
+        const vals = data.bu[id];
+        if (!vals) return null;
+        const sSolidPath = solidIdxs.map((i,n) => `${n===0?'M':'L'}${sx(i).toFixed(1)},${sy(vals[i]).toFixed(1)}`).join(' ');
+        const sFxPath    = splitIdx >= 0
+          ? fxIdxs.map((i,n) => `${n===0?'M':'L'}${sx(i).toFixed(1)},${sy(vals[i]).toFixed(1)}`).join(' ')
+          : '';
+        return { id, bu, vals, sSolidPath, sFxPath };
+      }).filter(Boolean);
+
+      // Hover
+      const handleMouseMove = useCallback(e => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const mx   = e.clientX - rect.left;
+        const colW = points.length > 1 ? CW / (points.length - 1) : CW;
+
+        // Data point hover
+        let best = null, bestDist = Infinity;
+        points.forEach((_, i) => {
+          const d = Math.abs(mx - sx(i));
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        const threshold = colW * 0.55;
+        if (best !== null && bestDist < threshold) {
+          const pt     = points[best];
+          const buVals = overlays.map(id => {
+            const vals = data.bu[id];
+            return vals ? { id, bu: BUS[id], y: vals[best] } : null;
+          }).filter(Boolean);
+          setHovered({ idx: best, px: sx(best), py: sy(pt.y), ...pt, buVals });
+        } else {
+          setHovered(null);
+        }
+
+        // Drag tracking — update live endpoint
+        if (mousedownXRef.current !== null && dragAnchorRef.current !== null) {
+          const moved = Math.abs(mx - mousedownXRef.current);
+          if (moved > 8) {
+            isDraggingRef.current = true;
+            if (best !== null) {
+              dragLiveRef.current = best;
+              setDragAnchor(dragAnchorRef.current);
+              setDragLive(best);
+            }
+          }
+        }
+
+        // Event band hover (suppressed for non-default granularities)
+        const tabEvents = data.events || [];
+        let foundEv = null;
+        tabEvents.forEach(ev => {
+          if (Math.abs(mx - sx(ev.idx)) < colW * 0.85) foundEv = ev;
+        });
+        setActiveEvent(foundEv ? { ...foundEv, px: sx(foundEv.idx) } : null);
+      }, [points, overlays, splitIdx, sx, sy, CW, data]);
+
+      // MouseDown: begin drag tracking
+      const handleMouseDown = useCallback(e => {
+        if (e.button !== 0) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const mx   = e.clientX - rect.left;
+        mousedownXRef.current  = mx;
+        isDraggingRef.current  = false;
+        justDraggedRef.current = false;
+        const colW = points.length > 1 ? CW / (points.length - 1) : CW;
+        let best = null, bestDist = Infinity;
+        points.forEach((_, i) => {
+          const d = Math.abs(mx - sx(i));
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        if (best !== null && bestDist < colW * 0.7) {
+          dragAnchorRef.current = best;
+          dragLiveRef.current   = best;
+        } else {
+          dragAnchorRef.current = null;
+          dragLiveRef.current   = null;
+        }
+      }, [points, CW, sx]);
+
+      // Click: pin + open panel on data point, clear on empty space
+      const handleClick = useCallback(e => {
+        // Suppress click if it was the tail of a drag commit
+        if (justDraggedRef.current) { justDraggedRef.current = false; return; }
+        const rect = e.currentTarget.getBoundingClientRect();
+        const mx   = e.clientX - rect.left;
+        const colW = points.length > 1 ? CW / (points.length - 1) : CW;
+        let best = null, bestDist = Infinity;
+        points.forEach((_, i) => {
+          const d = Math.abs(mx - sx(i));
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        if (best !== null && bestDist < colW * 0.6) {
+          if (best === pinnedIdx && panelOpen && panelMode === 'point') {
+            // Re-clicking the open point closes it
+            setPanelOpen(false);
+            setPinnedIdx(null);
+          } else {
+            // Click any point: clear range, pin point, open panel
+            setRangeSelection(null);
+            setPanelMode('point');
+            setPinnedIdx(best);
+            setPanelOpen(true);
+          }
+        } else {
+          // Clicked empty space — clear all selection
+          setPinnedIdx(null);
+          setPanelOpen(false);
+          setRangeSelection(null);
+          setPanelMode('point');
+        }
+      }, [points, pinnedIdx, panelOpen, panelMode, sx, CW]);
+
+      // ── Bump-pass helper — shared by pinned and hover pill renders
+      function buildPills(mainPxY, mainScore, buVals) {
+        const MIN_GAP = 28;
+        const entries = [
+          { key: 'overall', score: mainScore, label: 'Overall', color: '#1E1B4B', y: mainPxY },
+          ...buVals.map(({ id, bu, y }) => ({ key: id, score: y, label: bu.label, color: bu.color, y: sy(y) })),
+        ];
+        entries.sort((a, b) => a.y - b.y);
+        for (let i = 1; i < entries.length; i++) {
+          if (entries[i].y - entries[i - 1].y < MIN_GAP)
+            entries[i] = { ...entries[i], y: entries[i - 1].y + MIN_GAP };
+        }
+        for (let i = entries.length - 2; i >= 0; i--) {
+          if (entries[i + 1].y - entries[i].y < MIN_GAP)
+            entries[i] = { ...entries[i], y: entries[i + 1].y - MIN_GAP };
+        }
+        return entries;
+      }
+
+      // Pinned state derived values
+      const pinnedPt     = pinnedIdx !== null ? points[pinnedIdx] : null;
+      const pinnedBuVals = pinnedIdx !== null
+        ? overlays.map(id => { const v = data.bu[id]; return v ? { id, bu: BUS[id], y: v[pinnedIdx] } : null; }).filter(Boolean)
+        : [];
+      const pinnedPx      = pinnedIdx !== null ? sx(pinnedIdx) : null;
+      const PILL_W        = 78;
+      const offsetX       = 14;
+      const pinnedFlipL   = pinnedPx !== null && pinnedPx + offsetX + PILL_W  > w - PAD.right - 8;
+      const pinnedPillX   = pinnedPx !== null ? (pinnedFlipL ? pinnedPx - offsetX - PILL_W  : pinnedPx + offsetX) : 0;
+      const pinnedPills   = pinnedPt ? buildPills(sy(pinnedPt.y), pinnedPt.y, pinnedBuVals) : [];
+
+      const PANEL_W       = 264;
+      const panelFlipL    = pinnedPx !== null && pinnedPx + offsetX + PANEL_W > w - PAD.right - 8;
+      const panelLeft     = pinnedPx !== null ? (panelFlipL ? pinnedPx - PANEL_W - offsetX : pinnedPx + offsetX) : 0;
+      const panelTop      = PAD.top + 20;
+      const tabEvents     = data.events || [];
+      const insight       = pinnedIdx !== null ? getPointInsight(data, pinnedIdx, windowOffset) : null;
+
+      // Derived drag/range values for rendering
+      const isDraggingActive = dragAnchor !== null && dragLive !== null && dragAnchor !== dragLive;
+      const rangeA = rangeSelection ? rangeSelection.a : (isDraggingActive ? Math.min(dragAnchor, dragLive) : null);
+      const rangeB = rangeSelection ? rangeSelection.b : (isDraggingActive ? Math.max(dragAnchor, dragLive) : null);
+
+      function getRangeInsight(a, b) {
+        const startPt  = points[a];
+        const endPt    = points[b];
+        const delta    = endPt.y - startPt.y;
+        let obs;
+        if (Math.abs(delta) >= 5) {
+          obs = `Score ${delta > 0 ? 'grew' : 'fell'} ${Math.abs(delta)} pts from ${startPt.y} to ${endPt.y} across this window — a ${delta > 0 ? 'significant gain driven by control closures and evidence refresh.' : 'notable drop likely tied to stale controls or open risk items.'}`;
+        } else if (delta > 0) {
+          obs = `Steady improvement of ${delta} pt${delta !== 1 ? 's' : ''} from ${startPt.y} → ${endPt.y}. Automated monitoring and evidence refresh drove gradual progress.`;
+        } else if (delta < 0) {
+          obs = `Score slipped ${Math.abs(delta)} pt${Math.abs(delta) !== 1 ? 's' : ''} from ${startPt.y} → ${endPt.y}. Review stale controls and vendor risk items within this window.`;
+        } else {
+          obs = `Score held steady at ${startPt.y} across this range — stable compliance posture with no major anomalies detected.`;
+        }
+        return {
+          obs,
+          chips: [`What changed ${startPt.x} → ${endPt.x}?`, 'Which BU moved most?', 'Show controls in this window'],
+        };
+      }
+
+      return (
+        <div ref={containerRef} style={{ position: 'absolute', inset: 0 }}>
+          <svg width={w} height={h}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => {
+              setHovered(null); setActiveEvent(null);
+              // Cancel drag if mouse leaves chart
+              if (!isDraggingRef.current) {
+                mousedownXRef.current = null;
+                dragAnchorRef.current = null;
+                dragLiveRef.current   = null;
+                setDragAnchor(null);
+                setDragLive(null);
+              }
+            }}
+            onMouseDown={handleMouseDown}
+            onClick={handleClick}
+            style={{ display: 'block', cursor: isDraggingActive ? 'col-resize' : 'crosshair', userSelect: 'none' }}
+          >
+            <defs>
+              <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="#5B21B6" stopOpacity="0.13"/>
+                <stop offset="100%" stopColor="#5B21B6" stopOpacity="0.01"/>
+              </linearGradient>
+              <linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="#A78BFA" stopOpacity="0.07"/>
+                <stop offset="100%" stopColor="#A78BFA" stopOpacity="0.00"/>
+              </linearGradient>
+              <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="3.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            {/* Event bands — behind everything */}
+            {tabEvents.map(ev => {
+              const bx   = sx(ev.idx);
+              const bw   = (points.length > 1 ? CW / (points.length - 1) : 60) * 1.4;
+              const isActive = activeEvent && activeEvent.idx === ev.idx;
+              return (
+                <rect key={ev.idx}
+                  x={(bx - bw / 2).toFixed(1)} y={PAD.top}
+                  width={bw.toFixed(1)} height={CH}
+                  fill={isActive ? 'rgba(0,0,0,0.07)' : 'rgba(0,0,0,0.035)'}
+                  style={{ transition: 'fill 0.15s ease' }}
+                />
+              );
+            })}
+
+            {/* Grid */}
+            {yTicks.map(v => (
+              <g key={v}>
+                <line x1={PAD.left} y1={sy(v).toFixed(1)} x2={w-PAD.right} y2={sy(v).toFixed(1)} stroke="rgba(0,0,0,0.04)" strokeWidth="1"/>
+                <text x={PAD.left-12} y={sy(v)+4} textAnchor="end" fontSize="11" fontFamily="Inter" fontWeight="500" fill="#C0BDB8" letterSpacing="0.04em">{v}</text>
+              </g>
+            ))}
+
+            {/* Forecast divider */}
+            {windowOffset < 0 && currentIdx >= 0 && (
+              <line x1={sx(currentIdx).toFixed(1)} y1={PAD.top} x2={sx(currentIdx).toFixed(1)} y2={PAD.top+CH}
+                stroke="rgba(124,58,237,0.16)" strokeWidth="1" strokeDasharray="5 4"/>
+            )}
+
+            {/* Trust score areas */}
+            {areaPath   && <path d={areaPath}   fill="url(#ag)"/>}
+            {fxAreaPath && <path d={fxAreaPath} fill="url(#fg)"/>}
+
+            {/* BU overlay lines (behind trust) */}
+            {buLines.map(({ id, bu, sSolidPath, sFxPath }) => (
+              <g key={id}>
+                <path d={sSolidPath} fill="none" stroke={bu.color} strokeWidth="1.8" strokeOpacity="0.6" strokeLinejoin="round" strokeLinecap="round"/>
+                {sFxPath && (
+                  <path d={sFxPath} fill="none" stroke={bu.color} strokeWidth="1.8" strokeOpacity="0.35" strokeDasharray="7 5" strokeLinejoin="round" strokeLinecap="round"/>
+                )}
+              </g>
+            ))}
+
+            {/* Trust score line */}
+            {solidPath && (
+              <path d={solidPath} fill="none" stroke="#5B21B6" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round"/>
+            )}
+            {fxPath && (
+              <path d={fxPath} fill="none" stroke="#A78BFA" strokeWidth="2.4" strokeDasharray="7 5" strokeLinejoin="round" strokeLinecap="round"/>
+            )}
+
+            {/* Event dots */}
+            {points.map((p, i) => p.note && (
+              <circle key={i} cx={sx(i).toFixed(1)} cy={sy(p.y).toFixed(1)} r="4"
+                fill={p.forecast ? '#A78BFA' : '#5B21B6'} stroke="white" strokeWidth="2"/>
+            ))}
+
+            {/* Current point */}
+            {currentIdx >= 0 && (
+              <g>
+                <circle cx={sx(currentIdx).toFixed(1)} cy={sy(currentPt.y).toFixed(1)} r="9" fill="rgba(91,33,182,0.10)"/>
+                <circle cx={sx(currentIdx).toFixed(1)} cy={sy(currentPt.y).toFixed(1)} r="4.5"
+                  fill="#5B21B6" stroke="white" strokeWidth="2.5" filter="url(#glow)"/>
+              </g>
+            )}
+
+            {/* Forecast hint line — dashed extension from today toward future, only on current window */}
+            {windowOffset === 0 && currentIdx >= 0 && (
+              <line
+                x1={sx(currentIdx).toFixed(1)} y1={sy(currentPt.y).toFixed(1)}
+                x2={(w - PAD.right + 36).toFixed(1)} y2={sy(currentPt.y).toFixed(1)}
+                stroke="#A78BFA" strokeWidth="1.8" strokeDasharray="5 5"
+                strokeOpacity="0.45" strokeLinecap="round"
+              />
+            )}
+
+            {/* Range shading — drag in progress or committed */}
+            {rangeA !== null && rangeB !== null && rangeA !== rangeB && (() => {
+              const x1 = sx(rangeA);
+              const x2 = sx(rangeB);
+              const committed = !!rangeSelection;
+              return (
+                <g>
+                  <rect x={x1.toFixed(1)} y={PAD.top} width={(x2 - x1).toFixed(1)} height={CH}
+                    fill={committed ? 'rgba(91,33,182,0.075)' : 'rgba(91,33,182,0.04)'}/>
+                  <line x1={x1.toFixed(1)} y1={PAD.top} x2={x1.toFixed(1)} y2={PAD.top+CH}
+                    stroke={committed ? 'rgba(91,33,182,0.30)' : 'rgba(91,33,182,0.18)'} strokeWidth={committed ? '1.5' : '1'}/>
+                  <line x1={x2.toFixed(1)} y1={PAD.top} x2={x2.toFixed(1)} y2={PAD.top+CH}
+                    stroke={committed ? 'rgba(91,33,182,0.30)' : 'rgba(91,33,182,0.18)'} strokeWidth={committed ? '1.5' : '1'}/>
+                  {committed && (
+                    <>
+                      <circle cx={x1.toFixed(1)} cy={sy(points[rangeA].y).toFixed(1)} r="5"
+                        fill={points[rangeA].forecast ? '#A78BFA' : '#5B21B6'} stroke="white" strokeWidth="2.5"/>
+                      <circle cx={x2.toFixed(1)} cy={sy(points[rangeB].y).toFixed(1)} r="5"
+                        fill={points[rangeB].forecast ? '#A78BFA' : '#5B21B6'} stroke="white" strokeWidth="2.5"/>
+                    </>
+                  )}
+                </g>
+              );
+            })()}
+
+            {/* Pinned crosshair — persistent, slightly bolder */}
+            {pinnedIdx !== null && (() => {
+              const ppx = sx(pinnedIdx);
+              const ppt = points[pinnedIdx];
+              return (
+                <g>
+                  <line x1={ppx.toFixed(1)} y1={PAD.top} x2={ppx.toFixed(1)} y2={PAD.top+CH}
+                    stroke="rgba(91,33,182,0.22)" strokeWidth="1.5"/>
+                  <circle cx={ppx.toFixed(1)} cy={sy(ppt.y).toFixed(1)} r="5.5"
+                    fill={ppt.forecast ? '#A78BFA' : '#5B21B6'} stroke="white" strokeWidth="2.5"/>
+                  {pinnedBuVals.map(({ id, bu, y }) => (
+                    <circle key={id} cx={ppx.toFixed(1)} cy={sy(y).toFixed(1)} r="4"
+                      fill={bu.color} stroke="white" strokeWidth="2" opacity="0.85"/>
+                  ))}
+                </g>
+              );
+            })()}
+
+            {/* Hover crosshair — only shown when hovering a different point than pinned */}
+            {hovered && hovered.idx !== pinnedIdx && (
+              <g opacity="0.55">
+                <line x1={hovered.px.toFixed(1)} y1={PAD.top} x2={hovered.px.toFixed(1)} y2={PAD.top+CH}
+                  stroke="rgba(91,33,182,0.12)" strokeWidth="1"/>
+                <circle cx={hovered.px.toFixed(1)} cy={hovered.py.toFixed(1)} r="5.5"
+                  fill={hovered.forecast ? '#A78BFA' : '#5B21B6'} stroke="white" strokeWidth="2.5"/>
+                {hovered.buVals.map(({ id, bu, y }) => (
+                  <circle key={id} cx={hovered.px.toFixed(1)} cy={sy(y).toFixed(1)} r="4"
+                    fill={bu.color} stroke="white" strokeWidth="2" opacity="0.85"/>
+                ))}
+              </g>
+            )}
+
+            {/* X labels */}
+            {points.map((p, i) => {
+              const skip = { '1W': 1, '1M': 5, '3M': 14, '1Y': 45 }[windowSize] || 5;
+              const isFirst = i === 0, isLast = i === points.length - 1;
+              if (!isFirst && !isLast && i % skip !== 0 && !p.current) return null;
+              const isPinned      = pinnedIdx === i;
+              const isHov         = hovered && hovered.idx === i && i !== pinnedIdx;
+              const isRangeEndpt  = rangeA !== null && (i === rangeA || i === rangeB);
+              const isInRange     = rangeA !== null && rangeB !== null && i > rangeA && i < rangeB;
+              return (
+                <text key={i} x={sx(i).toFixed(1)} y={PAD.top+CH+26}
+                  textAnchor="middle" fontSize="11" fontFamily="Inter"
+                  fontWeight={isPinned || isRangeEndpt ? '600' : '500'}
+                  fill={isPinned ? '#5B21B6' : isRangeEndpt ? '#5B21B6' : isInRange ? '#7C6FAB' : isHov ? '#374151' : p.current ? '#7C3AED' : '#C0BDB8'}
+                  letterSpacing="0.02em">{p.x}</text>
+              );
+            })}
+
+            {/* Projected label — forecast window */}
+            {windowOffset < 0 && currentIdx >= 0 && (
+              <text x={sx(currentIdx)+14} y={PAD.top+18}
+                fontSize="10" fontFamily="Inter" fontWeight="500"
+                fill="#A78BFA" letterSpacing="0.08em">PROJECTED ›</text>
+            )}
+          </svg>
+
+          {/* Event label pills — above each band; clicking pins that point and opens panel */}
+          {tabEvents.map(ev => {
+            const px        = sx(ev.idx);
+            const isActive  = activeEvent && activeEvent.idx === ev.idx;
+            const isPinned  = pinnedIdx === ev.idx;
+            const isLit     = isActive || isPinned;
+            const bu        = BUS[ev.bu];
+            const pillW     = 104;
+            const left      = Math.min(Math.max(px - pillW / 2, PAD.left), w - PAD.right - pillW);
+            return (
+              <div key={ev.idx}
+                onClick={e => {
+                  e.stopPropagation();
+                  setPinnedIdx(ev.idx);
+                  setPanelOpen(true);
+                }}
+                style={{
+                  position: 'absolute', left, top: PAD.top - 28, width: pillW,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                  padding: '4px 10px',
+                  background: isLit ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.70)',
+                  backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                  border: isPinned ? `1px solid ${bu.color}55` : isActive ? `1px solid ${bu.color}30` : '1px solid rgba(0,0,0,0.07)',
+                  borderRadius: 20,
+                  boxShadow: isPinned ? '0 2px 14px rgba(0,0,0,0.10)' : isActive ? '0 1px 8px rgba(0,0,0,0.07)' : 'none',
+                  cursor: 'pointer', pointerEvents: 'auto', transition: 'all 0.15s ease', zIndex: 10, userSelect: 'none',
+                }}
+              >
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: bu.color, flexShrink: 0, opacity: isLit ? 1 : 0.5 }}/>
+                <span style={{ fontSize: 10, fontFamily: 'Inter', fontWeight: 500, color: isLit ? '#374151' : '#9CA3AF', letterSpacing: '0.02em', whiteSpace: 'nowrap', transition: 'color 0.15s' }}>{ev.label}</span>
+              </div>
+            );
+          })}
+
+          {/* Pinned inline score pills — always visible */}
+          {pinnedIdx !== null && (() => {
+            const PILL_H = 24;
+            return pinnedPills.map(entry => (
+              <div key={entry.key} style={{
+                position: 'absolute',
+                left: pinnedPillX,
+                top: entry.y - PILL_H / 2,
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '4px 9px 4px 8px',
+                background: entry.color,
+                borderRadius: 20,
+                boxShadow: '0 2px 10px rgba(0,0,0,0.22)',
+                pointerEvents: 'none', userSelect: 'none', whiteSpace: 'nowrap',
+              }}>
+                <span style={{ fontSize: 12.5, fontFamily: 'Fraunces', fontWeight: 300, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1 }}>{entry.score}</span>
+                <span style={{ fontSize: 9.5, fontFamily: 'Inter', fontWeight: 500, color: 'rgba(255,255,255,0.80)', letterSpacing: '0.02em' }}>{entry.label}</span>
+              </div>
+            ));
+          })()}
+
+          {/* Hover inline score pills — only when hovering a different point than pinned, not during drag */}
+          {hovered && hovered.idx !== pinnedIdx && !isDraggingActive && !rangeSelection && (() => {
+            const PILL_H  = 24;
+            const hovFlip = hovered.px + offsetX + PILL_W > w - PAD.right - 8;
+            const hovX    = hovFlip ? hovered.px - offsetX - PILL_W : hovered.px + offsetX;
+            const hovPills = buildPills(hovered.py, hovered.y, hovered.buVals);
+            return hovPills.map(entry => (
+              <div key={entry.key} style={{
+                position: 'absolute',
+                left: hovX,
+                top: entry.y - PILL_H / 2,
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '4px 9px 4px 8px',
+                background: entry.color,
+                borderRadius: 20,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.14)',
+                opacity: 0.68,
+                pointerEvents: 'none', userSelect: 'none', whiteSpace: 'nowrap',
+              }}>
+                <span style={{ fontSize: 12.5, fontFamily: 'Fraunces', fontWeight: 300, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1 }}>{entry.score}</span>
+                <span style={{ fontSize: 9.5, fontFamily: 'Inter', fontWeight: 500, color: 'rgba(255,255,255,0.80)', letterSpacing: '0.02em' }}>{entry.label}</span>
+              </div>
+            ));
+          })()}
+
+          {/* Range insight panel */}
+          {panelMode === 'range' && rangeSelection !== null && panelOpen && (() => {
+            const { a, b }  = rangeSelection;
+            const startPt   = points[a];
+            const endPt     = points[b];
+            const ri        = getRangeInsight(a, b);
+            const delta     = endPt.y - startPt.y;
+            const midX      = (sx(a) + sx(b)) / 2;
+            const rPanLeft  = Math.min(Math.max(midX - PANEL_W / 2, PAD.left), w - PAD.right - PANEL_W);
+            const dColor    = delta > 0 ? '#10B981' : delta < 0 ? '#EF4444' : '#9CA3AF';
+            return (
+              <div className="fade-up" onClick={e => e.stopPropagation()} style={{
+                position: 'absolute', left: rPanLeft, top: panelTop,
+                width: PANEL_W, zIndex: 40, pointerEvents: 'auto',
+                background: 'rgba(255,255,255,0.97)',
+                backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(91,33,182,0.10)', borderRadius: 16,
+                boxShadow: '0 12px 40px rgba(30,27,75,0.13), 0 2px 8px rgba(0,0,0,0.06)',
+                overflow: 'hidden',
+              }}>
+                {/* Header: date range + score delta */}
+                <div style={{ padding: '13px 14px 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontFamily: 'Inter', fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 3 }}>
+                      {startPt.x} → {endPt.x}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <span style={{ fontSize: 34, fontFamily: 'Fraunces', fontWeight: 300, color: '#1E1B4B', letterSpacing: '-0.03em', lineHeight: 1 }}>{startPt.y}</span>
+                      <span style={{ fontSize: 14, color: '#C0BDB8', fontFamily: 'Inter' }}>→</span>
+                      <span style={{ fontSize: 34, fontFamily: 'Fraunces', fontWeight: 300, color: '#1E1B4B', letterSpacing: '-0.03em', lineHeight: 1 }}>{endPt.y}</span>
+                      <span style={{ fontSize: 12, fontFamily: 'Inter', fontWeight: 600, color: dColor, letterSpacing: '-0.01em' }}>
+                        {delta > 0 ? `+${delta}` : `${delta}`}
+                      </span>
+                    </div>
+                  </div>
+                  <button onClick={e => { e.stopPropagation(); setPanelOpen(false); setRangeSelection(null); setPanelMode('point'); }}
+                    style={{ width: 22, height: 22, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0, marginTop: 2 }}>
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+                {/* AI observation */}
+                <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', gap: 7, alignItems: 'flex-start' }}>
+                    <svg width="11" height="11" viewBox="0 0 10 10" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M5 1l.8 2.5H8L5.9 5l.8 2.7L5 6.2 2.3 7.7l.8-2.7L1 3.5h2.2L5 1z" fill="#7C3AED"/></svg>
+                    <p style={{ fontSize: 11.5, fontFamily: 'Inter', color: '#4B5563', lineHeight: 1.5, margin: 0 }}>{ri.obs}</p>
+                  </div>
+                </div>
+                {/* Suggested chips */}
+                <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: 9.5, fontFamily: 'Inter', fontWeight: 500, color: '#C0BDB8', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 7 }}>SUGGESTED ›</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {ri.chips.map((c, i) => (
+                      <button key={i} onClick={() => onChipClick(c)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 10px', background: 'rgba(245,243,255,0.8)', border: '1px solid rgba(91,33,182,0.10)', borderRadius: 8, cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'background 0.1s ease' }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(237,233,254,0.9)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,243,255,0.8)'}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ flexShrink: 0, opacity: 0.5 }}><path d="M5 1l.8 2.5H8L5.9 5l.8 2.7L5 6.2 2.3 7.7l.8-2.7L1 3.5h2.2L5 1z" fill="#5B21B6"/></svg>
+                        <span style={{ fontSize: 11.5, fontFamily: 'Inter', fontWeight: 500, color: '#4C1D95', letterSpacing: '0.005em' }}>{c}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <FreeformAsk date={`${startPt.x} → ${endPt.x}`} onSubmit={q => { onChipClick(q); setPanelOpen(false); setRangeSelection(null); setPanelMode('point'); }}/>
+              </div>
+            );
+          })()}
+
+          {/* Single-point insight + action panel */}
+          {panelMode === 'point' && pinnedIdx !== null && panelOpen && insight && pinnedPt && (() => {
+            return (
+              <div className="fade-up"
+                onClick={e => e.stopPropagation()}
+                style={{
+                  position: 'absolute', left: panelLeft, top: panelTop,
+                  width: PANEL_W, zIndex: 40, pointerEvents: 'auto',
+                  background: 'rgba(255,255,255,0.97)',
+                  backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(91,33,182,0.10)',
+                  borderRadius: 16,
+                  boxShadow: '0 12px 40px rgba(30,27,75,0.13), 0 2px 8px rgba(0,0,0,0.06)',
+                  overflow: 'hidden',
+                }}>
+
+                {/* Header: date + score */}
+                <div style={{ padding: '13px 14px 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontFamily: 'Inter', fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 3 }}>{pinnedPt.x}</div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                      <span style={{ fontSize: 40, fontFamily: 'Fraunces', fontWeight: 300, color: '#1E1B4B', letterSpacing: '-0.03em', lineHeight: 1 }}>{pinnedPt.y}</span>
+                      <span style={{ fontSize: 11, fontFamily: 'Inter', color: '#9CA3AF' }}>overall</span>
+                    </div>
+                  </div>
+                  <button onClick={e => { e.stopPropagation(); setPanelOpen(false); }}
+                    style={{ width: 22, height: 22, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0, marginTop: 2 }}>
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  </button>
+                </div>
+
+                {/* AI observation */}
+                <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ display: 'flex', gap: 7, alignItems: 'flex-start' }}>
+                    <svg width="11" height="11" viewBox="0 0 10 10" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M5 1l.8 2.5H8L5.9 5l.8 2.7L5 6.2 2.3 7.7l.8-2.7L1 3.5h2.2L5 1z" fill="#7C3AED"/></svg>
+                    <p style={{ fontSize: 11.5, fontFamily: 'Inter', color: '#4B5563', lineHeight: 1.5, margin: 0 }}>{insight.obs}</p>
+                  </div>
+                </div>
+
+                {/* Suggested chips */}
+                <div style={{ padding: '10px 14px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: 9.5, fontFamily: 'Inter', fontWeight: 500, color: '#C0BDB8', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 7 }}>SUGGESTED ›</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {insight.chips.map((c, i) => (
+                      <button key={i} onClick={() => onChipClick(c)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 10px', background: 'rgba(245,243,255,0.8)', border: '1px solid rgba(91,33,182,0.10)', borderRadius: 8, cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'background 0.1s ease' }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(237,233,254,0.9)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(245,243,255,0.8)'}
+                      >
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ flexShrink: 0, opacity: 0.5 }}><path d="M5 1l.8 2.5H8L5.9 5l.8 2.7L5 6.2 2.3 7.7l.8-2.7L1 3.5h2.2L5 1z" fill="#5B21B6"/></svg>
+                        <span style={{ fontSize: 11.5, fontFamily: 'Inter', fontWeight: 500, color: '#4C1D95', letterSpacing: '0.005em' }}>{c}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Freeform ask */}
+                <FreeformAsk date={pinnedPt.x} onSubmit={q => { onChipClick(q); setPanelOpen(false); }}/>
+              </div>
+            );
+          })()}
+          {/* Forecast zone CTA — subtle right-edge hint when viewing current window */}
+          {windowOffset === 0 && onGoForecast && (() => {
+            const zoneW = Math.max(64, Math.min(156, CW * 0.16));
+            const zoneLeft = w - PAD.right - zoneW;
+            return (
+              <div
+                onClick={e => { e.stopPropagation(); onGoForecast(); }}
+                onMouseEnter={() => setFxHover(true)}
+                onMouseLeave={() => setFxHover(false)}
+                style={{
+                  position: 'absolute',
+                  left: zoneLeft,
+                  top: PAD.top,
+                  width: zoneW + PAD.right,
+                  height: CH,
+                  background: fxHover
+                    ? 'linear-gradient(90deg, transparent 0%, rgba(167,139,250,0.10) 55%, rgba(167,139,250,0.17) 100%)'
+                    : 'linear-gradient(90deg, transparent 0%, rgba(167,139,250,0.04) 55%, rgba(167,139,250,0.09) 100%)',
+                  cursor: 'pointer',
+                  transition: 'background 0.22s ease',
+                  zIndex: 7,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  paddingRight: 18,
+                }}
+              >
+                <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', gap: 5, pointerEvents: 'none' }}>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '5px 11px 5px 9px',
+                    background: fxHover ? 'rgba(255,255,255,0.94)' : 'rgba(255,255,255,0.72)',
+                    backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                    border: fxHover ? '1px solid rgba(167,139,250,0.38)' : '1px solid rgba(167,139,250,0.22)',
+                    borderRadius: 20,
+                    boxShadow: fxHover ? '0 4px 16px rgba(91,33,182,0.16)' : '0 1px 8px rgba(91,33,182,0.07)',
+                    transition: 'all 0.18s ease',
+                  }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M5 1l.8 2.5H8L5.9 5l.8 2.7L5 6.2 2.3 7.7l.8-2.7L1 3.5h2.2L5 1z" fill="#A78BFA"/>
+                    </svg>
+                    <span style={{ fontSize: 10.5, fontFamily: 'Inter', fontWeight: 500, color: '#7C3AED', letterSpacing: '0.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Forecast</span>
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path d="M2 4.5h5M5 2l2.5 2.5L5 7" stroke="#A78BFA" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+        </div>
+      );
+    }
+
+    // ─── STAT OVERLAY ────────────────────────────────────────────────────────────
+
+    function StatOverlay({ data, windowOffset }) {
+      const { stat } = data;
+      const isFx = windowOffset < 0;
+      return (
+        <div style={{ position: 'absolute', bottom: 148, left: 32, pointerEvents: 'none', zIndex: 5 }}>
+          <div style={{ fontSize: 11, fontFamily: 'Inter', fontWeight: 500, color: isFx ? '#A78BFA' : '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>{stat.label}</div>
+          <div style={{ fontSize: 80, fontFamily: 'Fraunces', fontWeight: 300, color: '#1E1B4B', letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 6 }}>{stat.score}</div>
+          <div style={{ fontSize: 13, fontFamily: 'Inter', color: '#7C6FAB' }}>{stat.sub}</div>
+        </div>
+      );
+    }
+
+    // ─── APP ─────────────────────────────────────────────────────────────────────
+
+    function App() {
+      const [windowSize,   setWindowSize]   = useState('1M');
+      const [windowOffset, setWindowOffset] = useState(0);   // 0=today, 1+=past, -1=forecast
+      const [overlays,     setOverlays]     = useState(['forge', 'atlas', 'orbit']);
+      const [pendingQuery, setPending]      = useState(null);
+
+      const toggleOverlay = id =>
+        setOverlays(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+      const goBack    = () => setWindowOffset(prev => prev < 0 ? 0 : prev + 1);
+      const goForward = () => setWindowOffset(prev => prev === 0 ? -1 : prev < 0 ? prev : Math.max(0, prev - 1));
+      const goToday   = () => setWindowOffset(0);
+
+      // Derive chart data from current window
+      const slice     = getWindowSlice(windowSize, windowOffset);
+      const events    = findEventsInSlice(slice);
+      const chartData = { ...sliceToChartData(slice, windowSize, windowOffset), events };
+      const buScores  = { forge: SERIES[TODAY_IDX].forge, atlas: SERIES[TODAY_IDX].atlas, orbit: SERIES[TODAY_IDX].orbit };
+      const isForecast = windowOffset < 0;
+      const quickChips = isForecast
+        ? ["Can Orbit hit 85 by Sep?", "What could delay Atlas ISO?", "Simulate a breach impact"]
+        : QUICK_CHIPS;
+
+      return (
+        <div style={{
+          display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden',
+          background: `linear-gradient(155deg,rgba(221,214,255,.50) 0%,rgba(232,226,255,.50) 10%,rgba(237,233,254,.50) 22%,rgba(240,237,255,.50) 38%,rgba(245,243,255,.50) 55%,rgba(247,246,243,0) 80%),#F7F6F3`,
+          backgroundAttachment: 'fixed',
+        }}>
+          <Sidebar buScores={buScores} overlays={overlays} onToggle={toggleOverlay}/>
+
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+            <Chart data={chartData} windowSize={windowSize} windowOffset={windowOffset}
+              overlays={overlays} onChipClick={q => setPending(q)} onGoForecast={goForward}/>
+            <StatOverlay data={chartData} windowOffset={windowOffset}/>
+
+            {/* Time nav — centered top */}
+            <div style={{ position: 'absolute', top: 28, left: '50%', transform: 'translateX(-50%)', zIndex: 30 }}>
+              <TimeNav windowOffset={windowOffset} onBack={goBack} onForward={goForward} onToday={goToday}/>
+            </div>
+
+            {/* Window size picker — top right */}
+            <div style={{ position: 'absolute', top: 28, right: 28, zIndex: 30 }}>
+              <WindowPicker value={windowSize} onChange={setWindowSize}/>
+            </div>
+
+            {/* AI bar — bottom center */}
+            <div style={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', zIndex: 30, width: '100%', maxWidth: 540, padding: '0 20px' }}>
+              <AskBar chips={quickChips} pendingQuery={pendingQuery} onClearPending={() => setPending(null)}/>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
