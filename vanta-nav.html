@@ -771,10 +771,8 @@
         <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 1.5l8 8M9.5 1.5l-8 8" stroke="#374151" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <!-- Chart iframe -->
-    <div style="flex:1;position:relative;min-height:0">
-      <iframe id="bu-modal-iframe" src="" style="width:100%;height:100%;border:none;display:block"></iframe>
-    </div>
+    <!-- Explorer body -->
+    <div id="bu-modal-body" style="flex:1;display:flex;min-height:0;overflow:hidden;background:linear-gradient(145deg,rgba(240,237,255,0.4) 0%,#F7F6F3 60%)"></div>
   </div>
 </div>
 
@@ -3369,13 +3367,376 @@ const TABS = {
     </div>`,
 }
 
+// ── BU Explorer Metadata ──────────────────────────────────────────────────────
+const _BU_EXPLORER_META = {
+  forge: {
+    color: '#7C3AED', rgb: '124,58,237', score: 84, delta: 3,
+    category: 'Engineering',
+    insights: [
+      { icon: '📈', title: 'Control pass rate improving', body: 'Up 6pts in 30 days — access review automation is working.', type: 'pos' },
+      { icon: '⚠️', title: '3 controls need owner sign-off', body: 'AC-2, SC-7, and IR-5 flagged before the June audit window.', type: 'warn' },
+      { icon: '🎯', title: 'SOC 2 audit readiness: 84%', body: 'On track for July. Penetration testing evidence due June 15.', type: 'neutral' },
+      { icon: '🔗', title: 'Vendor gaps: 2 missing BAAs', body: 'Cloudflare and Datadog need updated Business Associate Agreements.', type: 'warn' }
+    ],
+    chips: ["What's blocking 100%?", 'Show failing controls', 'Draft audit checklist', 'Vendor gap summary'],
+    answers: {
+      0: 'Three things are holding Forge back: (1) <b>AC-2 access review</b> — owner unconfirmed since March, (2) <b>SC-7 boundary protection</b> — needs updated network diagram evidence, (3) <b>IR-5 incident handling</b> — last table-top exercise was 14 months ago. Resolving these three would push Forge from 84% → ~96%.'
+    }
+  },
+  orbit: {
+    color: '#2563EB', rgb: '37,99,235', score: 71, delta: -4,
+    category: 'Product',
+    insights: [
+      { icon: '📉', title: 'April dip — 8pt drop', body: 'Sprint 22 deploy pushed 4 services to prod without security review.', type: 'neg' },
+      { icon: '⚠️', title: 'Change management gaps', body: '11 PRs merged without security sign-off in last 60 days.', type: 'warn' },
+      { icon: '🔄', title: 'Recovering in May (+2pts)', body: 'Backlog controls closing as the team catches up post-sprint.', type: 'pos' },
+      { icon: '📋', title: 'ISO 27001 gap analysis overdue', body: 'Last gap analysis was 18 months ago. Fresh assessment recommended.', type: 'neutral' }
+    ],
+    chips: ['Why the April dip?', 'Change management report', "What's recovering?", 'ISO 27001 gaps'],
+    answers: {
+      0: 'The 8pt dip (Apr 3–18) correlates with <b>Sprint 22</b>. Four new microservices were pushed to prod without completing security review — specifically missing vulnerability scans and data classification. Two access reviews also expired during this window. Recovery started May 1 as those reviews closed and the new services got scanned.'
+    }
+  },
+  sentinel: {
+    color: '#059669', rgb: '5,150,105', score: 91, delta: 2,
+    category: 'Security',
+    insights: [
+      { icon: '✅', title: 'Leading the portfolio at 91%', body: 'Highest control pass rate across all business units.', type: 'pos' },
+      { icon: '🏆', title: 'Zero critical failures (90 days)', body: 'No critical or high-severity findings in the last quarter.', type: 'pos' },
+      { icon: '📅', title: 'Pen test due in 45 days', body: 'Annual penetration test scheduled June 26. Evidence collection started.', type: 'neutral' },
+      { icon: '🌐', title: 'FedRAMP readiness: 78%', body: '22 additional controls needed for FedRAMP Moderate. Q4 2026 target.', type: 'neutral' }
+    ],
+    chips: ["What's the secret sauce?", 'FedRAMP gap analysis', 'Upcoming deadlines', 'Share best practices'],
+    answers: {
+      0: 'Sentinel\'s performance comes from three things: (1) <b>73% automated evidence collection</b> via integrations (vs 31% portfolio avg), (2) <b>Confirmed ownership</b> on every control with 30-day review SLAs, (3) <b>Weekly 30-min triage</b> every Monday — nothing stays stuck. These practices are documented and can be templated for other BUs.'
+    }
+  },
+  atlas: {
+    color: '#D97706', rgb: '217,119,6', score: 67, delta: -1,
+    category: 'GTM',
+    insights: [
+      { icon: '⚡', title: 'High-risk vendor exposure', body: '3 vendors with PII access lack current SOC 2 Type II reports.', type: 'neg' },
+      { icon: '⚠️', title: 'Training completion: 64%', body: 'Annual security training 36% incomplete — deadline was April 30.', type: 'warn' },
+      { icon: '📊', title: 'GDPR controls need refresh', body: '7 GDPR-aligned controls flagged for evidence renewal this quarter.', type: 'warn' },
+      { icon: '🔧', title: 'Automation in flight', body: 'Salesforce and HubSpot DSAR automation pending — due May 31.', type: 'neutral' }
+    ],
+    chips: ['Vendor risk details', 'Training completion report', 'GDPR gap list', "What's blocking improvement?"],
+    answers: {
+      3: 'Two main blockers: (1) <b>Vendor management</b> — Segment, Outreach, ZoomInfo need updated SOC 2 reports. 30+ days without response; escalation recommended. (2) <b>Training</b> — 47 employees incomplete. HR has the list, reminder campaign goes Thursday. Together these account for ~18pts of potential improvement.'
+    }
+  },
+  nexus: {
+    color: '#DB2777', rgb: '219,39,119', score: 78, delta: 5,
+    category: 'Partnerships',
+    insights: [
+      { icon: '🚀', title: 'Fastest improving BU (+5pts)', body: 'Best velocity in the portfolio this month.', type: 'pos' },
+      { icon: '🤝', title: 'Partner audit prep on track', body: 'Enterprise partner audit scheduled Q3. Currently 78% ready.', type: 'pos' },
+      { icon: '📜', title: 'Contract compliance gaps', body: '4 partner agreements missing data processing addenda.', type: 'warn' },
+      { icon: '🔍', title: '6 new SaaS tools need review', body: 'Tools adopted in Q1 without security review sign-off.', type: 'neutral' }
+    ],
+    chips: ["What's driving improvement?", 'Partner audit checklist', 'SaaS tool review status', 'Contract gap details'],
+    answers: {
+      0: 'Nexus jumped 5pts because: (1) New Partnerships lead <b>closed 12 overdue evidence requests</b> in their first two weeks, (2) <b>3 manual controls automated</b> via Salesforce partner portal integration, (3) <b>Annual risk assessment completed</b> after Q4 deferral. Remaining gap is mainly vendor reviews and the SaaS tool backlog.'
+    }
+  }
+}
+
+// ── BU Series data generator (deterministic) ──────────────────────────────────
+function _buRand(seed) {
+  let s = (seed * 1664525 + 1013904223) >>> 0
+  return () => { s = Math.imul(s, 1664525) + 1013904223 >>> 0; return s / 4294967296 }
+}
+
+function generateBUSeries(slug) {
+  const seed = slug.split('').reduce((a, c, i) => a + c.charCodeAt(0) * (i + 7), 0)
+  const rand = _buRand(seed)
+  const cfgs = {
+    forge:    { base: 74, end: 84, noise: 2.4 },
+    orbit:    { base: 77, end: 73, noise: 3.1, dip: { start: 325, depth: 8, width: 32 } },
+    sentinel: { base: 87, end: 91, noise: 1.4 },
+    atlas:    { base: 63, end: 67, noise: 3.6, dip: { start: 270, depth: 5, width: 38 } },
+    nexus:    { base: 56, end: 78, noise: 2.1 }
+  }
+  const cfg = cfgs[slug] || { base: 68, end: 74, noise: 3 }
+  const pts = []
+  const base = new Date(2025, 4, 12)
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(base); d.setDate(d.getDate() + i)
+    const t = i / 364
+    let sc = cfg.base + (cfg.end - cfg.base) * (t * t * (3 - 2 * t))
+    sc += (rand() - 0.5) * cfg.noise * 2.4
+    sc += Math.sin(i * 0.17 + seed) * cfg.noise * 0.35
+    if (cfg.dip) {
+      const dist = i - cfg.dip.start
+      if (dist >= 0 && dist < cfg.dip.width)
+        sc -= Math.sin((dist / cfg.dip.width) * Math.PI) * cfg.dip.depth
+    }
+    pts.push({ date: d, score: Math.min(100, Math.max(40, Math.round(sc * 10) / 10)) })
+  }
+  return pts
+}
+
+// ── BU Explorer inline renderer (replaces iframe) ─────────────────────────────
+function renderBUExplorer(slug) {
+  const meta = _BU_EXPLORER_META[slug]
+  if (!meta) return
+  const body    = document.getElementById('bu-modal-body')
+  const allData = generateBUSeries(slug)
+  let   winKey  = '3M'
+  const winDays = { '1W': 7, '1M': 30, '3M': 90, '6M': 180, '1Y': 365 }
+  let   chatLog = []
+
+  const getData = () => allData.slice(-winDays[winKey])
+
+  function icColor(type) {
+    if (type === 'pos')  return { bg:'rgba(5,150,105,0.08)',  bd:'rgba(5,150,105,0.2)',   tx:'#065F46' }
+    if (type === 'neg')  return { bg:'rgba(220,38,38,0.07)',  bd:'rgba(220,38,38,0.18)',  tx:'#991B1B' }
+    if (type === 'warn') return { bg:'rgba(217,119,6,0.08)',  bd:'rgba(217,119,6,0.2)',   tx:'#92400E' }
+    return { bg:'rgba(0,0,0,0.04)', bd:'rgba(0,0,0,0.1)', tx:'#374151' }
+  }
+
+  function buildSVG(data) {
+    const W=600,H=224,pL=44,pR=10,pT=16,pB=36
+    const cW=W-pL-pR, cH=H-pT-pB
+    const scores = data.map(p=>p.score)
+    const lo = Math.max(30, Math.min(...scores)-8)
+    const hi = Math.min(100, Math.max(...scores)+6)
+    const rng = hi-lo||1
+    const px = i => pL + (i/Math.max(data.length-1,1))*cW
+    const py = s => pT + (1-(s-lo)/rng)*cH
+
+    const yStep = rng>30?10:rng>15?5:2
+    const yTicks=[]
+    for(let v=Math.ceil(lo/yStep)*yStep; v<=hi; v+=yStep) yTicks.push(v)
+
+    const tc = Math.min(6, data.length)
+    const xTicks = Array.from({length:tc}, (_,i) => {
+      const idx = Math.round(i*(data.length-1)/(tc-1))
+      const d = data[idx].date
+      return { x:px(idx), label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) }
+    })
+
+    const linePts = data.map((p,i)=>`${px(i)},${py(p.score)}`).join(' ')
+    const n = data.length
+    const areaD = `M${px(0)},${pT+cH} `+data.map((p,i)=>`L${px(i)},${py(p.score)}`).join(' ')+` L${px(n-1)},${pT+cH}Z`
+
+    return `<svg id="buChartSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:100%;overflow:visible;display:block">
+      <defs>
+        <linearGradient id="buGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${meta.color}" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="${meta.color}" stop-opacity="0.01"/>
+        </linearGradient>
+        <clipPath id="buClip"><rect x="${pL}" y="${pT}" width="${cW}" height="${cH+1}"/></clipPath>
+      </defs>
+      ${yTicks.map(v=>`
+        <line x1="${pL}" y1="${py(v)}" x2="${pL+cW}" y2="${py(v)}" stroke="rgba(0,0,0,0.07)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="${pL-6}" y="${py(v)+4}" text-anchor="end" font-size="10" font-family="Inter,sans-serif" fill="rgba(0,0,0,0.38)">${Math.round(v)}%</text>
+      `).join('')}
+      <path d="${areaD}" fill="url(#buGrad)" clip-path="url(#buClip)"/>
+      <polyline points="${linePts}" fill="none" stroke="${meta.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#buClip)"/>
+      ${xTicks.map(t=>`<text x="${t.x}" y="${pT+cH+16}" text-anchor="middle" font-size="10" font-family="Inter,sans-serif" fill="rgba(0,0,0,0.4)">${t.label}</text>`).join('')}
+      <line x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+      <line x1="${pL}" y1="${pT+cH}" x2="${pL+cW}" y2="${pT+cH}" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+      <rect id="buHoverZone" x="${pL}" y="${pT}" width="${cW}" height="${cH}" fill="transparent" style="cursor:crosshair"/>
+      <g id="buTipG" style="display:none">
+        <line id="buVline" x1="0" y1="${pT}" x2="0" y2="${pT+cH}" stroke="${meta.color}" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.55"/>
+        <circle id="buDot" r="5" fill="${meta.color}" stroke="#fff" stroke-width="2.5"/>
+      </g>
+    </svg>
+    <div id="buTip" style="display:none;position:absolute;background:rgba(12,8,36,0.88);color:#fff;padding:5px 10px;border-radius:8px;font-size:11px;font-family:Inter,sans-serif;pointer-events:none;z-index:20;white-space:nowrap;backdrop-filter:blur(8px);box-shadow:0 4px 16px rgba(0,0,0,0.2)"></div>`
+  }
+
+  function chatHTML() {
+    return chatLog.map(m => m.role==='user'
+      ? `<div style="display:flex;justify-content:flex-end;margin-bottom:7px"><div style="background:rgba(${meta.rgb},0.13);color:#1A1A1A;padding:7px 11px;border-radius:14px 14px 4px 14px;font-size:12px;max-width:220px;line-height:1.45">${m.text}</div></div>`
+      : `<div style="margin-bottom:7px"><div style="background:#fff;border:1px solid rgba(0,0,0,0.09);padding:8px 12px;border-radius:4px 14px 14px 14px;font-size:12px;max-width:240px;line-height:1.5;color:#1A1A1A">${m.text}</div></div>`
+    ).join('')
+  }
+
+  function render() {
+    const data   = getData()
+    const scores = data.map(p=>p.score)
+    const cur    = scores[scores.length-1].toFixed(1)
+    const first  = scores[0].toFixed(1)
+    const avg    = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1)
+    const minS   = Math.min(...scores).toFixed(1)
+    const maxS   = Math.max(...scores).toFixed(1)
+    const chg    = (parseFloat(cur)-parseFloat(first)).toFixed(1)
+    const chgPos = parseFloat(chg)>=0
+
+    body.innerHTML = `
+    <div style="display:flex;height:100%;overflow:hidden;font-family:Inter,sans-serif">
+
+      <!-- LEFT: chart panel -->
+      <div style="flex:1;display:flex;flex-direction:column;padding:22px 18px 18px 22px;min-width:0;overflow:hidden">
+
+        <!-- Window tabs -->
+        <div style="display:flex;gap:4px;margin-bottom:14px;flex-shrink:0;align-items:center">
+          ${['1W','1M','3M','6M','1Y'].map(k=>`
+            <button id="buTab_${k}" onclick="window._buWin('${k}')"
+              style="font-family:Inter,sans-serif;font-size:11px;font-weight:600;padding:5px 11px;border-radius:6px;border:none;cursor:pointer;transition:all 0.15s;${k===winKey?`background:${meta.color};color:#fff`:'background:rgba(0,0,0,0.06);color:rgba(0,0,0,0.45)'}">
+              ${k}
+            </button>
+          `).join('')}
+          <div style="flex:1"></div>
+          <span style="font-size:11px;color:rgba(0,0,0,0.38);letter-spacing:0.02em">Compliance Health Score</span>
+        </div>
+
+        <!-- SVG chart area -->
+        <div id="buChartWrap" style="flex:1;min-height:0;position:relative">
+          ${buildSVG(data)}
+        </div>
+
+        <!-- Stats row -->
+        <div style="display:flex;gap:22px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.07);flex-shrink:0">
+          ${[
+            {label:'Current',      val:cur+'%',          color:meta.color},
+            {label:'Period change', val:(chgPos?'+':'')+chg+'pts', color:chgPos?'#059669':'#DC2626'},
+            {label:'Period avg',   val:avg+'%',           color:'#374151'},
+            {label:'Range',        val:minS+'% – '+maxS+'%', color:'#374151'},
+          ].map(s=>`
+            <div>
+              <div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">${s.label}</div>
+              <div style="font-size:13px;font-weight:600;color:${s.color}">${s.val}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- RIGHT: insights + chat panel -->
+      <div style="width:286px;flex-shrink:0;border-left:1px solid rgba(0,0,0,0.08);display:flex;flex-direction:column;background:rgba(255,255,255,0.72);backdrop-filter:blur(14px);overflow:hidden">
+
+        <!-- Score header -->
+        <div style="padding:18px 18px 14px;border-bottom:1px solid rgba(0,0,0,0.07);flex-shrink:0">
+          <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+            <div style="font-size:38px;font-family:'Fraunces','Inter',serif;font-weight:400;color:${meta.color};line-height:1">${meta.score}</div>
+            <div style="font-size:12px;color:rgba(0,0,0,0.38);margin-bottom:2px">/ 100</div>
+            <div style="margin-left:auto;font-size:13px;font-weight:700;color:${meta.delta>=0?'#059669':'#DC2626'}">
+              ${meta.delta>=0?'▲':'▼'} ${Math.abs(meta.delta)}pts
+            </div>
+          </div>
+          <div style="font-size:11px;color:rgba(0,0,0,0.42)">30-day trend · ${meta.category}</div>
+        </div>
+
+        <!-- Insights scroll -->
+        <div style="flex:1;overflow-y:auto;padding:12px 14px 6px;scrollbar-width:thin">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.32);margin-bottom:10px">Key Insights</div>
+          ${meta.insights.map(ins=>{
+            const ic=icColor(ins.type)
+            return `<div style="background:${ic.bg};border:1px solid ${ic.bd};border-radius:10px;padding:9px 11px;margin-bottom:7px">
+              <div style="font-size:12px;font-weight:600;color:${ic.tx};margin-bottom:3px">${ins.icon} ${ins.title}</div>
+              <div style="font-size:11px;color:rgba(0,0,0,0.58);line-height:1.45">${ins.body}</div>
+            </div>`
+          }).join('')}
+        </div>
+
+        <!-- Suggested chips -->
+        <div style="padding:10px 14px;border-top:1px solid rgba(0,0,0,0.07);flex-shrink:0">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.32);margin-bottom:8px">Ask about this BU</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${meta.chips.map((chip,i)=>`
+              <button onclick="window._buChip(${i})"
+                style="font-size:11px;font-weight:500;padding:5px 10px;border-radius:20px;border:1px solid rgba(${meta.rgb},0.25);background:rgba(${meta.rgb},0.08);color:${meta.color};cursor:pointer;transition:all 0.15s;white-space:nowrap"
+                onmouseenter="this.style.background='rgba(${meta.rgb},0.16)'"
+                onmouseleave="this.style.background='rgba(${meta.rgb},0.08)'">${chip}</button>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Ask Ilma chat -->
+        <div style="border-top:1px solid rgba(0,0,0,0.07);flex-shrink:0">
+          <div id="buChatLog" style="max-height:148px;overflow-y:auto;padding:8px 12px 0;scrollbar-width:thin">${chatHTML()}</div>
+          <div style="padding:8px 10px 12px;display:flex;gap:7px;align-items:center">
+            ${ILMA_SVG(17)}
+            <input id="buChatIn" type="text" placeholder="Ask Ilma about ${meta.category}…"
+              style="flex:1;font-family:Inter,sans-serif;font-size:12px;border:1px solid rgba(0,0,0,0.12);border-radius:20px;padding:7px 12px;outline:none;background:#fff;color:#1A1A1A;transition:border-color 0.15s"
+              onfocus="this.style.borderColor='rgba(${meta.rgb},0.45)'"
+              onblur="this.style.borderColor='rgba(0,0,0,0.12)'"
+              onkeydown="if(event.key==='Enter')window._buSend()"/>
+            <button onclick="window._buSend()"
+              style="width:28px;height:28px;border-radius:50%;border:none;background:${meta.color};cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.15s"
+              onmouseenter="this.style.opacity='0.75'" onmouseleave="this.style.opacity='1'">
+              <svg width="11" height="11" viewBox="0 0 12 12"><path d="M11 6L1 1l2 5-2 5 10-5z" fill="#fff"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`
+
+    requestAnimationFrame(() => attachHover(data))
+  }
+
+  function attachHover(data) {
+    const svg  = document.getElementById('buChartSvg')
+    const zone = document.getElementById('buHoverZone')
+    const tipG = document.getElementById('buTipG')
+    const vln  = document.getElementById('buVline')
+    const dot  = document.getElementById('buDot')
+    const tip  = document.getElementById('buTip')
+    if (!svg || !zone) return
+
+    const W=600,H=224,pL=44,pR=10,pT=16,pB=36
+    const cW=W-pL-pR, cH=H-pT-pB
+    const scores=data.map(p=>p.score)
+    const lo=Math.max(30,Math.min(...scores)-8), hi=Math.min(100,Math.max(...scores)+6), rng=hi-lo||1
+    const py = s => pT+(1-(s-lo)/rng)*cH
+
+    zone.addEventListener('mousemove', e => {
+      const rect = svg.getBoundingClientRect()
+      const scX  = 600/rect.width
+      const mx   = (e.clientX-rect.left)*scX
+      const frac = Math.max(0,Math.min(1,(mx-pL)/cW))
+      const idx  = Math.round(frac*(data.length-1))
+      const pt   = data[idx]; if(!pt) return
+      const svgX = pL+(idx/(data.length-1))*cW
+      const svgY = py(pt.score)
+      vln.setAttribute('x1',svgX); vln.setAttribute('x2',svgX)
+      dot.setAttribute('cx',svgX); dot.setAttribute('cy',svgY)
+      tipG.style.display='block'
+      const ttx  = (e.clientX-rect.left)+14
+      const tty  = (e.clientY-rect.top)-34
+      const dStr = pt.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+      tip.style.display='block'; tip.style.left=ttx+'px'; tip.style.top=tty+'px'
+      tip.innerHTML = `<b>${pt.score.toFixed(1)}%</b> &nbsp;<span style="opacity:0.7">${dStr}</span>`
+    })
+    zone.addEventListener('mouseleave', () => { tipG.style.display='none'; tip.style.display='none' })
+  }
+
+  // Global handlers scoped to this modal instance
+  window._buWin  = k => { winKey = k; render() }
+  window._buChip = i => {
+    const inp = document.getElementById('buChatIn')
+    if(inp){ inp.value = meta.chips[i]; window._buSend() }
+  }
+  window._buSend = () => {
+    const inp = document.getElementById('buChatIn')
+    const log = document.getElementById('buChatLog')
+    if(!inp||!log) return
+    const txt = inp.value.trim(); if(!txt) return
+    inp.value = ''
+    chatLog.push({role:'user', text:txt})
+    log.innerHTML = chatHTML(); log.scrollTop = log.scrollHeight
+
+    const chipIdx = meta.chips.findIndex(c => c.toLowerCase()===txt.toLowerCase())
+    const reply   = (chipIdx>=0 && meta.answers[chipIdx])
+      ? meta.answers[chipIdx]
+      : `Analyzing ${slug.charAt(0).toUpperCase()+slug.slice(1)}'s data for "<i>${txt}</i>"... The most relevant signal right now is the <b>${meta.insights[0].title.toLowerCase()}</b>. Based on the current ${meta.score}% score and ${winKey} trend, this area warrants your attention. Want me to break down specific controls?`
+
+    setTimeout(() => {
+      chatLog.push({role:'assistant', text:reply})
+      log.innerHTML = chatHTML(); log.scrollTop = log.scrollHeight
+    }, 640)
+  }
+
+  render()
+}
+
 // ── BU Data Modal ─────────────────────────────────────────────────────────────
 
 function openBUModal(slug, name, status, sColor, sBg, color, cardEl) {
-  const modal    = document.getElementById('bu-modal')
-  const card     = document.getElementById('bu-modal-card')
-  const scrim    = document.getElementById('bu-modal-scrim')
-  const iframe   = document.getElementById('bu-modal-iframe')
+  const modal = document.getElementById('bu-modal')
+  const card  = document.getElementById('bu-modal-card')
+  const scrim = document.getElementById('bu-modal-scrim')
 
   // Populate header
   document.getElementById('bu-modal-name').textContent = name
@@ -3406,14 +3767,14 @@ function openBUModal(slug, name, status, sColor, sBg, color, cardEl) {
   card.style.width  = tw + 'px'
   card.style.height = th + 'px'
 
-  // Set CSS vars for the grow keyframe origin
+  // Set CSS vars for grow animation
   card.style.setProperty('--modal-ox', ox + 'px')
   card.style.setProperty('--modal-oy', oy + 'px')
   card.style.setProperty('--modal-sx', sx)
   card.style.setProperty('--modal-sy', sy)
 
-  // Load iframe for this specific BU
-  iframe.src = 'bu-explorer.html?bu=' + slug
+  // Render inline BU explorer (no iframe)
+  renderBUExplorer(slug)
 
   // Show
   modal.style.display = 'block'
@@ -3439,7 +3800,8 @@ function closeBUModal() {
     modal.style.display = 'none'
     modal.style.pointerEvents = 'none'
     card.style.animation = ''
-    document.getElementById('bu-modal-iframe').src = ''
+    const body = document.getElementById('bu-modal-body')
+    if (body) body.innerHTML = ''
   }, 240)
 
   if (document._buModalKeyHandler) {
