@@ -1797,6 +1797,158 @@ const VIEWS = {
     </div>
   </div>`,
 
+  // ── ILMA: DATA VIZ CONVERSATION ──
+  'ilma-viz': () => `<div class="page">
+    <div class="page-header"><div class="page-breadcrumb">Ask Ilma &nbsp;›&nbsp; Recent conversations</div><h1 class="page-title">Control pass rates — all programs</h1><p class="page-sub" style="margin-top:4px">Today</p></div>
+    <div class="chat-wrap">
+      <div class="chat-messages" style="max-height:none">
+
+        <div class="msg-user">Can you show me control pass rates across all three programs?</div>
+
+        <div class="msg-ai">
+          Here's a breakdown of where each program stands today across all control domains.
+
+          <!-- ── Inline chart ── -->
+          <div style="margin:16px 0;background:#FAFAF9;border:1px solid rgba(0,0,0,0.06);border-radius:14px;padding:20px 20px 16px;font-family:var(--font-ui)">
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+              <span style="font-size:11px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase">Control pass rate by program</span>
+              <div style="display:flex;gap:6px">
+                <button onclick="showGenerating('Cross-BU Control Report')" style="font-size:10px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(124,58,237,0.15);border-radius:6px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px">
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#7C3AED" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6" y2="8" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  Export
+                </button>
+              </div>
+            </div>
+
+            <!-- Grouped bar chart -->
+            ${(()=>{
+              const domains = [
+                { name:'Access Mgmt',   forge:94, atlas:88, orbit:55 },
+                { name:'Change Mgmt',   forge:88, atlas:75, orbit:83 },
+                { name:'Data Protect',  forge:80, atlas:90, orbit:80 },
+                { name:'Vendor Risk',   forge:91, atlas:60, orbit:90 },
+                { name:'Incident Resp', forge:100,atlas:83, orbit:70 },
+              ]
+              const barW = 14, gap = 5, groupGap = 22, h = 110, padding = 36
+              const groupW = barW*3 + gap*2
+              const totalW = domains.length * (groupW + groupGap) - groupGap + padding*2
+              const colors = { forge:'#5B21B6', atlas:'#D97706', orbit:'#DC2626' }
+
+              const bars = domains.map((d, gi) => {
+                const gx = padding + gi * (groupW + groupGap)
+                return `
+                  <g>
+                    ${['forge','atlas','orbit'].map((bu, bi) => {
+                      const pct = d[bu]
+                      const barH = Math.round((pct / 100) * h)
+                      const x = gx + bi * (barW + gap)
+                      const y = h - barH + 4
+                      const color = colors[bu]
+                      return `
+                        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="3" fill="${color}" opacity="${pct < 75 ? '1' : '0.85'}"/>
+                        <text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-family="var(--font-ui)" font-size="9" fill="${color}" font-weight="600">${pct}</text>
+                      `
+                    }).join('')}
+                    <text x="${gx + groupW/2}" y="${h + 20}" text-anchor="middle" font-family="var(--font-ui)" font-size="9.5" fill="#9CA3AF">${d.name}</text>
+                  </g>
+                `
+              }).join('')
+
+              return `<svg width="100%" viewBox="0 0 ${totalW} ${h + 30}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                <!-- Gridlines -->
+                ${[25,50,75,100].map(v => {
+                  const y = h - Math.round((v/100)*h) + 4
+                  return `<line x1="${padding}" y1="${y}" x2="${totalW - padding}" y2="${y}" stroke="#E5E7EB" stroke-width="0.8" stroke-dasharray="${v===100?'0':'3,3'}"/>`
+                }).join('')}
+                ${bars}
+              </svg>`
+            })()}
+
+            <!-- Legend -->
+            <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
+              ${[['Forge','#5B21B6'],['Atlas','#D97706'],['Orbit','#DC2626']].map(([name,color])=>`
+                <div style="display:flex;align-items:center;gap:5px">
+                  <div style="width:8px;height:8px;border-radius:2px;background:${color}"></div>
+                  <span style="font-size:10px;color:#6B7280;font-weight:500">${name}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <strong>The pattern is clear.</strong> Access Management is your weakest cross-BU domain — Orbit is at 55%, which is directly tied to the IdP sync failure. Vendor Risk is the other gap: Atlas is at 60% because of the Okta questionnaire backlog.<br><br>Forge is the cleanest — only Data Protection is below 90%, and that's already flagged and assigned.
+        </div>
+
+        <div class="msg-user">Break down the Orbit Access Management gap more specifically.</div>
+
+        <div class="msg-ai">
+          Orbit's Access Management score of 55% is driven by 5 failing controls out of 11. Here's the full picture:
+
+          <!-- ── Control status table ── -->
+          <div style="margin:16px 0;background:#FAFAF9;border:1px solid rgba(0,0,0,0.06);border-radius:14px;overflow:hidden;font-family:var(--font-ui)">
+            <div style="display:grid;grid-template-columns:60px 1fr 80px 90px;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,0.05)">
+              ${['ID','Control','Owner','Status'].map(h=>`<span style="font-size:9.5px;font-weight:700;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase">${h}</span>`).join('')}
+            </div>
+            ${[
+              { id:'AC-1', name:'Access control policy',      owner:'Pam',    status:'pass',    label:'Passing' },
+              { id:'AC-2', name:'Account management',         owner:'—',      status:'fail',    label:'Failing' },
+              { id:'AC-3', name:'Access enforcement',         owner:'—',      status:'fail',    label:'Failing' },
+              { id:'AC-4', name:'Information flow control',   owner:'Pam',    status:'pass',    label:'Passing' },
+              { id:'AC-5', name:'Separation of duties',       owner:'Marcus', status:'pass',    label:'Passing' },
+              { id:'AC-6', name:'Least privilege',            owner:'—',      status:'fail',    label:'Failing' },
+              { id:'AC-7', name:'Unsuccessful login attempts',owner:'Pam',    status:'pass',    label:'Passing' },
+              { id:'AC-8', name:'System use notification',    owner:'Marcus', status:'pass',    label:'Passing' },
+              { id:'AC-9', name:'Previous logon notification',owner:'—',      status:'fail',    label:'Failing' },
+              { id:'AC-10',name:'Concurrent session control', owner:'—',      status:'fail',    label:'Failing' },
+              { id:'AC-11',name:'Session lock',               owner:'Pam',    status:'pass',    label:'Passing' },
+            ].map((c,i,arr)=>`
+              <div style="display:grid;grid-template-columns:60px 1fr 80px 90px;padding:11px 16px;border-bottom:${i<arr.length-1?'1px solid rgba(0,0,0,0.04)':'none'};background:${c.status==='fail'?'rgba(254,242,242,0.5)':'transparent'}">
+                <span style="font-size:11px;font-weight:600;color:#9CA3AF">${c.id}</span>
+                <span style="font-size:12px;color:#111827">${c.name}</span>
+                <span style="font-size:11px;color:${c.owner==='—'?'#DC2626':'#6B7280'}">${c.owner}</span>
+                <span style="display:inline-flex;align-items:center;gap:4px">
+                  <span style="width:5px;height:5px;border-radius:50%;background:${c.status==='pass'?'#059669':'#DC2626'};flex-shrink:0"></span>
+                  <span style="font-size:10px;font-weight:600;color:${c.status==='pass'?'#059669':'#DC2626'}">${c.label}</span>
+                </span>
+              </div>
+            `).join('')}
+          </div>
+
+          All 5 failing controls are unowned and directly tied to the IdP sync failure — no active session data means no evidence. Once Marcus reconnects the Okta integration, these should auto-remediate within 24 hours.<br><br>Want me to assign all 5 to Marcus with a due date of May 14 and draft a Slack message to let him know?
+        </div>
+
+        <div class="msg-user">Yes, draft the Slack message.</div>
+
+        <div class="msg-ai">
+          Here's a draft — keeping it direct, gives him the full context without needing to dig.
+
+          <!-- ── Draft message card ── -->
+          <div style="margin:16px 0;background:#F0F9FF;border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:18px 20px;font-family:var(--font-ui)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#0EA5E9" stroke-width="1.5"><path d="M14 5H2a1 1 0 00-1 1v6a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1z"/><path d="M2 5l6 4.5L14 5"/></svg>
+                <span style="font-size:10px;font-weight:700;color:#0369A1;letter-spacing:0.06em;text-transform:uppercase">Draft — Slack DM to Marcus Webb</span>
+              </div>
+              <button style="font-size:10px;font-weight:600;color:#0369A1;background:#E0F2FE;border:none;border-radius:6px;padding:4px 10px;cursor:pointer">Send now →</button>
+            </div>
+            <div style="font-size:13px;color:#1E3A5F;line-height:1.7;white-space:pre-wrap">Hey Marcus — quick heads up. The Orbit IdP sync failure is causing 5 AC controls to fail (AC-2, AC-3, AC-6, AC-9, AC-10). I've assigned them to you with a due date of May 14.
+
+Once the Okta integration is reconnected the evidence should auto-populate. Estimated time is ~30 min for the reconnect + verification.
+
+Let me know if you hit anything unexpected.</div>
+          </div>
+
+          I've also queued the 5 control assignments in Orbit. They'll show in your team view once you confirm.
+        </div>
+
+      </div>
+      <div class="chat-input-wrap">
+        <input type="text" placeholder="Ask a follow-up…" />
+        <button class="chat-send">↑</button>
+      </div>
+    </div>
+  </div>`,
+
   // ── INBOX: STALE ACCOUNTS ──
   'inbox-stale': () => `<div class="page">
     <div class="page-hero">
@@ -3059,6 +3211,7 @@ const TABS = {
     <div class="nav-section">
       <span class="sec-label">Recent conversations</span>
       <button class="nav-row" data-view="ilma-health"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Program health — all 3</span><span class="row-meta">2h</span></button>
+      <button class="nav-row" data-view="ilma-viz"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Control pass rates — all programs</span><span class="row-meta">4h</span></button>
       <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">What's blocking Atlas ISO 27001?</span><span class="row-meta">1d</span></button>
       <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Forge pre-audit checklist</span><span class="row-meta">3d</span></button>
       <button class="nav-row" data-view="ilma-new"><span class="row-icon" style="color:#7C3AED">${ic.spark}</span><span class="row-text">Draft Caesar exec summary</span><span class="row-meta">4d</span></button>
