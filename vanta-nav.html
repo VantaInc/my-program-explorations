@@ -1145,25 +1145,20 @@ const VIEWS = {
       <div class="page-hero">
 
         <!-- ── Editorial week's read header ── -->
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:26px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
           <div style="background:#111827;color:#fff;font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.1em;padding:4px 10px;border-radius:4px;white-space:nowrap">YOUR WEEK'S READ</div>
           <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">LAST VISIT &nbsp;·&nbsp; MONDAY, APRIL 28 &nbsp;·&nbsp; 6 DAYS AGO</span>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
-            <div style="display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:10px;color:#9CA3AF">
-              <div style="width:5px;height:5px;border-radius:50%;background:#059669"></div>
-              Synced 2h ago
-            </div>
-            <button onclick="showGenerating('Cross-BU Program Report')" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(124,58,237,0.15);border-radius:8px;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px" onmouseenter="this.style.background='#EDE9FE'" onmouseleave="this.style.background='#F5F3FF'">
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="#7C3AED" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6.5" y2="8" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/></svg>
-              Generate report
-            </button>
-          </div>
+          <button onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',metaKey:true,bubbles:true}))" style="margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--font-ui);font-size:11px;font-weight:500;color:#374151;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:5px 12px 5px 10px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.06)" onmouseenter="this.style.borderColor='rgba(109,40,217,0.3)';this.style.color='#5B21B6'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.1)';this.style.color='#374151'">
+            <div style="width:6px;height:6px;border-radius:50%;background:#059669;flex-shrink:0"></div>
+            Ask Ilma
+            <kbd style="font-family:var(--font-ui);font-size:9px;color:#9CA3AF;background:#F3F4F6;border:1px solid #E5E7EB;border-radius:4px;padding:1px 5px;letter-spacing:0.02em">⌘K</kbd>
+          </button>
         </div>
 
         <!-- ── Editorial greeting ── -->
         <h1 style="font-family:var(--font-display);font-size:52px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.05;margin-bottom:14px">Welcome back, Pam.</h1>
-        <p style="font-family:var(--font-display);font-size:34px;font-weight:400;font-style:italic;color:#C2410C;letter-spacing:-0.02em;line-height:1.2;margin-bottom:20px">Forge held steady. Atlas is fine.<br>Orbit needs you this week.</p>
-        <p style="font-family:var(--font-body);font-size:14px;color:#6B7280;line-height:1.75;margin-bottom:44px;max-width:540px">Six things changed while you were out. Vanta has triaged them — three are already handled, two need your judgment, one is worth a conversation with Caesar.</p>
+        <p style="font-family:var(--font-display);font-size:34px;font-weight:400;font-style:italic;color:#C2410C;letter-spacing:-0.02em;line-height:1.2;margin-bottom:20px">Forge held steady. Atlas is fine. Orbit needs you this week.</p>
+        <p style="font-family:var(--font-body);font-size:14px;color:#6B7280;line-height:1.75;margin-bottom:44px">Six things changed while you were out. Vanta has triaged them — three are already handled, two need your judgment, one is worth a conversation with Caesar.</p>
 
         <!-- ── BU cards ── -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
