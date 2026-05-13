@@ -5989,6 +5989,16 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                   </div>
                 </div>
               </div>
+
+              <!-- Ilma touchpoint -->
+              <div style="display:flex;align-items:center;gap:12px;margin-top:24px;padding:14px 18px;background:linear-gradient(135deg,rgba(245,243,255,0.8),rgba(237,233,254,0.5));border:1px solid rgba(109,40,217,0.12);border-radius:14px">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#6D28D9);flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px">Ilma</div>
+                  <div style="font-family:var(--font-body);font-size:12px;color:#374151">What&apos;s dragging the program score below 90?</div>
+                </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('Program health','What is dragging our program score below 90?','The biggest drag right now is the Orbit critical alert — it\'s a binary goal weighted at 25%, and it\'s scoring zero. That single item pulls the org score down to 69. Fix the Orbit IdP issue, clear the 12 stale accounts, and that goal flips to 100 immediately. After that, the next lever is controls passing — you\'re at 87 against a target of 95%. Getting 12 more controls green adds another 3-4 points.',['How do I fix the Orbit alert?','Which controls are closest to passing?','Forecast my score if I fix Orbit'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='#DDD6FE'" onmouseleave="this.style.background='#EDE9FE'">Ask Ilma</button>
+              </div>
             </div>
 
             <!-- ── GOALS SECTION ── -->
@@ -6004,6 +6014,16 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
               </div>
               <!-- goal list -->
               <div id="goals-list" style="margin-bottom:16px"></div>
+
+              <!-- Ilma touchpoint -->
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:14px 18px;background:linear-gradient(135deg,rgba(245,243,255,0.8),rgba(237,233,254,0.5));border:1px solid rgba(109,40,217,0.12);border-radius:14px">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#6D28D9);flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px">Ilma</div>
+                  <div style="font-family:var(--font-body);font-size:12px;color:#374151">Suggest goals based on current gaps</div>
+                </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('Goal suggestions','Suggest goals for our GRC program based on current gaps','Based on the current state, here are three high-leverage goals to add: 1) Reduce Orbit stale accounts to zero — this directly fixes the binary goal scoring zero and is worth 18 points to org health. 2) Achieve 95% controls passing across all BUs — you\'re at 87% org-wide. 3) Complete all auditor requests within 3 business days — the two overdue Atlas requests are a velocity risk for the ISO 27001 surveillance. Want me to scaffold any of these with the right metric type and weight?',['Add the stale accounts goal','Scaffold the controls passing goal','What weight should each have?'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='#DDD6FE'" onmouseleave="this.style.background='#EDE9FE'">Ask Ilma</button>
+              </div>
               <button onclick="addGoalPrompt()" style="width:100%;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;background:rgba(245,243,255,0.8);border:1.5px dashed rgba(109,40,217,0.25);border-radius:10px;padding:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#EDE9FE';this.style.borderColor='rgba(109,40,217,0.5)'" onmouseleave="this.style.background='rgba(245,243,255,0.8)';this.style.borderColor='rgba(109,40,217,0.25)'">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#5B21B6" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
                 Add goal
@@ -6035,6 +6055,10 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                   <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC7 — Monitoring</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 11 controls</div></div>
                   <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">CC8 — Change Mgmt</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">3 items open</div></div>
                 </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('SOC 2 Audit Prep','What is left before the Forge SOC 2 audit window?','You\'re in great shape — 89% evidence collected with 12 days to go. Three things left: vendor activity logs for VM-04 (Denise, ~15 min), data retention export for DP-07 and DP-08 (Denise, ~30 min), and the auditor intro call — the calendar link is in your inbox from May 2. Close those three and you\'re fully ready by May 14, four days before the window opens.',['Draft the vendor log request','Book the auditor intro call','What happens if CC8 stays open?'])" style="margin-top:14px;width:100%;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#059669;background:#F0FDF4;border:1px solid rgba(5,150,105,0.15);border-radius:8px;padding:8px 14px;cursor:pointer;transition:background 0.12s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#DCFCE7'" onmouseleave="this.style.background='#F0FDF4'">
+                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h6M7 4l3 3-3 3"/></svg>
+                  Ask Ilma what&apos;s left before the audit
+                </button>
               </div>
 
               <!-- ISO 27001 -->
@@ -6057,6 +6081,10 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                   <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">A.12 — Operations</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">2 requests overdue</div></div>
                   <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">A.18 — Compliance</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 8 controls</div></div>
                 </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('ISO 27001 — Atlas','Help me clear the two overdue auditor requests for Atlas','The two overdue requests are AC-2.4 (access review documentation) and CM-3.1 (change management log). Both have been sitting unassigned since March 14. I can draft the responses for both right now — AC-2.4 needs the last quarterly access review export, CM-3.1 needs the change log from Q1. Both are already in Vanta, just needs someone to attach and submit. Who should I assign them to?',['Draft the AC-2.4 response','Draft the CM-3.1 response','Who should own these?'])" style="margin-top:14px;width:100%;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#D97706;background:#FFFBEB;border:1px solid rgba(217,119,6,0.15);border-radius:8px;padding:8px 14px;cursor:pointer;transition:background 0.12s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#FEF3C7'" onmouseleave="this.style.background='#FFFBEB'">
+                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h6M7 4l3 3-3 3"/></svg>
+                  Ask Ilma to clear the overdue requests
+                </button>
               </div>
 
               <!-- SOC 2 Type I -->
@@ -6079,6 +6107,10 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                   <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC2 — Communication</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 6 controls</div></div>
                   <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC9 — Risk</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 9 controls</div></div>
                 </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('Orbit IdP Fix','Walk me through fixing the Orbit IdP sync failure','The root cause is the Okta integration token expired on April 11 — that\'s when the sync stopped and the 12 former employee accounts stayed active. Fix path: 1) Re-authenticate the Okta integration in Vanta (IT admin, ~5 min). 2) Run a manual sync. 3) The 5 failing CC6 controls will auto-re-evaluate — 4 should flip to passing once the sync is clean. 4) AC-2.4 still needs a manual access review export. Estimated time to green: 1 hour of IT work. Want me to draft the remediation note for your auditor?',['Draft the remediation note','Who re-authenticates Okta?','What controls flip green after the fix?'])" style="margin-top:14px;width:100%;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#DC2626;background:#FEF2F2;border:1px solid rgba(220,38,38,0.15);border-radius:8px;padding:8px 14px;cursor:pointer;transition:background 0.12s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#FEE2E2'" onmouseleave="this.style.background='#FEF2F2'">
+                  <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h6M7 4l3 3-3 3"/></svg>
+                  Ask Ilma how to fix the IdP failure
+                </button>
               </div>
             </div>
 
@@ -6103,6 +6135,16 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                 </div>
                 <!-- Rows -->
                 <div id="controls-table-rows"></div>
+
+              <!-- Ilma touchpoint -->
+              <div style="display:flex;align-items:center;gap:12px;margin-top:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(245,243,255,0.8),rgba(237,233,254,0.5));border:1px solid rgba(109,40,217,0.12);border-radius:14px">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#6D28D9);flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px">Ilma</div>
+                  <div style="font-family:var(--font-body);font-size:12px;color:#374151">Why are Orbit&apos;s access controls failing?</div>
+                </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('Failing controls','Why are Orbit\'s access management controls failing?','Five CC6 controls went offline April 11 when the Okta IdP sync token expired. Former employee accounts stayed active because sync never ran — so Vanta flagged AC-2, AC-2.1, AC-2.4, AC-5, and AC-6 as failing. MFA is also flagged because two of those stale accounts don\'t have MFA enrolled. All five controls will auto-remediate once the IdP sync is restored and a fresh access review runs. Estimated fix: 1 hour of IT admin work.',['Which accounts need to be revoked?','Generate the remediation plan','Who owns the Okta integration?'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='#DDD6FE'" onmouseleave="this.style.background='#EDE9FE'">Ask Ilma</button>
+              </div>
               </div>
             </div>
 
@@ -6176,6 +6218,16 @@ document.querySelectorAll('.ritual-ilma-icon').forEach(function(el){el.innerHTML
                   <span style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#5B21B6">69<span style="font-size:12px;font-family:var(--font-ui)">/100</span></span>
                 </div>
                 <div style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;margin-top:10px;line-height:1.6">The "Zero critical alerts" goal is dragging the org score down to 69 — even though health and controls are strong. Resolve the Orbit critical alert and the org score jumps above 80.</div>
+
+              <!-- Ilma touchpoint -->
+              <div style="display:flex;align-items:center;gap:12px;margin-top:20px;padding:14px 18px;background:linear-gradient(135deg,rgba(245,243,255,0.8),rgba(237,233,254,0.5));border:1px solid rgba(109,40,217,0.12);border-radius:14px">
+                <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#6D28D9);flex-shrink:0"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2px">Ilma</div>
+                  <div style="font-family:var(--font-body);font-size:12px;color:#374151">What would move my score the most right now?</div>
+                </div>
+                <button onclick="closeGoalsPanel();openIlmaSidebar('Score forecast','What would move my program health score the most right now?','The single highest-leverage action is resolving the Orbit critical alert. That binary goal is weighted 25% and scoring zero — fixing it adds ~18 points immediately, taking you from 69 to roughly 87. Next is controls passing rate: you need 12 more controls at passing to hit 95%, worth another 4-5 points. Together those two actions take the org score from 69 to around 92 — above your target of 90 for the first time this quarter.',['Fix the Orbit alert path','Which 12 controls are closest to passing?','What does 90+ look like for the audit?'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='#DDD6FE'" onmouseleave="this.style.background='#EDE9FE'">Ask Ilma</button>
+              </div>
               </div>
             </div>
 
