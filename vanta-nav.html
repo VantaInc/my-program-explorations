@@ -1751,12 +1751,12 @@ const VIEWS = {
           const pillMap = {pass:'pill-pass',warn:'pill-warn',risk:'pill-risk',review:'pill-review'}
           const pillLabel = {pass:'Pass',warn:'Warn',risk:'Risk',review:'Review'}
           return `
-          <div data-view="${p.slug}" onclick="openBUModal('${p.slug}','${p.name}','${p.status}','${p.sColor}','${p.sBg}','${p.color}',this)" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s,transform 0.18s;display:flex;flex-direction:column;position:relative;overflow:hidden"
+          <div onclick="openBUModal('${p.slug}','${p.name}','${p.status}','${p.sColor}','${p.sBg}','${p.color}',this)" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px;cursor:pointer;transition:box-shadow 0.18s,border-color 0.18s,transform 0.18s;display:flex;flex-direction:column;position:relative;overflow:hidden"
             onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.1)';this.style.borderColor='rgba(0,0,0,0.15)';this.style.transform='translateY(-2px)';this.querySelector('.bu-expand-hint').style.opacity='1'"
             onmouseleave="this.style.boxShadow='none';this.style.borderColor='rgba(0,0,0,0.07)';this.style.transform='translateY(0)';this.querySelector('.bu-expand-hint').style.opacity='0'">
-            <div class="bu-expand-hint" style="position:absolute;top:10px;right:10px;opacity:0;transition:opacity 0.15s;display:flex;align-items:center;gap:4px;background:rgba(0,0,0,0.06);border-radius:6px;padding:3px 7px;pointer-events:none">
-              <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="#6B7280" stroke-width="1.5"><path d="M1 9L9 1M9 1H4M9 1V6"/></svg>
-              <span style="font-family:var(--font-ui);font-size:9px;font-weight:500;color:#6B7280;letter-spacing:0.03em">Expand</span>
+            <div class="bu-expand-hint" style="position:absolute;bottom:10px;right:12px;opacity:0;transition:opacity 0.15s;display:flex;align-items:center;gap:4px;pointer-events:none">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M1 9L9 1M9 1H4M9 1V6"/></svg>
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:500;color:#9CA3AF;letter-spacing:0.03em">Expand</span>
             </div>
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
               <span style="font-family:var(--font-display);font-size:17px;font-weight:300;color:#111827;letter-spacing:-0.02em">${p.name}</span>
