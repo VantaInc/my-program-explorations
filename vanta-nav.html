@@ -1035,6 +1035,271 @@ function tableView(title, breadcrumb, cols, rows, actions='') {
   </div>`
 }
 
+
+// ── Rich AI response library (top-level, no template literal issues) ──
+const AI_RESPONSES = {}
+
+AI_RESPONSES['Generate Forge audit readiness report'] = {
+  narrative: 'Forge is <strong>12 days out</strong> from its SOC 2 Type II audit window and running ahead of schedule at 89% evidence collected. Three items remain — all assigned, all moving. If pacing holds, Forge closes out fully ready by May 16.',
+  body: function() {
+    var domains = [
+      {l:'Access Management',pct:94,color:'#059669'},
+      {l:'Change Management',pct:88,color:'#059669'},
+      {l:'Incident Response',pct:100,color:'#059669'},
+      {l:'Data Protection',pct:80,color:'#D97706'},
+      {l:'Vendor Management',pct:91,color:'#059669'},
+    ]
+    var items = [
+      {label:'Vendor activity logs (VM-04)',owner:'Denise',eta:'~15 min',color:'#059669'},
+      {label:'Data retention export (DP-07, DP-08)',owner:'Denise',eta:'~30 min',color:'#059669'},
+      {label:'Auditor intro call (unassigned)',owner:'Unassigned',eta:'Book before May 16',color:'#DC2626'},
+    ]
+    return '<div style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;margin-bottom:20px">' +
+      '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px">' +
+        '<div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Evidence Collected</div>' +
+        '<div style="position:relative;width:110px;height:110px">' +
+          '<svg width="110" height="110" viewBox="0 0 110 110">' +
+            '<circle cx="55" cy="55" r="42" fill="none" stroke="#F3F4F6" stroke-width="9"/>' +
+            '<circle cx="55" cy="55" r="42" fill="none" stroke="#059669" stroke-width="9" stroke-dasharray="263.9" stroke-dashoffset="29" transform="rotate(-90 55 55)" stroke-linecap="round"/>' +
+          '</svg>' +
+          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+            '<span style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#059669;letter-spacing:-0.03em;line-height:1">89%</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-family:var(--font-ui);font-size:11px;color:#059669;font-weight:500">On track</div>' +
+        '<div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">12 days to audit</div>' +
+      '</div>' +
+      '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px">' +
+        '<div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:16px">Control Domains</div>' +
+        domains.map(function(d) { return '' +
+          '<div style="margin-bottom:13px">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">' +
+              '<span style="font-family:var(--font-ui);font-size:11px;color:#374151">' + d.l + '</span>' +
+              '<span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:' + d.color + '">' + d.pct + '%</span>' +
+            '</div>' +
+            '<div style="height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden">' +
+              '<div style="height:100%;width:' + d.pct + '%;background:' + d.color + ';border-radius:3px;transition:width 0.6s ease"></div>' +
+            '</div>' +
+          '</div>'
+        }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px">' +
+      '<div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">3 Remaining Items</div>' +
+      items.map(function(item, i) { return '' +
+        '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;' + (i > 0 ? 'border-top:1px solid rgba(0,0,0,0.05)' : '') + '">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:' + item.color + ';flex-shrink:0"></div>' +
+          '<div style="flex:1;font-family:var(--font-ui);font-size:12px;color:#111827;font-weight:500">' + item.label + '</div>' +
+          '<span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">' + item.owner + '</span>' +
+          '<span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:' + item.color + ';white-space:nowrap">' + item.eta + '</span>' +
+        '</div>'
+      }).join('') +
+    '</div>'
+  }
+}
+
+AI_RESPONSES['Summarize my week'] = {
+  narrative: 'A mixed week — <strong>Forge held strong</strong>, Atlas is slipping on auditor response time, and Orbit surfaced a credential gap that Vanta already contained. Net result: program health is up +2 across the portfolio, but two items still need you today.',
+  body: function() {
+    var tiles = [
+      {n:'+2',l:'Health change',sub:'Avg across all BUs',color:'#059669',bg:'#D1FAE5'},
+      {n:'34',l:'Evidence refreshes',sub:'Handled by Vanta auto-sync',color:'#5B21B6',bg:'#EDE9FE'},
+      {n:'2',l:'Items needing you',sub:'1 critical · 1 audit pacing',color:'#DC2626',bg:'#FEE2E2'},
+    ]
+    var rows = [
+      {time:'Today',label:'12 stale Orbit credentials auto-revoked by Vanta',tag:'Contained',tagC:'#059669',tagBg:'#D1FAE5'},
+      {time:'May 11',label:'Atlas auditor requests (AC-2.4, CM-3.1) still unassigned',tag:'Action needed',tagC:'#DC2626',tagBg:'#FEE2E2'},
+      {time:'May 10',label:'Forge evidence refresh completed — 34 controls updated',tag:'Done',tagC:'#059669',tagBg:'#D1FAE5'},
+      {time:'May 9',label:'Okta vendor questionnaire deadline approaching (60% done)',tag:'At risk',tagC:'#D97706',tagBg:'#FEF3C7'},
+    ]
+    return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">' +
+      tiles.map(function(c) { return '' +
+        '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 22px">' +
+          '<div style="display:inline-block;font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:' + c.bg + ';color:' + c.color + ';letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase">' + c.l + '</div>' +
+          '<div style="font-family:var(--font-display);font-size:42px;font-weight:300;color:' + c.color + ';letter-spacing:-0.04em;line-height:1;margin-bottom:6px">' + c.n + '</div>' +
+          '<div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">' + c.sub + '</div>' +
+        '</div>'
+      }).join('') + '</div>' +
+      '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;overflow:hidden">' +
+        '<div style="padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.05)">' +
+          '<span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">What moved this week</span>' +
+        '</div>' +
+        rows.map(function(r, i) { return '' +
+          '<div style="display:flex;align-items:center;gap:12px;padding:14px 20px;' + (i > 0 ? 'border-top:1px solid rgba(0,0,0,0.04)' : '') + '">' +
+            '<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;min-width:56px">' + r.time + '</span>' +
+            '<span style="font-family:var(--font-body);font-size:12px;color:#374151;flex:1">' + r.label + '</span>' +
+            '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:' + r.tagBg + ';color:' + r.tagC + ';white-space:nowrap;text-transform:uppercase">' + r.tag + '</span>' +
+          '</div>'
+        }).join('') +
+      '</div>'
+  }
+}
+
+AI_RESPONSES['Where do I need to focus?'] = {
+  narrative: 'Three things need your judgment — not Vanta\'s. Everything else is handled or monitoring. The Orbit credential gap is contained but undisclosed. Atlas auditor response time is past SLA. The Okta questionnaire deadline is in 3 days.',
+  body: function() {
+    var items = [
+      {rank:1,urgency:'Critical',urgencyC:'#DC2626',urgencyBg:'#FEE2E2',title:'Decide on Orbit customer disclosure',body:'12 former employee credentials were active — Vanta contained it, but disclosure to affected customers may be required before the May 18 audit window. This is a judgment call, not an automation.',bu:'Orbit',effort:'30 min',view:'orbit'},
+      {rank:2,urgency:'Today',urgencyC:'#D97706',urgencyBg:'#FEF3C7',title:'Assign Atlas auditor request owners',body:'AC-2.4 and CM-3.1 have been sitting unassigned since March 14. Auditor SLA is 3 days — you\'re past it. Assigning takes 2 minutes but prevents a late-audit flag.',bu:'Atlas',effort:'2 min',view:'atlas'},
+      {rank:3,urgency:'3 days',urgencyC:'#5B21B6',urgencyBg:'#EDE9FE',title:'Unblock Okta vendor questionnaire',body:'60% complete, deadline May 9. Two ISO 27001 controls stay blocked until it clears. Ilma can draft the remaining 14 answers for Denise to review.',bu:'Atlas',effort:'20 min (with Ilma)',view:'atlas'},
+    ]
+    return '<div style="display:flex;flex-direction:column;gap:12px">' +
+      items.map(function(item) { return '' +
+        '<div onclick="renderView(\'' + item.view + '\')" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px;cursor:pointer;transition:box-shadow 0.15s;display:flex;gap:20px;align-items:flex-start" onmouseenter="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,0.06)\'" onmouseleave="this.style.boxShadow=\'none\'">' +
+          '<div style="width:32px;height:32px;border-radius:50%;background:#F9FAFB;border:1.5px solid #E5E7EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">' +
+            '<span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#374151">' + item.rank + '</span>' +
+          '</div>' +
+          '<div style="flex:1">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+              '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 9px;border-radius:8px;background:' + item.urgencyBg + ';color:' + item.urgencyC + ';letter-spacing:0.05em;text-transform:uppercase">' + item.urgency + '</span>' +
+              '<span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">' + item.bu + '</span>' +
+            '</div>' +
+            '<div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:#111827;margin-bottom:6px">' + item.title + '</div>' +
+            '<div style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.65">' + item.body + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0">' +
+            '<div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;margin-bottom:3px">Est. time</div>' +
+            '<div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">' + item.effort + '</div>' +
+          '</div>' +
+        '</div>'
+      }).join('') + '</div>'
+  }
+}
+
+AI_RESPONSES["Draft Caesar's quarterly briefing"] = {
+  narrative: 'Here\'s a draft executive briefing for Caesar. It leads with portfolio health, surfaces the one critical item requiring executive awareness, and closes with Forge\'s upcoming audit milestone.',
+  body: function() {
+    var programs = [
+      {name:'Forge',score:91,color:'#059669',status:'On track'},
+      {name:'Atlas',score:86,color:'#D97706',status:'Monitor'},
+      {name:'Orbit',score:71,color:'#DC2626',status:'At risk'},
+    ]
+    var sections = [
+      {head:'Portfolio Overview',body:'Three programs active in Q2 2026. Portfolio average health is 84/100, up 2 points from Q1. Forge leads heading into its SOC 2 audit window (May 18). Orbit is the outlier — an IdP sync failure in April surfaced 12 stale credentials, now remediated.'},
+      {head:'Executive Action Required',body:'Orbit\'s credential exposure may require customer disclosure before the May 18 audit window. Legal review is recommended this week. The incident is contained; the disclosure decision is the remaining open question.'},
+      {head:'Audit Outlook',body:'Forge SOC 2 Type II audit opens May 18 with 89% evidence collected and all major controls passing. Atlas ISO 27001 is on track. No material audit risk is anticipated across the portfolio at this time.'},
+    ]
+    return '<div style="background:#F9FAFB;border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:28px 32px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">' +
+        '<div>' +
+          '<div style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.1em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px">GRC Quarterly Briefing · Q2 2026</div>' +
+          '<div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em">Program Status Summary</div>' +
+        '</div>' +
+        '<div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">Prepared for Caesar · May 12, 2026</div>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">' +
+        programs.map(function(p) { return '' +
+          '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:18px 20px">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+              '<span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827">' + p.name + '</span>' +
+              '<span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:' + p.color + '">' + p.status + '</span>' +
+            '</div>' +
+            '<div style="font-family:var(--font-display);font-size:36px;font-weight:300;color:' + p.color + ';letter-spacing:-0.04em;line-height:1;margin-bottom:8px">' + p.score + '</div>' +
+            '<div style="height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden">' +
+              '<div style="height:100%;width:' + p.score + '%;background:' + p.color + ';border-radius:2px"></div>' +
+            '</div>' +
+          '</div>'
+        }).join('') +
+      '</div>' +
+      sections.map(function(s) { return '' +
+        '<div style="margin-bottom:18px">' +
+          '<div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#374151;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px">' + s.head + '</div>' +
+          '<div style="font-family:var(--font-body);font-size:13px;color:#6B7280;line-height:1.75">' + s.body + '</div>' +
+        '</div>'
+      }).join('') +
+    '</div>'
+  }
+}
+
+AI_RESPONSES["What's Orbit's biggest risk right now?"] = {
+  narrative: '<strong>Orbit\'s IdP sync has been down for 47 days.</strong> That\'s the root cause of every failing control in the program. The 12 stale credentials are contained — but AC-2, AC-3, AC-6, AC-9, and AC-10 are all failing because the connector hasn\'t verified state since April.',
+  body: function() {
+    var controls = ['AC-2 · Account Management','AC-3 · Access Enforcement','AC-6 · Least Privilege','AC-9 · Previous Logon Notification','AC-10 · Concurrent Session Control']
+    var steps = [
+      {step:'1',label:'Marcus Webb re-authenticates the Okta connector',owner:'Marcus Webb',eta:'Today'},
+      {step:'2',label:'Vanta re-verifies all 5 controls automatically',owner:'Vanta',eta:'~2 min after reconnect'},
+      {step:'3',label:'Decide on customer disclosure language',owner:'Pam / Legal',eta:'This week'},
+    ]
+    return '<div style="background:#FFF1F1;border:1.5px solid rgba(220,38,38,0.18);border-radius:16px;padding:22px 26px;margin-bottom:16px">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">' +
+          '<div style="width:8px;height:8px;border-radius:50%;background:#DC2626"></div>' +
+          '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#DC2626;letter-spacing:0.08em;text-transform:uppercase">Active Risk · Orbit</span>' +
+        '</div>' +
+        '<div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.35;margin-bottom:10px">Okta IdP connector offline for <span style=\"color:#DC2626;font-weight:400\">47 days</span></div>' +
+        '<div style="font-family:var(--font-body);font-size:13px;color:#6B7280;line-height:1.7">The connector authenticated last on April 1. Without it, Vanta can\'t verify user access state — which means all access-related controls are unverified and currently failing.</div>' +
+      '</div>' +
+      '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px;margin-bottom:14px">' +
+        '<div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">5 Failing Controls</div>' +
+        controls.map(function(c, i) { return '' +
+          '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;' + (i > 0 ? 'border-top:1px solid rgba(0,0,0,0.04)' : '') + '">' +
+            '<span class="pill-risk" style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;white-space:nowrap">Fail</span>' +
+            '<span style="font-family:var(--font-ui);font-size:12px;color:#374151">' + c + '</span>' +
+          '</div>'
+        }).join('') +
+      '</div>' +
+      '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px">' +
+        '<div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">Fix Path (estimated 45 min)</div>' +
+        steps.map(function(s) { return '' +
+          '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">' +
+            '<div style="width:22px;height:22px;border-radius:50%;background:#5B21B6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">' +
+              '<span style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#fff">' + s.step + '</span>' +
+            '</div>' +
+            '<div style="flex:1">' +
+              '<div style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#111827;margin-bottom:2px">' + s.label + '</div>' +
+              '<span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">' + s.owner + ' · ' + s.eta + '</span>' +
+            '</div>' +
+          '</div>'
+        }).join('') +
+      '</div>'
+  }
+}
+
+AI_RESPONSES['Show me vendor gaps'] = {
+  narrative: 'Three vendor assessments are open right now. Okta is the most urgent — 60% done with a 3-day deadline and two ISO controls blocked behind it. Snowflake and Datadog are in earlier stages.',
+  body: function() {
+    var vendors = [
+      {name:'Okta',pct:60,deadline:'May 9',daysLeft:3,blocked:2,urgency:'At risk',urgencyC:'#DC2626',urgencyBg:'#FEE2E2',color:'#DC2626'},
+      {name:'Snowflake',pct:20,deadline:'May 28',daysLeft:22,blocked:1,urgency:'Blocked',urgencyC:'#D97706',urgencyBg:'#FEF3C7',color:'#D97706'},
+      {name:'Datadog',pct:0,deadline:'Jun 15',daysLeft:40,blocked:0,urgency:'Not started',urgencyC:'#9CA3AF',urgencyBg:'#F3F4F6',color:'#9CA3AF'},
+    ]
+    return '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">' +
+      vendors.map(function(v) {
+        var circ = 2 * Math.PI * 32
+        var filled = circ * v.pct / 100
+        return '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:10px">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:2px">' +
+            '<span style="font-family:var(--font-display);font-size:17px;font-weight:300;color:#111827">' + v.name + '</span>' +
+            '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:' + v.urgencyBg + ';color:' + v.urgencyC + ';text-transform:uppercase">' + v.urgency + '</span>' +
+          '</div>' +
+          '<div style="position:relative;width:90px;height:90px">' +
+            '<svg width="90" height="90" viewBox="0 0 90 90">' +
+              '<circle cx="45" cy="45" r="32" fill="none" stroke="#F3F4F6" stroke-width="7"/>' +
+              '<circle cx="45" cy="45" r="32" fill="none" stroke="' + v.color + '" stroke-width="7" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ - filled) + '" transform="rotate(-90 45 45)" stroke-linecap="round"/>' +
+            '</svg>' +
+            '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+              '<span style="font-family:var(--font-display);font-size:22px;font-weight:300;color:' + v.color + ';letter-spacing:-0.03em;line-height:1">' + v.pct + '%</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="width:100%;display:flex;flex-direction:column;gap:4px">' +
+            '<div style="display:flex;justify-content:space-between">' +
+              '<span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Deadline</span>' +
+              '<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:' + v.color + '">' + v.deadline + ' (' + v.daysLeft + 'd)</span>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between">' +
+              '<span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Blocked controls</span>' +
+              '<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:' + (v.blocked > 0 ? '#DC2626' : '#059669') + '">' + (v.blocked === 0 ? 'None' : v.blocked + ' controls') + '</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      }).join('') + '</div>' +
+      '<div style="background:#FEF3C7;border:1px solid rgba(217,119,6,0.15);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:10px">' +
+        '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 12H2L8 2z" stroke="#D97706" stroke-width="1.4" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.5" r="0.7" fill="#D97706"/></svg>' +
+        '<span style="font-family:var(--font-body);font-size:12px;color:#92400E">Okta\'s ISO 27001 controls <strong>A.15.1.2</strong> and <strong>A.15.2.1</strong> are blocked until the questionnaire clears. Ilma can draft the remaining 14 answers — just say "draft Okta answers."</span>' +
+      '</div>'
+  }
+}
+
+
 const VIEWS = {
 
   'home-page': () => {
@@ -1497,258 +1762,8 @@ const VIEWS = {
         }
       }
 
-      // ── Rich AI response library ──
-      const AI_RESPONSES = {
-        'Generate Forge audit readiness report': {
-          narrative: 'Forge is **12 days out** from its SOC 2 Type II audit window and running ahead of schedule at 89% evidence collected. Three items remain — all assigned, all moving. If pacing holds, Forge closes out fully ready by May 16.',
-          body: () => `
-            <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;margin-bottom:20px">
-              <!-- Donut -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px">
-                <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Evidence Collected</div>
-                <div style="position:relative;width:110px;height:110px">
-                  <svg width="110" height="110" viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r="42" fill="none" stroke="#F3F4F6" stroke-width="9"/>
-                    <circle cx="55" cy="55" r="42" fill="none" stroke="#059669" stroke-width="9"
-                      stroke-dasharray="263.9" stroke-dashoffset="29"
-                      transform="rotate(-90 55 55)" stroke-linecap="round"/>
-                  </svg>
-                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-                    <span style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#059669;letter-spacing:-0.03em;line-height:1">89%</span>
-                  </div>
-                </div>
-                <div style="font-family:var(--font-ui);font-size:11px;color:#059669;font-weight:500">On track</div>
-                <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">12 days to audit</div>
-              </div>
-              <!-- Control domains -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px">
-                <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:16px">Control Domains</div>
-                ${[
-                  {l:'Access Management',pct:94,color:'#059669'},
-                  {l:'Change Management',pct:88,color:'#059669'},
-                  {l:'Incident Response',pct:100,color:'#059669'},
-                  {l:'Data Protection',pct:80,color:'#D97706'},
-                  {l:'Vendor Management',pct:91,color:'#059669'},
-                ].map(d=>`
-                <div style="margin-bottom:13px">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">${d.l}</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:${d.color}">${d.pct}%</span>
-                  </div>
-                  <div style="height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden">
-                    <div style="height:100%;width:${d.pct}%;background:${d.color};border-radius:3px;transition:width 0.6s ease"></div>
-                  </div>
-                </div>`).join('')}
-              </div>
-            </div>
-            <!-- Remaining 3 items -->
-            <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px;margin-bottom:16px">
-              <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">3 Remaining Items</div>
-              ${[
-                {label:'Vendor activity logs (VM-04)',owner:'Denise',eta:'~15 min',color:'#059669'},
-                {label:'Data retention export (DP-07, DP-08)',owner:'Denise',eta:'~30 min',color:'#059669'},
-                {label:'Auditor intro call (unassigned)',owner:'Unassigned',eta:'Book before May 16',color:'#DC2626'},
-              ].map((item,i)=>`
-              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${i>0?'border-top:1px solid rgba(0,0,0,0.05)':''}">
-                <div style="width:8px;height:8px;border-radius:50%;background:${item.color};flex-shrink:0"></div>
-                <div style="flex:1;font-family:var(--font-ui);font-size:12px;color:#111827;font-weight:500">${item.label}</div>
-                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">${item.owner}</span>
-                <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:${item.color};white-space:nowrap">${item.eta}</span>
-              </div>`).join('')}
-            </div>`
-        },
 
-        'Summarize my week': {
-          narrative: 'A mixed week — **Forge held strong**, Atlas is slipping on auditor response time, and Orbit surfaced a credential gap that Vanta already contained. Net result: program health is up +2 across the portfolio, but two items still need you today.',
-          body: () => `
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
-              ${[
-                {n:'+2',l:'Health change',sub:'Avg across all BUs',color:'#059669',bg:'#D1FAE5'},
-                {n:'34',l:'Evidence refreshes',sub:'Handled by Vanta auto-sync',color:'#5B21B6',bg:'#EDE9FE'},
-                {n:'2',l:'Items needing you',sub:'1 critical · 1 audit pacing',color:'#DC2626',bg:'#FEE2E2'},
-              ].map(c=>`
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 22px">
-                <div style="display:inline-block;font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:${c.bg};color:${c.color};letter-spacing:0.05em;margin-bottom:10px;text-transform:uppercase">${c.l}</div>
-                <div style="font-family:var(--font-display);font-size:42px;font-weight:300;color:${c.color};letter-spacing:-0.04em;line-height:1;margin-bottom:6px">${c.n}</div>
-                <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${c.sub}</div>
-              </div>`).join('')}
-            </div>
-            <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;overflow:hidden">
-              <div style="padding:16px 20px;border-bottom:1px solid rgba(0,0,0,0.05)">
-                <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">What moved this week</span>
-              </div>
-              ${[
-                {time:'Today',label:'12 stale Orbit credentials auto-revoked by Vanta',tag:'Contained',tagC:'#059669',tagBg:'#D1FAE5'},
-                {time:'May 11',label:'Atlas auditor requests (AC-2.4, CM-3.1) still unassigned',tag:'Action needed',tagC:'#DC2626',tagBg:'#FEE2E2'},
-                {time:'May 10',label:'Forge evidence refresh completed — 34 controls updated',tag:'Done',tagC:'#059669',tagBg:'#D1FAE5'},
-                {time:'May 9',label:'Okta vendor questionnaire deadline approaching (60% done)',tag:'At risk',tagC:'#D97706',tagBg:'#FEF3C7'},
-              ].map((r,i)=>`
-              <div style="display:flex;align-items:center;gap:12px;padding:14px 20px;${i>0?'border-top:1px solid rgba(0,0,0,0.04)':''}">
-                <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;min-width:56px">${r.time}</span>
-                <span style="font-family:var(--font-body);font-size:12px;color:#374151;flex:1">${r.label}</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:${r.tagBg};color:${r.tagC};white-space:nowrap;text-transform:uppercase">${r.tag}</span>
-              </div>`).join('')}
-            </div>`
-        },
 
-        'Where do I need to focus?': {
-          narrative: 'Three things need your judgment — not Vanta\'s. Everything else is handled or monitoring. The Orbit credential gap is contained but undisclosed. Atlas auditor response time is past SLA. The Okta questionnaire deadline is in 3 days.',
-          body: () => `
-            <div style="display:flex;flex-direction:column;gap:12px">
-              ${[
-                {rank:1,urgency:'Critical',urgencyC:'#DC2626',urgencyBg:'#FEE2E2',title:'Decide on Orbit customer disclosure',body:'12 former employee credentials were active — Vanta contained it, but disclosure to affected customers may be required before the May 18 audit window. This is a judgment call, not an automation.',bu:'Orbit',effort:'30 min',view:'orbit'},
-                {rank:2,urgency:'Today',urgencyC:'#D97706',urgencyBg:'#FEF3C7',title:'Assign Atlas auditor request owners',body:'AC-2.4 and CM-3.1 have been sitting unassigned since March 14. Auditor SLA is 3 days — you\'re past it. Assigning takes 2 minutes but prevents a late-audit flag.',bu:'Atlas',effort:'2 min',view:'atlas'},
-                {rank:3,urgency:'3 days',urgencyC:'#5B21B6',urgencyBg:'#EDE9FE',title:'Unblock Okta vendor questionnaire',body:'60% complete, deadline May 9. Two ISO 27001 controls stay blocked until it clears. Ilma can draft the remaining 14 answers for Denise to review.',bu:'Atlas',effort:'20 min (with Ilma)',view:'atlas'},
-              ].map(item=>`
-              <div onclick="renderView('${item.view}')" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px;cursor:pointer;transition:box-shadow 0.15s;display:flex;gap:20px;align-items:flex-start" onmouseenter="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.06)'" onmouseleave="this.style.boxShadow='none'">
-                <div style="width:32px;height:32px;border-radius:50%;background:#F9FAFB;border:1.5px solid #E5E7EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px">
-                  <span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#374151">${item.rank}</span>
-                </div>
-                <div style="flex:1">
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                    <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 9px;border-radius:8px;background:${item.urgencyBg};color:${item.urgencyC};letter-spacing:0.05em;text-transform:uppercase">${item.urgency}</span>
-                    <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">${item.bu}</span>
-                  </div>
-                  <div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:#111827;margin-bottom:6px">${item.title}</div>
-                  <div style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.65">${item.body}</div>
-                </div>
-                <div style="text-align:right;flex-shrink:0">
-                  <div style="font-family:var(--font-ui);font-size:9px;color:#C0BDB8;margin-bottom:3px">Est. time</div>
-                  <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">${item.effort}</div>
-                </div>
-              </div>`).join('')}
-            </div>`
-        },
-
-        "Draft Caesar's quarterly briefing": {
-          narrative: 'Here\'s a draft executive briefing for Caesar. It leads with portfolio health, surfaces the one critical item requiring executive awareness, and closes with Forge\'s upcoming audit milestone.',
-          body: () => `
-            <div style="background:#F9FAFB;border:1px solid rgba(0,0,0,0.08);border-radius:16px;padding:28px 32px;font-family:var(--font-body)">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-                <div>
-                  <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.1em;color:#9CA3AF;text-transform:uppercase;margin-bottom:4px">GRC Quarterly Briefing · Q2 2026</div>
-                  <div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em">Program Status Summary</div>
-                </div>
-                <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">Prepared for Caesar · May 12, 2026</div>
-              </div>
-              <!-- Program health bars -->
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
-                ${[
-                  {name:'Forge',score:91,color:'#059669',status:'On track'},
-                  {name:'Atlas',score:86,color:'#D97706',status:'Monitor'},
-                  {name:'Orbit',score:71,color:'#DC2626',status:'At risk'},
-                ].map(p=>`
-                <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:18px 20px">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                    <span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827">${p.name}</span>
-                    <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:${p.color}">${p.status}</span>
-                  </div>
-                  <div style="font-family:var(--font-display);font-size:36px;font-weight:300;color:${p.color};letter-spacing:-0.04em;line-height:1;margin-bottom:8px">${p.score}</div>
-                  <div style="height:4px;background:#F3F4F6;border-radius:2px;overflow:hidden">
-                    <div style="height:100%;width:${p.score}%;background:${p.color};border-radius:2px"></div>
-                  </div>
-                </div>`).join('')}
-              </div>
-              <!-- Briefing text blocks -->
-              ${[
-                {head:'Portfolio Overview',body:'Three programs active in Q2 2026. Portfolio average health is 84/100, up 2 points from Q1. Forge leads heading into its SOC 2 audit window (May 18). Orbit is the outlier — an IdP sync failure in April surfaced 12 stale credentials, now remediated.'},
-                {head:'Executive Action Required',body:'Orbit\'s credential exposure may require customer disclosure before the May 18 audit window. Legal review is recommended this week. The incident is contained; the disclosure decision is the remaining open question.'},
-                {head:'Audit Outlook',body:'Forge SOC 2 Type II audit opens May 18 with 89% evidence collected and all major controls passing. Atlas ISO 27001 is on track. No material audit risk is anticipated across the portfolio at this time.'},
-              ].map(s=>`
-              <div style="margin-bottom:18px">
-                <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#374151;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:6px">${s.head}</div>
-                <div style="font-family:var(--font-body);font-size:13px;color:#6B7280;line-height:1.75">${s.body}</div>
-              </div>`).join('')}
-            </div>`
-        },
-
-        "What's Orbit's biggest risk right now?": {
-          narrative: '**Orbit\'s IdP sync has been down for 47 days.** That\'s the root cause of every failing control in the program. The 12 stale credentials are contained — but AC-2, AC-3, AC-6, AC-9, and AC-10 are all failing because the connector hasn\'t verified state since April.',
-          body: () => `
-            <div style="background:#FFF1F1;border:1.5px solid rgba(220,38,38,0.18);border-radius:16px;padding:22px 26px;margin-bottom:16px">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-                <div style="width:8px;height:8px;border-radius:50%;background:#DC2626;animation:ilma-pulse 1.5s ease-in-out infinite"></div>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#DC2626;letter-spacing:0.08em;text-transform:uppercase">Active Risk · Orbit</span>
-              </div>
-              <div style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.35;margin-bottom:10px">Okta IdP connector offline for <span style="color:#DC2626;font-weight:400">47 days</span></div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#6B7280;line-height:1.7">The connector authenticated last on April 1. Without it, Vanta can't verify user access state — which means all access-related controls are unverified and currently failing.</div>
-            </div>
-            <!-- Failing controls -->
-            <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px;margin-bottom:14px">
-              <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">5 Failing Controls</div>
-              ${['AC-2 · Account Management','AC-3 · Access Enforcement','AC-6 · Least Privilege','AC-9 · Previous Logon Notification','AC-10 · Concurrent Session Control'].map((c,i)=>`
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i>0?'border-top:1px solid rgba(0,0,0,0.04)':''}">
-                <span class="pill-risk" style="font-size:8px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;white-space:nowrap">Fail</span>
-                <span style="font-family:var(--font-ui);font-size:12px;color:#374151">${c}</span>
-              </div>`).join('')}
-            </div>
-            <!-- Fix path -->
-            <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:20px 24px">
-              <div style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px">Fix Path (estimated 45 min)</div>
-              ${[
-                {step:'1',label:'Marcus Webb re-authenticates the Okta connector',owner:'Marcus Webb',eta:'Today'},
-                {step:'2',label:'Vanta re-verifies all 5 controls automatically',owner:'Vanta',eta:'~2 min after reconnect'},
-                {step:'3',label:'Decide on customer disclosure language',owner:'Pam / Legal',eta:'This week'},
-              ].map(s=>`
-              <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
-                <div style="width:22px;height:22px;border-radius:50%;background:#5B21B6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
-                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#fff">${s.step}</span>
-                </div>
-                <div style="flex:1">
-                  <div style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#111827;margin-bottom:2px">${s.label}</div>
-                  <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">${s.owner} · ${s.eta}</span>
-                </div>
-              </div>`).join('')}
-            </div>`
-        },
-
-        'Show me vendor gaps': {
-          narrative: 'Three vendor assessments are open right now. Okta is the most urgent — 60% done with a 3-day deadline and two ISO controls blocked behind it. Snowflake and Datadog are in earlier stages.',
-          body: () => `
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
-              ${[
-                {name:'Okta',pct:60,deadline:'May 9',daysLeft:3,blocked:2,urgency:'At risk',urgencyC:'#DC2626',urgencyBg:'#FEE2E2',color:'#DC2626'},
-                {name:'Snowflake',pct:20,deadline:'May 28',daysLeft:22,blocked:1,urgency:'Blocked',urgencyC:'#D97706',urgencyBg:'#FEF3C7',color:'#D97706'},
-                {name:'Datadog',pct:0,deadline:'Jun 15',daysLeft:40,blocked:0,urgency:'Not started',urgencyC:'#9CA3AF',urgencyBg:'#F3F4F6',color:'#9CA3AF'},
-              ].map(v=>{
-                const circ = 2*Math.PI*32
-                const filled = circ * v.pct/100
-                return `
-                <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:10px">
-                  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:2px">
-                    <span style="font-family:var(--font-display);font-size:17px;font-weight:300;color:#111827">${v.name}</span>
-                    <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:${v.urgencyBg};color:${v.urgencyC};text-transform:uppercase">${v.urgency}</span>
-                  </div>
-                  <!-- Ring -->
-                  <div style="position:relative;width:90px;height:90px">
-                    <svg width="90" height="90" viewBox="0 0 90 90">
-                      <circle cx="45" cy="45" r="32" fill="none" stroke="#F3F4F6" stroke-width="7"/>
-                      <circle cx="45" cy="45" r="32" fill="none" stroke="${v.color}" stroke-width="7"
-                        stroke-dasharray="${circ}" stroke-dashoffset="${circ - filled}"
-                        transform="rotate(-90 45 45)" stroke-linecap="round"/>
-                    </svg>
-                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-                      <span style="font-family:var(--font-display);font-size:22px;font-weight:300;color:${v.color};letter-spacing:-0.03em;line-height:1">${v.pct}%</span>
-                    </div>
-                  </div>
-                  <div style="width:100%;display:flex;flex-direction:column;gap:4px">
-                    <div style="display:flex;justify-content:space-between">
-                      <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Deadline</span>
-                      <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:${v.color}">${v.deadline} (${v.daysLeft}d)</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between">
-                      <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Blocked controls</span>
-                      <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:${v.blocked>0?'#DC2626':'#059669'}">${v.blocked===0?'None':v.blocked+' controls'}</span>
-                    </div>
-                  </div>
-                </div>`}).join('')}
-            </div>
-            <div style="background:#FEF3C7;border:1px solid rgba(217,119,6,0.15);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:10px">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2l6 12H2L8 2z" stroke="#D97706" stroke-width="1.4" stroke-linejoin="round"/><line x1="8" y1="7" x2="8" y2="10" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.5" r="0.7" fill="#D97706"/></svg>
-              <span style="font-family:var(--font-body);font-size:12px;color:#92400E">Okta's ISO 27001 controls <strong>A.15.1.2</strong> and <strong>A.15.2.1</strong> are blocked until the questionnaire clears. Ilma can draft the remaining 14 answers — just say "draft Okta answers."</span>
-            </div>`
-        },
-      }
 
       async function submitAIPrompt(query) {
         document.getElementById('ai-landing').style.display = 'none'
@@ -1799,9 +1814,9 @@ const VIEWS = {
             { n:'6', l:'Open Items', color:'#DC2626', sub:'2 critical · 4 medium' },
             { n:'12', l:'Days to Audit', color:'#5B21B6', sub:'Forge SOC 2 · May 18' }
           ]
-          body.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">` +
-            cards.map(c => `<div style="background:rgba(255,255,255,0.88);border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:22px 24px"><div style="font-family:var(--font-display);font-size:42px;font-weight:300;color:${c.color};letter-spacing:-0.04em;line-height:1;margin-bottom:6px">${c.n}</div><div style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#374151;margin-bottom:4px">${c.l}</div><div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">${c.sub}</div></div>`).join('')
-            + `</div>`
+          body.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">' +
+            cards.map(function(c) { return '<div style="background:rgba(255,255,255,0.88);border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:22px 24px"><div style="font-family:var(--font-display);font-size:42px;font-weight:300;color:' + c.color + ';letter-spacing:-0.04em;line-height:1;margin-bottom:6px">' + c.n + '</div><div style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#374151;margin-bottom:4px">' + c.l + '</div><div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8">' + c.sub + '</div></div>' }).join('')
+            + '</div>'
         }
 
         // Transition to result
