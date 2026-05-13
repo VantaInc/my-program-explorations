@@ -1648,9 +1648,9 @@ const VIEWS = {
         <div style="background:linear-gradient(135deg,#3B1F6E 0%,#5B21B6 60%,#7C3AED 100%);border-radius:16px;padding:20px;position:relative;overflow:hidden">
           <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);pointer-events:none"></div>
           <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.55);text-transform:uppercase;margin-bottom:12px">More from Ilma</div>
-          <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#fff;line-height:1.3;margin-bottom:6px;letter-spacing:-0.02em">AI Mode — ask anything about your program</div>
-          <div style="font-family:var(--font-body);font-size:11px;color:rgba(255,255,255,0.6);line-height:1.5;margin-bottom:16px">Generate reports, explore risks, draft briefs — all from one prompt.</div>
-          <button onclick="toggleAIMode()" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#fff;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;transition:opacity 0.15s" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">Try AI Mode →</button>
+          <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#fff;line-height:1.3;margin-bottom:6px;letter-spacing:-0.02em">She read every audit framework ever written.</div>
+          <div style="font-family:var(--font-body);font-size:11px;color:rgba(255,255,255,0.6);line-height:1.5;margin-bottom:16px">Still friendlier than your auditor. Ask her anything about your program.</div>
+          <button onclick="openIlmaSidebar('Ask Ilma','What should I focus on this week?','Based on what I can see, Orbit is your most urgent item — the IdP connector has been offline for 47 days and 5 controls are failing. I\\'d start there, then get the Atlas auditor requests assigned before end of day. Forge is in great shape heading into the audit window.',['Tell me more about Orbit','What\\'s the Atlas SLA issue?','How\\'s Forge looking?'])" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#5B21B6;background:#fff;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;transition:opacity 0.15s" onmouseenter="this.style.opacity='0.9'" onmouseleave="this.style.opacity='1'">Ask Ilma →</button>
         </div>
 
         <!-- Weekly Recap card -->
@@ -1702,6 +1702,70 @@ const VIEWS = {
           </div>
           <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:5px">89% evidence collected</div>
         </div>
+
+        <!-- Rituals card -->
+        <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:16px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <div style="width:28px;height:28px;background:linear-gradient(135deg,#EDE9FE,#DDD6FE);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">🔁</div>
+            <div>
+              <div style="font-family:var(--font-ui);font-size:12px;font-weight:700;color:#111827">Rituals</div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Recurring moments that matter</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+
+            <!-- Caesar weekly briefing -->
+            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Caesar's weekly brief</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#7C3AED;background:#EDE9FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Weekly</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Due Friday · GRC summary for the CEO</div>
+              <button onclick="openIlmaSidebar('Caesar Brief','Help me prepare Caesar\'s weekly GRC briefing for this Friday.','On it. Here\'s a draft exec summary for Caesar covering program health, Orbit\'s risk status, and the Forge audit timeline — tight, no fluff, decision-ready.',['Draft the brief','Highlight Orbit risk','Add a recommendation'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+            </div>
+
+            <!-- Audit kickoff - highlighted as urgent -->
+            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Forge audit kickoff</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C2410C;background:#FFEDD5;border-radius:20px;padding:1px 6px;flex-shrink:0">⚡ May 24</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#92400E;margin-bottom:8px">SOC 2 Type II · 11 days out</div>
+              <button onclick="openIlmaSidebar('Audit Kickoff','Help me prep for the Forge SOC 2 audit kickoff call on May 24.','On it. I\'ll prep a kickoff package — auditor introductions, evidence status summary, open items list, and a timeline. You\'ll want to walk in with all 3 remaining items assigned.',['Prep the package','Review open items','Draft auditor email'])" style="width:100%;background:linear-gradient(135deg,#EA580C,#C2410C);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+            </div>
+
+            <!-- Board meeting prep -->
+            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Board meeting prep</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 15 · Security &amp; risk update</div>
+              <button onclick="openIlmaSidebar('Board Prep','Help me prep the security and risk update for the June board meeting.','Sure. I\'ll pull together a board-ready narrative covering program health trends, the Orbit incident, Forge audit status, and any material risks worth flagging.',['Draft narrative','Pull risk themes','What needs action before Jun 15'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+            </div>
+
+            <!-- QBR -->
+            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Team QBR</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 1 · Q2 GRC retrospective</div>
+              <button onclick="openIlmaSidebar('QBR Prep','Help me run the Q2 GRC team QBR on June 1.','Happy to help. I can pull together what we shipped in Q2, what slipped, where the program moved, and what the team should focus on in Q3.',['Build the agenda','Summarize Q2 wins','Flag what slipped'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+            </div>
+
+            <!-- Vendor review -->
+            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Vendor review</span>
+                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#047857;background:#D1FAE5;border-radius:20px;padding:1px 6px;flex-shrink:0">Monthly</span>
+              </div>
+              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 1 · Critical vendor risk check</div>
+              <button onclick="openIlmaSidebar('Vendor Review','Help me prep for the monthly critical vendor risk review.','Sure. I can scan your critical vendors, flag any that have new security advisories, updated SOC 2 reports, or overdue questionnaires — and draft a summary for the review.',['Scan critical vendors','Flag new risks','Draft the summary'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+            </div>
+
+          </div>
+        </div><!-- /rituals -->
 
       </div><!-- /sidebar -->
 
