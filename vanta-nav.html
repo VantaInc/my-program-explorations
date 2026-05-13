@@ -1579,10 +1579,10 @@ const VIEWS = {
         <div id="ai-landing" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:520px;padding:64px 48px;text-align:center">
           <!-- Pulsing Ilma avatar -->
           <div style="position:relative;margin-bottom:28px">
-            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A78BFA);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0 rgba(124,58,237,0.4);animation:ilma-pulse 2s ease-in-out infinite">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/><path d="M18 8h2M4 8h2M18.5 14.5l1.5 1.5M4 16l1.5-1.5"/></svg>
+            <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 0 rgba(124,58,237,0.4);animation:ilma-pulse 2s ease-in-out infinite">
+              ${ILMA_SVG(72).replace('width="72" height="72"','width="100%" height="100%"')}
             </div>
-            <div style="position:absolute;inset:-8px;border-radius:50%;border:1.5px solid rgba(124,58,237,0.2);animation:ilma-ring 2s ease-in-out infinite"></div>
+            <div style="position:absolute;inset:-10px;border-radius:50%;border:1.5px solid rgba(124,58,237,0.2);animation:ilma-ring 2s ease-in-out infinite"></div>
           </div>
 
           <h2 style="font-family:var(--font-display);font-size:38px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1.15;margin-bottom:12px">What do you want to know, Pam?</h2>
@@ -1668,7 +1668,7 @@ const VIEWS = {
       <style>
         @keyframes ilma-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(124,58,237,0.35) } 50% { box-shadow:0 0 0 14px rgba(124,58,237,0) } }
         @keyframes ilma-ring { 0%,100% { transform:scale(1);opacity:0.5 } 50% { transform:scale(1.12);opacity:0.15 } }
-        #home-ai-mode { background: rgba(248,246,243,0.97); backdrop-filter: blur(8px); }
+        #home-ai-mode { background: rgba(248,246,243,0.95); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border-radius: 16px; }
       </style>
 
       <script>
