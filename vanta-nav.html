@@ -1255,7 +1255,7 @@ const VIEWS = {
         <!-- Header row: Ilma avatar + name + meta -->
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
           <div style="width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;box-shadow:0 4px 14px rgba(124,58,237,0.3)">
-            ${ILMA_SVG(48)}
+            ${ILMA_SVG(48).replace('width="48" height="48"','width="100%" height="100%"')}
           </div>
           <span style="font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;letter-spacing:-0.01em">From Ilma</span>
           <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.04em">·&nbsp; First read this week</span>
