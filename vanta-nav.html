@@ -3946,6 +3946,13 @@ function renderView(id) {
   const content = document.getElementById('content')
   const view = VIEWS[id] || VIEWS['home-page']
   content.innerHTML = view()
+  // Re-execute any <script> blocks injected via innerHTML (innerHTML doesn't run them)
+  content.querySelectorAll('script').forEach(oldScript => {
+    const newScript = document.createElement('script')
+    newScript.textContent = oldScript.textContent
+    document.head.appendChild(newScript)
+    oldScript.remove()
+  })
   // wire up ilma chat if present
   const sendBtn = document.getElementById('chat-send')
   const chatInput = document.getElementById('chat-input')
