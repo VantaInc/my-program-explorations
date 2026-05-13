@@ -1273,6 +1273,156 @@ const VIEWS = {
         </div>
       </div>
 
+      <!-- ── This week ── -->
+      <div style="margin-bottom:44px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em">This week</span>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase">3 THEMES NEED YOUR JUDGMENT</span>
+          </div>
+          <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8;cursor:pointer;transition:color 0.1s" onmouseenter="this.style.color='#7C3AED'" onmouseleave="this.style.color='#C0BDB8'">View all →</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+          <!-- CRITICAL card -->
+          <div onclick="renderView('orbit')" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;cursor:pointer;transition:box-shadow 0.18s" onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.06em;padding:3px 9px;border-radius:12px;background:#FEE2E2;color:#DC2626;text-transform:uppercase">Critical</span>
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Orbit &nbsp;·&nbsp; Access Management</span>
+            </div>
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.3;margin-bottom:12px">12 former employees still had active credentials</h3>
+            <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.75;margin-bottom:20px">Okta sync gap detected on March 11. Vanta auto-revoked access within 4 hours and logged the incident. Disclosure language is drafted. You decide whether to notify customers.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">4 controls affected</span>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#059669;font-weight:500">Contained · 5d ago</span>
+              </div>
+              <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Review →</span>
+            </div>
+          </div>
+
+          <!-- AUDIT PACING card -->
+          <div onclick="renderView('atlas')" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;cursor:pointer;transition:box-shadow 0.18s" onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.06em;padding:3px 9px;border-radius:12px;background:#FEF3C7;color:#D97706;text-transform:uppercase">Audit Pacing</span>
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Atlas &nbsp;·&nbsp; SOC 2</span>
+            </div>
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.3;margin-bottom:12px">Two auditor requests are aging</h3>
+            <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.75;margin-bottom:20px">Sterling sent requests for evidence on AC-2.4 and CM-3.1 on March 14. Both are still unassigned. Auditor's typical SLA is 3 business days — we're past it on AC-2.4.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">2 requests</span>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#DC2626;font-weight:500">Owner: unassigned</span>
+              </div>
+              <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Assign →</span>
+            </div>
+          </div>
+
+          <!-- EVIDENCE DRIFT card -->
+          <div onclick="openIlmaSidebar('Home · Evidence Drift','7 controls have evidence older than 60 days across Atlas and Orbit — what should I do?','Here\\'s the breakdown: 5 of the 7 are auto-refreshable — I can queue those now. The other 2 need vendor input: Snowflake\\'s data retention export and Okta\\'s access log. Both are blocked by open questionnaires.<br><br>Want me to queue the 5 auto-refreshes and draft a vendor request for the other two?',['Queue the 5 auto-refreshes','Draft vendor request for Snowflake','What controls are at risk?'])" style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;cursor:pointer;transition:box-shadow 0.18s" onmouseenter="this.style.boxShadow='0 8px 28px rgba(0,0,0,0.07)'" onmouseleave="this.style.boxShadow='none'">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.06em;padding:3px 9px;border-radius:12px;background:#EDE9FE;color:#7C3AED;text-transform:uppercase">Evidence Drift</span>
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Atlas &nbsp;·&nbsp; Orbit</span>
+            </div>
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.3;margin-bottom:12px">7 controls have evidence past 60 days</h3>
+            <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.75;margin-bottom:20px">None failing yet. Auditor scrutiny window is 90 days, so we have time. Vanta can refresh 5 of 7 automatically — the other 2 need vendor input.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-family:var(--font-ui);font-size:10px;color:#059669;font-weight:500">5 auto-refreshable</span>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">2 need vendor</span>
+              </div>
+              <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#7C3AED">Refresh →</span>
+            </div>
+          </div>
+
+          <!-- RESOLVED card -->
+          <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;cursor:default;transition:box-shadow 0.18s">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.06em;padding:3px 9px;border-radius:12px;background:#D1FAE5;color:#065F46;text-transform:uppercase">Resolved While You Were Out</span>
+              <span style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase">Forge &nbsp;·&nbsp; Incident Response</span>
+            </div>
+            <h3 style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.3;margin-bottom:12px">3 evidence refreshes completed automatically</h3>
+            <p style="font-family:var(--font-body);font-size:12px;color:#9CA3AF;line-height:1.75;margin-bottom:20px">Vanta refreshed SIEM logs, IR runbook, and DR test attestation last Friday. All three are now within the audit-ready window. No human review needed.</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(0,0,0,0.05)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <span style="font-family:var(--font-ui);font-size:10px;color:#059669;font-weight:500">3 controls refreshed</span>
+                <span style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Auto · Mar 14</span>
+              </div>
+              <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#9CA3AF">View activity →</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Coming up ── -->
+      <div style="margin-bottom:48px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-family:var(--font-display);font-size:22px;font-weight:300;color:#111827;letter-spacing:-0.02em">Coming up</span>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase">NEXT 30 DAYS</span>
+          </div>
+          <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8;cursor:pointer;transition:color 0.1s" onmouseenter="this.style.color='#7C3AED'" onmouseleave="this.style.color='#C0BDB8'">Calendar view →</span>
+        </div>
+
+        <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:18px;overflow:hidden">
+
+          <!-- row 1 -->
+          <div style="display:flex;align-items:center;padding:22px 28px;border-bottom:1px solid rgba(0,0,0,0.05);cursor:pointer;transition:background 0.12s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="min-width:100px;margin-right:28px">
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.1">Tomorrow</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase;margin-top:2px">May 13</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827;letter-spacing:-0.01em;margin-bottom:4px">Stakeholder sync with Caesar</div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">15 min &nbsp;·&nbsp; Quarterly check-in &nbsp;·&nbsp; Vanta has drafted a 1-page read</div>
+            </div>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;background:#D1FAE5;color:#065F46;white-space:nowrap;text-transform:uppercase;flex-shrink:0">Prep Ready</span>
+          </div>
+
+          <!-- row 2 -->
+          <div style="display:flex;align-items:center;padding:22px 28px;border-bottom:1px solid rgba(0,0,0,0.05);cursor:pointer;transition:background 0.12s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="min-width:100px;margin-right:28px">
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.1">May 18</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase;margin-top:2px">Audit Opens</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827;letter-spacing:-0.01em;margin-bottom:4px">Forge SOC 2 Type II — audit window opens</div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">Sterling Assurance &nbsp;·&nbsp; Evidence 89% collected &nbsp;·&nbsp; 3 items remaining</div>
+            </div>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;background:#D1FAE5;color:#065F46;white-space:nowrap;text-transform:uppercase;flex-shrink:0">6 Days Out</span>
+          </div>
+
+          <!-- row 3 -->
+          <div style="display:flex;align-items:center;padding:22px 28px;border-bottom:1px solid rgba(0,0,0,0.05);cursor:pointer;transition:background 0.12s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="min-width:100px;margin-right:28px">
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.1">Jun 1</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase;margin-top:2px">Board Report</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827;letter-spacing:-0.01em;margin-bottom:4px">Quarterly board reporting due</div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">Caesar presents &nbsp;·&nbsp; Vanta will draft three audiences from the same data: board, auditor, BU leads</div>
+            </div>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;background:#D1FAE5;color:#065F46;white-space:nowrap;text-transform:uppercase;flex-shrink:0">20 Days Out</span>
+          </div>
+
+          <!-- row 4 -->
+          <div style="display:flex;align-items:center;padding:22px 28px;cursor:pointer;transition:background 0.12s" onmouseenter="this.style.background='#FAFAF9'" onmouseleave="this.style.background='transparent'">
+            <div style="min-width:100px;margin-right:28px">
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.1">Jun 22</div>
+              <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.07em;text-transform:uppercase;margin-top:2px">Audit Close</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#111827;letter-spacing:-0.01em;margin-bottom:4px">Atlas SOC 2 Type II — audit window closes</div>
+              <div style="font-family:var(--font-ui);font-size:11px;color:#9CA3AF">Sterling Assurance &nbsp;·&nbsp; Currently pacing 4 days late on auditor request response time</div>
+            </div>
+            <span style="font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:0.06em;padding:4px 10px;border-radius:20px;background:#FEF3C7;color:#D97706;white-space:nowrap;text-transform:uppercase;flex-shrink:0">6 Weeks &nbsp;·&nbsp; Pacing Late</span>
+          </div>
+
+        </div>
+      </div>
+
       <!-- ── Monthly Wrapped ── -->
       <div style="margin-bottom:40px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
