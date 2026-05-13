@@ -1300,6 +1300,254 @@ AI_RESPONSES['Show me vendor gaps'] = {
 }
 
 
+
+// ── Goals system (moved to main script to survive re-renders) ──
+// ── Goals system ──
+var _goalsTab = 'org'
+
+var GOALS_DATA = {
+  org: {
+    label: 'Organization',
+    color: '#374151',
+    goals: [
+{ id:'g1', title:'Overall program health ≥ 90', metric:'health', current:82, target:90, unit:'/100', due:'Sep 30, 2026', status:'on-track', weight:30, notes:'Up 2pts this week. Need Orbit to stabilize.' },
+{ id:'g2', title:'Zero critical alerts maintained', metric:'critical', current:1, target:0, unit:' open', due:'Ongoing', status:'at-risk', weight:25, notes:'Orbit credential gap still needs disclosure decision.' },
+{ id:'g3', title:'Evidence collection rate ≥ 95%', metric:'evidence', current:83, target:95, unit:'%', due:'Jun 30, 2026', status:'on-track', weight:20, notes:'Forge at 89%, Atlas at 78%, Orbit lagging at 62%.' },
+{ id:'g4', title:'All vendor assessments current', metric:'vendors', current:1, target:3, unit:' complete', due:'Jun 1, 2026', status:'at-risk', weight:25, notes:'Okta overdue, Snowflake and Datadog not started.' },
+    ]
+  },
+  forge: {
+    label: 'Forge',
+    color: '#059669',
+    goals: [
+{ id:'g5', title:'SOC 2 Type II audit complete', metric:'audit', current:89, target:100, unit:'% ready', due:'May 24, 2026', status:'on-track', weight:50, notes:'3 items remaining. All assigned. On pace for May 16 readiness.' },
+{ id:'g6', title:'Zero vendor management gaps', metric:'vendors', current:91, target:100, unit:'% passing', due:'May 18, 2026', status:'on-track', weight:25, notes:'Snowflake BAA is the last outstanding item.' },
+{ id:'g7', title:'Access Management fully passing', metric:'access', current:94, target:100, unit:'% passing', due:'May 18, 2026', status:'on-track', weight:25, notes:'1 control in manual review. Expected to pass by May 14.' },
+    ]
+  },
+  atlas: {
+    label: 'Atlas',
+    color: '#D97706',
+    goals: [
+{ id:'g8', title:'ISO 27001 certification', metric:'iso', current:84, target:100, unit:'% ready', due:'Sep 1, 2026', status:'on-track', weight:40, notes:'On track. 12 controls resolved in March. 8 remain.' },
+{ id:'g9', title:'Auditor response SLA < 3 days', metric:'sla', current:0, target:100, unit:'% on time', due:'Ongoing', status:'at-risk', weight:35, notes:'2 requests currently past SLA. Assign owners today.' },
+{ id:'g10', title:'Complete all vendor assessments', metric:'vendors', current:60, target:100, unit:'% complete', due:'Jun 1, 2026', status:'at-risk', weight:25, notes:'Okta at 60%, deadline May 9.' },
+    ]
+  },
+  orbit: {
+    label: 'Orbit',
+    color: '#DC2626',
+    goals: [
+{ id:'g11', title:'Resolve IdP sync failure', metric:'idp', current:0, target:1, unit:' resolved', due:'May 15, 2026', status:'at-risk', weight:40, notes:'Connector offline 47 days. Marcus reconnecting today.' },
+{ id:'g12', title:'All AC controls passing', metric:'access', current:0, target:5, unit:' passing', due:'May 22, 2026', status:'at-risk', weight:35, notes:'5 controls failing due to IdP. Will auto-resolve on reconnect.' },
+{ id:'g13', title:'Health score ≥ 80', metric:'health', current:71, target:80, unit:'/100', due:'Jun 30, 2026', status:'at-risk', weight:25, notes:'Currently 71. Needs IdP fix + disclosure decision.' },
+    ]
+  },
+}
+
+var _goalsSection = 'overview'
+
+function openGoalsPanel() {
+  const overlay = document.getElementById('goals-modal-overlay')
+  const modal   = document.getElementById('goals-modal')
+  overlay.style.display = 'flex'
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    modal.style.opacity = '1'
+    modal.style.transform = 'scale(1) translateY(0)'
+  }))
+  switchGoalsSection(_goalsSection)
+  renderGoalsTab(_goalsTab)
+  renderControlsTable()
+}
+
+function closeGoalsPanel() {
+  const modal   = document.getElementById('goals-modal')
+  const overlay = document.getElementById('goals-modal-overlay')
+  modal.style.opacity  = '0'
+  modal.style.transform = 'scale(0.96) translateY(12px)'
+  setTimeout(() => { overlay.style.display = 'none' }, 250)
+}
+
+function switchGoalsSection(section) {
+  _goalsSection = section
+  ;['overview','goals','frameworks','controls','health'].forEach(function(s) {
+    const sec = document.getElementById('gs-section-' + s)
+    const btn = document.getElementById('gs-btn-' + s)
+    if (!sec || !btn) return
+    const active = s === section
+    sec.style.display = active ? 'block' : 'none'
+    if (active) {
+btn.classList.add('gs-nav-active')
+btn.style.fontWeight = '600'
+btn.style.color = '#5B21B6'
+btn.style.background = '#EDE9FE'
+    } else {
+btn.classList.remove('gs-nav-active')
+btn.style.fontWeight = '500'
+btn.style.color = '#374151'
+btn.style.background = 'transparent'
+    }
+  })
+}
+
+function renderControlsTable() {
+  const controls = [
+    { name:'Access reviews (quarterly)', forge:'pass', atlas:'pass', orbit:'warn' },
+    { name:'Multi-factor authentication', forge:'pass', atlas:'pass', orbit:'fail' },
+    { name:'Encryption at rest', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Encryption in transit (TLS)', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Employee security training', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Background checks', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Vulnerability scanning', forge:'pass', atlas:'warn', orbit:'pass' },
+    { name:'Incident response plan', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Business continuity plan', forge:'pass', atlas:'pass', orbit:'warn' },
+    { name:'Vendor risk assessments', forge:'pass', atlas:'warn', orbit:'pass' },
+    { name:'Data retention policy', forge:'pass', atlas:'pass', orbit:'pass' },
+    { name:'Change management process', forge:'warn', atlas:'pass', orbit:'pass' },
+    { name:'Logical access controls', forge:'pass', atlas:'pass', orbit:'fail' },
+    { name:'Audit logging & monitoring', forge:'pass', atlas:'pass', orbit:'pass' },
+  ]
+  const dot = function(s) {
+    const map = { pass:'#059669', warn:'#D97706', fail:'#DC2626', na:'#E5E7EB' }
+    return '<div style="width:10px;height:10px;border-radius:50%;background:' + (map[s]||'#E5E7EB') + ';margin:0 auto"></div>'
+  }
+  const rows = document.getElementById('controls-table-rows')
+  if (!rows) return
+  rows.innerHTML = controls.map(function(c, i) {
+    return '<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;padding:10px 18px;' +
+(i < controls.length - 1 ? 'border-bottom:1px solid rgba(0,0,0,0.05)' : '') + ';align-items:center">' +
+'<span style="font-family:var(--font-ui);font-size:12px;color:#374151">' + c.name + '</span>' +
+dot(c.forge) + dot(c.atlas) + dot(c.orbit) +
+'</div>'
+  }).join('')
+}
+
+function switchGoalsTab(tab) {
+  _goalsTab = tab
+  ;['org','forge','atlas','orbit'].forEach(function(t) {
+    const btn = document.getElementById('goals-tab-' + t)
+    if (!btn) return
+    const active = t === tab
+    btn.style.fontWeight = active ? '600' : '400'
+    btn.style.color = active ? '#111827' : '#6B7280'
+    btn.style.background = active ? '#fff' : 'transparent'
+    btn.style.boxShadow = active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
+  })
+  renderGoalsTab(tab)
+}
+
+function renderGoalsTab(tab) {
+  const data = GOALS_DATA[tab]
+  if (!data) return
+  const list = document.getElementById('goals-list')
+  const statusMeta = {
+    'on-track': { label:'On track', color:'#059669', bg:'#D1FAE5' },
+    'at-risk':  { label:'At risk',  color:'#DC2626', bg:'#FEE2E2' },
+    'achieved': { label:'Achieved', color:'#5B21B6', bg:'#EDE9FE' },
+  }
+
+  // Health score breakdown for this tab
+  const goals = data.goals
+  const totalWeight = goals.reduce(function(s,g){return s+g.weight},0)
+  const weightedScore = Math.round(goals.reduce(function(s,g){
+    const pct = g.metric==='critical' ? (g.current===0?100:0)
+: g.metric==='idp'||g.metric==='audit'&&g.target===1 ? (g.current>=g.target?100:0)
+: Math.min(100, Math.round((g.current/g.target)*100))
+    return s + (pct * g.weight / totalWeight)
+  },0))
+
+  list.innerHTML =
+    '<div style="background:#F9FAFB;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;margin-bottom:20px">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+  '<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#374151;letter-spacing:0.04em;text-transform:uppercase">' + data.label + ' goal score</span>' +
+  '<span style="font-family:var(--font-display);font-size:26px;font-weight:300;color:' + data.color + ';letter-spacing:-0.03em">' + weightedScore + '<span style="font-size:11px;font-family:var(--font-ui);color:#C0BDB8">/100</span></span>' +
+'</div>' +
+'<div style="height:6px;background:#E5E7EB;border-radius:3px;overflow:hidden">' +
+  '<div style="height:100%;width:' + weightedScore + '%;background:' + data.color + ';border-radius:3px;transition:width 0.5s ease"></div>' +
+'</div>' +
+'<div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:6px">' + goals.length + ' goals · weighted contribution to program health</div>' +
+    '</div>' +
+    goals.map(function(g) {
+const sm = statusMeta[g.status] || statusMeta['on-track']
+const pct = g.metric==='critical' ? (g.current===0?100:Math.max(0,100-g.current*50))
+  : g.metric==='idp' ? (g.current>=g.target?100:20)
+  : Math.min(100, Math.round((g.current/g.target)*100))
+const barColor = g.status==='at-risk' ? '#DC2626' : g.status==='achieved' ? '#5B21B6' : '#059669'
+return '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:16px;margin-bottom:10px">' +
+  '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">' +
+    '<div style="flex:1">' +
+'<div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;line-height:1.4;margin-bottom:4px">' + g.title + '</div>' +
+'<div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">' +
+  'Due ' + g.due + ' &nbsp;·&nbsp; Weight ' + g.weight + '%' +
+'</div>' +
+    '</div>' +
+    '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:' + sm.bg + ';color:' + sm.color + ';text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0">' + sm.label + '</span>' +
+  '</div>' +
+  '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+    '<span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Progress</span>' +
+    '<span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:' + barColor + '">' + g.current + g.unit + ' / ' + g.target + g.unit + '</span>' +
+  '</div>' +
+  '<div style="height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;margin-bottom:8px">' +
+    '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px;transition:width 0.5s ease"></div>' +
+  '</div>' +
+  (g.notes ? '<div style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;line-height:1.55;padding:8px 10px;background:#F9FAFB;border-radius:8px;margin-bottom:8px">' + g.notes + '</div>' : '') +
+  '<div style="display:flex;gap:6px">' +
+    '<button onclick="editGoal(\'' + g.id + '\')" style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#6B7280;background:#F3F4F6;border:none;border-radius:7px;padding:5px 11px;cursor:pointer;transition:all 0.12s" onmouseenter="this.style.background=\'#E5E7EB\'" onmouseleave="this.style.background=\'#F3F4F6\'">Edit</button>' +
+    '<button onclick="markGoalDone(\'' + g.id + '\')" style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#059669;background:#D1FAE5;border:none;border-radius:7px;padding:5px 11px;cursor:pointer;transition:all 0.12s" onmouseenter="this.style.opacity=\'0.75\'" onmouseleave="this.style.opacity=\'1\'">Mark done</button>' +
+  '</div>' +
+'</div>'
+    }).join('')
+}
+
+function addGoalPrompt() {
+  const tab = _goalsTab
+  const data = GOALS_DATA[tab]
+  const title = prompt('Goal title (e.g. "Controls passing rate ≥ 95%"):')
+  if (!title) return
+  const target = prompt('Target value (number):')
+  const due = prompt('Due date (e.g. "Jun 30, 2026"):')
+  const newGoal = {
+    id: 'g' + Date.now(),
+    title: title,
+    metric: 'custom',
+    current: 0,
+    target: parseFloat(target) || 100,
+    unit: '%',
+    due: due || 'No deadline',
+    status: 'on-track',
+    weight: Math.floor(100 / (data.goals.length + 1)),
+    notes: ''
+  }
+  data.goals.push(newGoal)
+  renderGoalsTab(tab)
+}
+
+function editGoal(id) {
+  for (var tab in GOALS_DATA) {
+    var found = GOALS_DATA[tab].goals.find(function(g){return g.id===id})
+    if (found) {
+var newTitle = prompt('Goal title:', found.title)
+if (newTitle) found.title = newTitle
+var newNotes = prompt('Notes:', found.notes || '')
+if (newNotes !== null) found.notes = newNotes
+renderGoalsTab(tab)
+return
+    }
+  }
+}
+
+function markGoalDone(id) {
+  for (var tab in GOALS_DATA) {
+    var found = GOALS_DATA[tab].goals.find(function(g){return g.id===id})
+    if (found) {
+found.status = 'achieved'
+found.current = found.target
+renderGoalsTab(tab)
+return
+    }
+  }
+}
+
 const VIEWS = {
 
   'home-page': () => {
@@ -1430,9 +1678,8 @@ const VIEWS = {
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="#6B7280" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6.5" y2="8" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/></svg>
             Generate report
           </button>
-          <button onclick="openGoalsPanel()" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:8px;padding:5px 13px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.05)" onmouseenter="this.style.borderColor='rgba(0,0,0,0.2)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.09)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#374151" stroke-width="1.4" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><circle cx="6" cy="6" r="2"/><line x1="6" y1="1" x2="6" y2="1.8"/><line x1="6" y1="10.2" x2="6" y2="11"/><line x1="1" y1="6" x2="1.8" y2="6"/><line x1="10.2" y1="6" x2="11" y2="6"/></svg>
-            Goals
+          <button onclick="openGoalsPanel()" title="Program goals &amp; settings" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:#fff;border:1px solid rgba(0,0,0,0.09);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.05)" onmouseenter="this.style.borderColor='rgba(0,0,0,0.2)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)';this.style.background='#F9FAFB'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.09)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)';this.style.background='#fff'">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v1M8 13.5v1M1.5 8h1M13.5 8h1M3.1 3.1l.7.7M12.2 12.2l.7.7M12.9 3.1l-.7.7M3.8 12.2l-.7.7"/></svg>
           </button>
         </div>
       </div>
@@ -1800,330 +2047,7 @@ const VIEWS = {
       </div>
 
 
-      <!-- ── Goals Modal ── -->
-      <div id="goals-modal-overlay" onclick="if(event.target===this)closeGoalsPanel()" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:32px">
-        <div id="goals-modal" style="background:#fff;border-radius:24px;width:100%;max-width:920px;height:min(88vh,700px);display:flex;box-shadow:0 32px 100px rgba(0,0,0,0.22);overflow:hidden;opacity:0;transform:scale(0.96) translateY(12px);transition:opacity 0.25s ease,transform 0.25s cubic-bezier(0.32,0,0,1)">
 
-          <!-- Left nav -->
-          <div style="width:200px;flex-shrink:0;background:#F9FAFB;border-right:1px solid rgba(0,0,0,0.06);padding:24px 16px;display:flex;flex-direction:column;gap:4px">
-            <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:8px">Program Intelligence</div>
-            <button onclick="switchGoalsSection('overview')" id="gs-btn-overview" class="gs-nav-btn gs-nav-active" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1 13c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
-              Overview
-            </button>
-            <button onclick="switchGoalsSection('goals')" id="gs-btn-goals" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="2.5"/><line x1="7" y1="1.5" x2="7" y2="3"/><line x1="7" y1="11" x2="7" y2="12.5"/><line x1="1.5" y1="7" x2="3" y2="7"/><line x1="11" y1="7" x2="12.5" y2="7"/></svg>
-              Goals
-            </button>
-            <button onclick="switchGoalsSection('frameworks')" id="gs-btn-frameworks" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="11" rx="2"/><line x1="1.5" y1="5" x2="12.5" y2="5"/><line x1="5" y1="5" x2="5" y2="12.5"/></svg>
-              Frameworks
-            </button>
-            <button onclick="switchGoalsSection('controls')" id="gs-btn-controls" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 1.5L12.5 4v3c0 3-2.5 5-5.5 5.5C4 12 1.5 10 1.5 7V4L7 1.5z"/><polyline points="4.5 7 6.5 9 9.5 5.5"/></svg>
-              Controls
-            </button>
-            <button onclick="switchGoalsSection('health')" id="gs-btn-health" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="1.5 9 4.5 5 7 7.5 9.5 3.5 12.5 6"/><line x1="1.5" y1="12.5" x2="12.5" y2="12.5"/></svg>
-              Health calc
-            </button>
-            <div style="flex:1"></div>
-            <!-- BU summary pills at bottom -->
-            <div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px;display:flex;flex-direction:column;gap:6px">
-              <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Business units</div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
-                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Forge</span>
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#059669">94</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
-                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Atlas</span>
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#D97706">81</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
-                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Orbit</span>
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#DC2626">71</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right content area -->
-          <div style="flex:1;overflow-y:auto;position:relative">
-
-            <!-- Close btn -->
-            <button onclick="closeGoalsPanel()" style="position:absolute;top:20px;right:20px;z-index:2;width:32px;height:32px;border-radius:50%;background:#F3F4F6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.12s" onmouseenter="this.style.background='#E5E7EB'" onmouseleave="this.style.background='#F3F4F6'">
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
-            </button>
-
-            <!-- ── OVERVIEW SECTION ── -->
-            <div id="gs-section-overview" style="padding:32px 36px">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Program overview</div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Meridian · Vanta · 3 business units active · Q2 2026</div>
-
-              <!-- Health score hero -->
-              <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:28px 32px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
-                <div>
-                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Overall health</div>
-                  <div style="font-family:var(--font-display);font-size:52px;font-weight:300;color:#5B21B6;letter-spacing:-0.04em;line-height:1">82<span style="font-size:18px;color:#A78BFA">/100</span></div>
-                  <div style="font-family:var(--font-ui);font-size:11px;color:#059669;font-weight:500;margin-top:6px">↑ +2 from last week</div>
-                </div>
-                <div>
-                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Security posture</div>
-                  <div style="font-family:var(--font-display);font-size:24px;font-weight:300;color:#374151;margin-bottom:8px">Proactive</div>
-                  <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6">Controls-first approach. Evidence collected continuously. Audit-ready on demand.</div>
-                </div>
-                <div>
-                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Active frameworks</div>
-                  <div style="display:flex;flex-direction:column;gap:6px">
-                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#059669;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">SOC 2 Type II (Forge)</span></div>
-                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#D97706;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">ISO 27001 (Atlas)</span></div>
-                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">SOC 2 Type I (Orbit)</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- BU health bars -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:24px">
-                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:18px">Business unit health</div>
-                <div style="display:flex;flex-direction:column;gap:14px">
-                  <div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Forge</span>
-                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">SOC 2 · 94 controls passing</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#059669">94</span></div>
-                    </div>
-                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:94%;background:#059669;border-radius:3px"></div></div>
-                  </div>
-                  <div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Atlas</span>
-                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">ISO 27001 · 2 overdue requests</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#D97706">81</span></div>
-                    </div>
-                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:81%;background:#D97706;border-radius:3px"></div></div>
-                  </div>
-                  <div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Orbit</span>
-                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#DC2626">IdP sync failure · 5 controls failing</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#DC2626">71</span></div>
-                    </div>
-                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:71%;background:#DC2626;border-radius:3px"></div></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- What we're doing -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
-                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">What we're doing</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Continuous monitoring</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Vanta collects evidence from 40+ integrations automatically. Controls are evaluated in real time, not just at audit time.</div>
-                  </div>
-                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Risk-based prioritization</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Critical and high-risk findings are surfaced first. Each program tracks severity separately so Pam can triage by business impact.</div>
-                  </div>
-                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Cross-BU shared controls</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">14 controls apply across all 3 business units — managed centrally and inherited by each program. Changes propagate automatically.</div>
-                  </div>
-                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Audit-ready posture</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Forge is 89% evidence collected with 12 days to the SOC 2 window. Atlas and Orbit are managed to their own audit timelines.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- ── GOALS SECTION ── -->
-            <div id="gs-section-goals" style="display:none;padding:32px 36px">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Program goals</div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:28px">Goals drive health scores. Each goal contributes a weighted score to its BU and to the overall program.</div>
-              <!-- BU tabs -->
-              <div style="display:flex;gap:2px;background:#F3F4F6;border-radius:10px;padding:3px;margin-bottom:20px;width:fit-content">
-                <button onclick="switchGoalsTab('org')" id="goals-tab-org" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;background:#fff;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.08)">Org</button>
-                <button onclick="switchGoalsTab('forge')" id="goals-tab-forge" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Forge</button>
-                <button onclick="switchGoalsTab('atlas')" id="goals-tab-atlas" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Atlas</button>
-                <button onclick="switchGoalsTab('orbit')" id="goals-tab-orbit" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Orbit</button>
-              </div>
-              <!-- goal list -->
-              <div id="goals-list" style="margin-bottom:16px"></div>
-              <button onclick="addGoalPrompt()" style="width:100%;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;background:rgba(245,243,255,0.8);border:1.5px dashed rgba(109,40,217,0.25);border-radius:10px;padding:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#EDE9FE';this.style.borderColor='rgba(109,40,217,0.5)'" onmouseleave="this.style.background='rgba(245,243,255,0.8)';this.style.borderColor='rgba(109,40,217,0.25)'">
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#5B21B6" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
-                Add goal
-              </button>
-            </div>
-
-            <!-- ── FRAMEWORKS SECTION ── -->
-            <div id="gs-section-frameworks" style="display:none;padding:32px 36px">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Frameworks</div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Three active compliance frameworks across the portfolio, each mapped to specific business units and audit timelines.</div>
-
-              <!-- SOC 2 Type II -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:16px">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
-                  <div>
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                      <div style="background:#D1FAE5;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#059669">SOC 2 Type II</div>
-                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Forge</span>
-                    </div>
-                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">AICPA trust services criteria covering Security, Availability, and Confidentiality. Audit window opens May 24 — the most rigorous standard in the portfolio. Forge has maintained continuous evidence collection for 90 days.</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#059669">89%</div>
-                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">evidence ready</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC6 — Access</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 18 controls</div></div>
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC7 — Monitoring</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 11 controls</div></div>
-                  <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">CC8 — Change Mgmt</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">3 items open</div></div>
-                </div>
-              </div>
-
-              <!-- ISO 27001 -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:16px">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
-                  <div>
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                      <div style="background:#FEF3C7;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#D97706">ISO 27001</div>
-                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Atlas</span>
-                    </div>
-                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">International standard for information security management systems (ISMS). Atlas is in active surveillance — annual audit in September 2026. Two auditor information requests are overdue, slowing velocity.</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#D97706">81</div>
-                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">health score</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">A.9 — Access ctrl</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 14 controls</div></div>
-                  <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">A.12 — Operations</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">2 requests overdue</div></div>
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">A.18 — Compliance</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 8 controls</div></div>
-                </div>
-              </div>
-
-              <!-- SOC 2 Type I -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
-                  <div>
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                      <div style="background:#FEE2E2;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#DC2626">SOC 2 Type I</div>
-                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Orbit</span>
-                    </div>
-                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">Point-in-time assessment of control design. Orbit is the newest program — Type I is a stepping stone to Type II. Currently blocked on IdP sync failure which took 5 access management controls offline in April.</div>
-                  </div>
-                  <div style="text-align:right;flex-shrink:0">
-                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#DC2626">71</div>
-                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">health score</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-                  <div style="background:#FEE2E2;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#DC2626;margin-bottom:2px">CC6 — Access</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">5 controls failing</div></div>
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC2 — Communication</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 6 controls</div></div>
-                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC9 — Risk</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 9 controls</div></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- ── CONTROLS SECTION ── -->
-            <div id="gs-section-controls" style="display:none;padding:32px 36px">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Common controls</div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:28px">14 controls are shared across all three business units. These are managed centrally and inherited by each program automatically.</div>
-              <!-- Legend -->
-              <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
-                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#059669"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Passing</span></div>
-                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#D97706"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Warning</span></div>
-                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#DC2626"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Failing</span></div>
-                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#E5E7EB"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Not applicable</span></div>
-              </div>
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;overflow:hidden">
-                <!-- Table header -->
-                <div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid rgba(0,0,0,0.07)">
-                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Control</span>
-                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Forge</span>
-                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Atlas</span>
-                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#DC2626;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Orbit</span>
-                </div>
-                <!-- Rows -->
-                <div id="controls-table-rows"></div>
-              </div>
-            </div>
-
-            <!-- ── HEALTH CALC SECTION ── -->
-            <div id="gs-section-health" style="display:none;padding:32px 36px">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">How health is calculated</div>
-              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Program health is a weighted composite score, not a simple average. Goals at higher risk carry more weight.</div>
-
-              <!-- Formula -->
-              <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid rgba(109,40,217,0.15);border-radius:16px;padding:24px 28px;margin-bottom:24px">
-                <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px">The formula</div>
-                <div style="font-family:var(--font-ui);font-size:13px;color:#374151;line-height:2;font-weight:500">
-                  Health = <span style="color:#5B21B6;font-weight:700">∑ (goal score × goal weight)</span> / total weight<br>
-                  <span style="font-size:11px;color:#9CA3AF;font-weight:400">Each goal is scored 0–100 based on its specific metric type, then multiplied by its weight</span>
-                </div>
-              </div>
-
-              <!-- Metric types -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:24px">
-                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">How each metric is scored</div>
-                <div style="display:flex;flex-direction:column;gap:10px">
-                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Percentage goals</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = (current / target) × 100, capped at 100. Example: 83 controls passing of target 95 = 87/100.</div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Binary goals</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = 100 if fully met, 0 if not. Example: "Zero critical alerts" scores 0 when any open, 100 when all resolved.</div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
-                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Health index goals</div>
-                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = current health score / target (e.g. 82/90 = 91/100 score toward this goal).</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Live calculation example -->
-              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
-                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">Live calculation · Org-level example</div>
-                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
-                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:8px 12px;background:#F9FAFB;border-radius:8px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.04em">
-                    <span>Goal</span><span style="text-align:center">Weight</span><span style="text-align:center">Score</span><span style="text-align:right">Contribution</span>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Overall health ≥ 90</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">30%</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">91</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">27.3</span>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Zero critical alerts</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">25%</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#DC2626;text-align:center">0</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#DC2626;text-align:right">0.0</span>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Controls passing ≥ 95%</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">25%</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">87</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">21.8</span>
-                  </div>
-                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px">
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Audit completion on time</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">20%</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">100</span>
-                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">20.0</span>
-                  </div>
-                </div>
-                <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:10px;padding:14px 16px">
-                  <span style="font-family:var(--font-ui);font-size:12px;font-weight:700;color:#5B21B6">Weighted health score</span>
-                  <span style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#5B21B6">69<span style="font-size:12px;font-family:var(--font-ui)">/100</span></span>
-                </div>
-                <div style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;margin-top:10px;line-height:1.6">The "Zero critical alerts" goal is dragging the org score down to 69 — even though health and controls are strong. Resolve the Orbit critical alert and the org score jumps above 80.</div>
-              </div>
-            </div>
-
-          </div><!-- /right content -->
-        </div><!-- /modal -->
-      </div><!-- /goals-modal-overlay -->
 
       <!-- ── AI Mode Overlay ── -->
             <!-- ── AI Mode Overlay ── -->
@@ -2423,251 +2347,6 @@ const VIEWS = {
         document.getElementById('recap-modal-overlay').style.display = 'none'
       }
 
-      // ── Goals system ──
-      let _goalsTab = 'org'
-
-      const GOALS_DATA = {
-        org: {
-          label: 'Organization',
-          color: '#374151',
-          goals: [
-            { id:'g1', title:'Overall program health ≥ 90', metric:'health', current:82, target:90, unit:'/100', due:'Sep 30, 2026', status:'on-track', weight:30, notes:'Up 2pts this week. Need Orbit to stabilize.' },
-            { id:'g2', title:'Zero critical alerts maintained', metric:'critical', current:1, target:0, unit:' open', due:'Ongoing', status:'at-risk', weight:25, notes:'Orbit credential gap still needs disclosure decision.' },
-            { id:'g3', title:'Evidence collection rate ≥ 95%', metric:'evidence', current:83, target:95, unit:'%', due:'Jun 30, 2026', status:'on-track', weight:20, notes:'Forge at 89%, Atlas at 78%, Orbit lagging at 62%.' },
-            { id:'g4', title:'All vendor assessments current', metric:'vendors', current:1, target:3, unit:' complete', due:'Jun 1, 2026', status:'at-risk', weight:25, notes:'Okta overdue, Snowflake and Datadog not started.' },
-          ]
-        },
-        forge: {
-          label: 'Forge',
-          color: '#059669',
-          goals: [
-            { id:'g5', title:'SOC 2 Type II audit complete', metric:'audit', current:89, target:100, unit:'% ready', due:'May 24, 2026', status:'on-track', weight:50, notes:'3 items remaining. All assigned. On pace for May 16 readiness.' },
-            { id:'g6', title:'Zero vendor management gaps', metric:'vendors', current:91, target:100, unit:'% passing', due:'May 18, 2026', status:'on-track', weight:25, notes:'Snowflake BAA is the last outstanding item.' },
-            { id:'g7', title:'Access Management fully passing', metric:'access', current:94, target:100, unit:'% passing', due:'May 18, 2026', status:'on-track', weight:25, notes:'1 control in manual review. Expected to pass by May 14.' },
-          ]
-        },
-        atlas: {
-          label: 'Atlas',
-          color: '#D97706',
-          goals: [
-            { id:'g8', title:'ISO 27001 certification', metric:'iso', current:84, target:100, unit:'% ready', due:'Sep 1, 2026', status:'on-track', weight:40, notes:'On track. 12 controls resolved in March. 8 remain.' },
-            { id:'g9', title:'Auditor response SLA < 3 days', metric:'sla', current:0, target:100, unit:'% on time', due:'Ongoing', status:'at-risk', weight:35, notes:'2 requests currently past SLA. Assign owners today.' },
-            { id:'g10', title:'Complete all vendor assessments', metric:'vendors', current:60, target:100, unit:'% complete', due:'Jun 1, 2026', status:'at-risk', weight:25, notes:'Okta at 60%, deadline May 9.' },
-          ]
-        },
-        orbit: {
-          label: 'Orbit',
-          color: '#DC2626',
-          goals: [
-            { id:'g11', title:'Resolve IdP sync failure', metric:'idp', current:0, target:1, unit:' resolved', due:'May 15, 2026', status:'at-risk', weight:40, notes:'Connector offline 47 days. Marcus reconnecting today.' },
-            { id:'g12', title:'All AC controls passing', metric:'access', current:0, target:5, unit:' passing', due:'May 22, 2026', status:'at-risk', weight:35, notes:'5 controls failing due to IdP. Will auto-resolve on reconnect.' },
-            { id:'g13', title:'Health score ≥ 80', metric:'health', current:71, target:80, unit:'/100', due:'Jun 30, 2026', status:'at-risk', weight:25, notes:'Currently 71. Needs IdP fix + disclosure decision.' },
-          ]
-        },
-      }
-
-      var _goalsSection = 'overview'
-
-      function openGoalsPanel() {
-        const overlay = document.getElementById('goals-modal-overlay')
-        const modal   = document.getElementById('goals-modal')
-        overlay.style.display = 'flex'
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          modal.style.opacity = '1'
-          modal.style.transform = 'scale(1) translateY(0)'
-        }))
-        switchGoalsSection(_goalsSection)
-        renderGoalsTab(_goalsTab)
-        renderControlsTable()
-      }
-
-      function closeGoalsPanel() {
-        const modal   = document.getElementById('goals-modal')
-        const overlay = document.getElementById('goals-modal-overlay')
-        modal.style.opacity  = '0'
-        modal.style.transform = 'scale(0.96) translateY(12px)'
-        setTimeout(() => { overlay.style.display = 'none' }, 250)
-      }
-
-      function switchGoalsSection(section) {
-        _goalsSection = section
-        ;['overview','goals','frameworks','controls','health'].forEach(function(s) {
-          const sec = document.getElementById('gs-section-' + s)
-          const btn = document.getElementById('gs-btn-' + s)
-          if (!sec || !btn) return
-          const active = s === section
-          sec.style.display = active ? 'block' : 'none'
-          if (active) {
-            btn.classList.add('gs-nav-active')
-            btn.style.fontWeight = '600'
-            btn.style.color = '#5B21B6'
-            btn.style.background = '#EDE9FE'
-          } else {
-            btn.classList.remove('gs-nav-active')
-            btn.style.fontWeight = '500'
-            btn.style.color = '#374151'
-            btn.style.background = 'transparent'
-          }
-        })
-      }
-
-      function renderControlsTable() {
-        const controls = [
-          { name:'Access reviews (quarterly)', forge:'pass', atlas:'pass', orbit:'warn' },
-          { name:'Multi-factor authentication', forge:'pass', atlas:'pass', orbit:'fail' },
-          { name:'Encryption at rest', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Encryption in transit (TLS)', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Employee security training', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Background checks', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Vulnerability scanning', forge:'pass', atlas:'warn', orbit:'pass' },
-          { name:'Incident response plan', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Business continuity plan', forge:'pass', atlas:'pass', orbit:'warn' },
-          { name:'Vendor risk assessments', forge:'pass', atlas:'warn', orbit:'pass' },
-          { name:'Data retention policy', forge:'pass', atlas:'pass', orbit:'pass' },
-          { name:'Change management process', forge:'warn', atlas:'pass', orbit:'pass' },
-          { name:'Logical access controls', forge:'pass', atlas:'pass', orbit:'fail' },
-          { name:'Audit logging & monitoring', forge:'pass', atlas:'pass', orbit:'pass' },
-        ]
-        const dot = function(s) {
-          const map = { pass:'#059669', warn:'#D97706', fail:'#DC2626', na:'#E5E7EB' }
-          return '<div style="width:10px;height:10px;border-radius:50%;background:' + (map[s]||'#E5E7EB') + ';margin:0 auto"></div>'
-        }
-        const rows = document.getElementById('controls-table-rows')
-        if (!rows) return
-        rows.innerHTML = controls.map(function(c, i) {
-          return '<div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;padding:10px 18px;' +
-            (i < controls.length - 1 ? 'border-bottom:1px solid rgba(0,0,0,0.05)' : '') + ';align-items:center">' +
-            '<span style="font-family:var(--font-ui);font-size:12px;color:#374151">' + c.name + '</span>' +
-            dot(c.forge) + dot(c.atlas) + dot(c.orbit) +
-            '</div>'
-        }).join('')
-      }
-
-      function switchGoalsTab(tab) {
-        _goalsTab = tab
-        ;['org','forge','atlas','orbit'].forEach(function(t) {
-          const btn = document.getElementById('goals-tab-' + t)
-          if (!btn) return
-          const active = t === tab
-          btn.style.fontWeight = active ? '600' : '400'
-          btn.style.color = active ? '#111827' : '#6B7280'
-          btn.style.background = active ? '#fff' : 'transparent'
-          btn.style.boxShadow = active ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
-        })
-        renderGoalsTab(tab)
-      }
-
-      function renderGoalsTab(tab) {
-        const data = GOALS_DATA[tab]
-        if (!data) return
-        const list = document.getElementById('goals-list')
-        const statusMeta = {
-          'on-track': { label:'On track', color:'#059669', bg:'#D1FAE5' },
-          'at-risk':  { label:'At risk',  color:'#DC2626', bg:'#FEE2E2' },
-          'achieved': { label:'Achieved', color:'#5B21B6', bg:'#EDE9FE' },
-        }
-
-        // Health score breakdown for this tab
-        const goals = data.goals
-        const totalWeight = goals.reduce(function(s,g){return s+g.weight},0)
-        const weightedScore = Math.round(goals.reduce(function(s,g){
-          const pct = g.metric==='critical' ? (g.current===0?100:0)
-            : g.metric==='idp'||g.metric==='audit'&&g.target===1 ? (g.current>=g.target?100:0)
-            : Math.min(100, Math.round((g.current/g.target)*100))
-          return s + (pct * g.weight / totalWeight)
-        },0))
-
-        list.innerHTML =
-          '<div style="background:#F9FAFB;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:14px 16px;margin-bottom:20px">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
-              '<span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#374151;letter-spacing:0.04em;text-transform:uppercase">' + data.label + ' goal score</span>' +
-              '<span style="font-family:var(--font-display);font-size:26px;font-weight:300;color:' + data.color + ';letter-spacing:-0.03em">' + weightedScore + '<span style="font-size:11px;font-family:var(--font-ui);color:#C0BDB8">/100</span></span>' +
-            '</div>' +
-            '<div style="height:6px;background:#E5E7EB;border-radius:3px;overflow:hidden">' +
-              '<div style="height:100%;width:' + weightedScore + '%;background:' + data.color + ';border-radius:3px;transition:width 0.5s ease"></div>' +
-            '</div>' +
-            '<div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF;margin-top:6px">' + goals.length + ' goals · weighted contribution to program health</div>' +
-          '</div>' +
-          goals.map(function(g) {
-            const sm = statusMeta[g.status] || statusMeta['on-track']
-            const pct = g.metric==='critical' ? (g.current===0?100:Math.max(0,100-g.current*50))
-              : g.metric==='idp' ? (g.current>=g.target?100:20)
-              : Math.min(100, Math.round((g.current/g.target)*100))
-            const barColor = g.status==='at-risk' ? '#DC2626' : g.status==='achieved' ? '#5B21B6' : '#059669'
-            return '<div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:16px;margin-bottom:10px">' +
-              '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">' +
-                '<div style="flex:1">' +
-                  '<div style="font-family:var(--font-ui);font-size:13px;font-weight:500;color:#111827;line-height:1.4;margin-bottom:4px">' + g.title + '</div>' +
-                  '<div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">' +
-                    'Due ' + g.due + ' &nbsp;·&nbsp; Weight ' + g.weight + '%' +
-                  '</div>' +
-                '</div>' +
-                '<span style="font-family:var(--font-ui);font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;background:' + sm.bg + ';color:' + sm.color + ';text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;flex-shrink:0">' + sm.label + '</span>' +
-              '</div>' +
-              '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
-                '<span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Progress</span>' +
-                '<span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:' + barColor + '">' + g.current + g.unit + ' / ' + g.target + g.unit + '</span>' +
-              '</div>' +
-              '<div style="height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden;margin-bottom:8px">' +
-                '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:3px;transition:width 0.5s ease"></div>' +
-              '</div>' +
-              (g.notes ? '<div style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;line-height:1.55;padding:8px 10px;background:#F9FAFB;border-radius:8px;margin-bottom:8px">' + g.notes + '</div>' : '') +
-              '<div style="display:flex;gap:6px">' +
-                '<button onclick="editGoal(\'' + g.id + '\')" style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#6B7280;background:#F3F4F6;border:none;border-radius:7px;padding:5px 11px;cursor:pointer;transition:all 0.12s" onmouseenter="this.style.background=\'#E5E7EB\'" onmouseleave="this.style.background=\'#F3F4F6\'">Edit</button>' +
-                '<button onclick="markGoalDone(\'' + g.id + '\')" style="font-family:var(--font-ui);font-size:10px;font-weight:500;color:#059669;background:#D1FAE5;border:none;border-radius:7px;padding:5px 11px;cursor:pointer;transition:all 0.12s" onmouseenter="this.style.opacity=\'0.75\'" onmouseleave="this.style.opacity=\'1\'">Mark done</button>' +
-              '</div>' +
-            '</div>'
-          }).join('')
-      }
-
-      function addGoalPrompt() {
-        const tab = _goalsTab
-        const data = GOALS_DATA[tab]
-        const title = prompt('Goal title (e.g. "Controls passing rate ≥ 95%"):')
-        if (!title) return
-        const target = prompt('Target value (number):')
-        const due = prompt('Due date (e.g. "Jun 30, 2026"):')
-        const newGoal = {
-          id: 'g' + Date.now(),
-          title: title,
-          metric: 'custom',
-          current: 0,
-          target: parseFloat(target) || 100,
-          unit: '%',
-          due: due || 'No deadline',
-          status: 'on-track',
-          weight: Math.floor(100 / (data.goals.length + 1)),
-          notes: ''
-        }
-        data.goals.push(newGoal)
-        renderGoalsTab(tab)
-      }
-
-      function editGoal(id) {
-        for (var tab in GOALS_DATA) {
-          var found = GOALS_DATA[tab].goals.find(function(g){return g.id===id})
-          if (found) {
-            var newTitle = prompt('Goal title:', found.title)
-            if (newTitle) found.title = newTitle
-            var newNotes = prompt('Notes:', found.notes || '')
-            if (newNotes !== null) found.notes = newNotes
-            renderGoalsTab(tab)
-            return
-          }
-        }
-      }
-
-      function markGoalDone(id) {
-        for (var tab in GOALS_DATA) {
-          var found = GOALS_DATA[tab].goals.find(function(g){return g.id===id})
-          if (found) {
-            found.status = 'achieved'
-            found.current = found.target
-            renderGoalsTab(tab)
-            return
-          }
-        }
-      }
       <\/script>
 
     </div>`
@@ -6119,5 +5798,329 @@ document.getElementById('nav-search-input').addEventListener('input', e => {
 renderNavForCtx(currentCtx)
 renderView('home-page')
 </script>
+      <!-- ── Goals Modal ── -->
+      <div id="goals-modal-overlay" onclick="if(event.target===this)closeGoalsPanel()" style="display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:32px">
+        <div id="goals-modal" style="background:#fff;border-radius:24px;width:100%;max-width:920px;height:min(88vh,700px);display:flex;box-shadow:0 32px 100px rgba(0,0,0,0.22);overflow:hidden;opacity:0;transform:scale(0.96) translateY(12px);transition:opacity 0.25s ease,transform 0.25s cubic-bezier(0.32,0,0,1)">
+
+          <!-- Left nav -->
+          <div style="width:200px;flex-shrink:0;background:#F9FAFB;border-right:1px solid rgba(0,0,0,0.06);padding:24px 16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin-bottom:8px">Program Intelligence</div>
+            <button onclick="switchGoalsSection('overview')" id="gs-btn-overview" class="gs-nav-btn gs-nav-active" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;background:#EDE9FE;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="5" r="3"/><path d="M1 13c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+              Overview
+            </button>
+            <button onclick="switchGoalsSection('goals')" id="gs-btn-goals" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="2.5"/><line x1="7" y1="1.5" x2="7" y2="3"/><line x1="7" y1="11" x2="7" y2="12.5"/><line x1="1.5" y1="7" x2="3" y2="7"/><line x1="11" y1="7" x2="12.5" y2="7"/></svg>
+              Goals
+            </button>
+            <button onclick="switchGoalsSection('frameworks')" id="gs-btn-frameworks" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1.5" y="1.5" width="11" height="11" rx="2"/><line x1="1.5" y1="5" x2="12.5" y2="5"/><line x1="5" y1="5" x2="5" y2="12.5"/></svg>
+              Frameworks
+            </button>
+            <button onclick="switchGoalsSection('controls')" id="gs-btn-controls" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 1.5L12.5 4v3c0 3-2.5 5-5.5 5.5C4 12 1.5 10 1.5 7V4L7 1.5z"/><polyline points="4.5 7 6.5 9 9.5 5.5"/></svg>
+              Controls
+            </button>
+            <button onclick="switchGoalsSection('health')" id="gs-btn-health" class="gs-nav-btn" style="display:flex;align-items:center;gap:9px;width:100%;font-family:var(--font-ui);font-size:12px;font-weight:500;color:#374151;background:transparent;border:none;border-radius:9px;padding:9px 10px;cursor:pointer;text-align:left;transition:all 0.15s" onmouseenter="if(!this.classList.contains('gs-nav-active')){this.style.background='#F3F4F6'}" onmouseleave="if(!this.classList.contains('gs-nav-active')){this.style.background='transparent'}">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="1.5 9 4.5 5 7 7.5 9.5 3.5 12.5 6"/><line x1="1.5" y1="12.5" x2="12.5" y2="12.5"/></svg>
+              Health calc
+            </button>
+            <div style="flex:1"></div>
+            <!-- BU summary pills at bottom -->
+            <div style="border-top:1px solid rgba(0,0,0,0.07);padding-top:14px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-family:var(--font-ui);font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Business units</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
+                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Forge</span>
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#059669">94</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
+                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Atlas</span>
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#D97706">81</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px">
+                <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Orbit</span>
+                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#DC2626">71</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right content area -->
+          <div style="flex:1;overflow-y:auto;position:relative">
+
+            <!-- Close btn -->
+            <button onclick="closeGoalsPanel()" style="position:absolute;top:20px;right:20px;z-index:2;width:32px;height:32px;border-radius:50%;background:#F3F4F6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.12s" onmouseenter="this.style.background='#E5E7EB'" onmouseleave="this.style.background='#F3F4F6'">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#6B7280" stroke-width="2" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+            </button>
+
+            <!-- ── OVERVIEW SECTION ── -->
+            <div id="gs-section-overview" style="padding:32px 36px">
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Program overview</div>
+              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Meridian · Vanta · 3 business units active · Q2 2026</div>
+
+              <!-- Health score hero -->
+              <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid rgba(109,40,217,0.15);border-radius:20px;padding:28px 32px;margin-bottom:24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Overall health</div>
+                  <div style="font-family:var(--font-display);font-size:52px;font-weight:300;color:#5B21B6;letter-spacing:-0.04em;line-height:1">82<span style="font-size:18px;color:#A78BFA">/100</span></div>
+                  <div style="font-family:var(--font-ui);font-size:11px;color:#059669;font-weight:500;margin-top:6px">↑ +2 from last week</div>
+                </div>
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Security posture</div>
+                  <div style="font-family:var(--font-display);font-size:24px;font-weight:300;color:#374151;margin-bottom:8px">Proactive</div>
+                  <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6">Controls-first approach. Evidence collected continuously. Audit-ready on demand.</div>
+                </div>
+                <div>
+                  <div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px">Active frameworks</div>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#059669;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">SOC 2 Type II (Forge)</span></div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#D97706;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">ISO 27001 (Atlas)</span></div>
+                    <div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0"></div><span style="font-family:var(--font-ui);font-size:12px;color:#374151">SOC 2 Type I (Orbit)</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BU health bars -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:24px">
+                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:18px">Business unit health</div>
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Forge</span>
+                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">SOC 2 · 94 controls passing</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#059669">94</span></div>
+                    </div>
+                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:94%;background:#059669;border-radius:3px"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Atlas</span>
+                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">ISO 27001 · 2 overdue requests</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#D97706">81</span></div>
+                    </div>
+                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:81%;background:#D97706;border-radius:3px"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                      <span style="font-family:var(--font-ui);font-size:12px;color:#374151;font-weight:500">Orbit</span>
+                      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-ui);font-size:10px;color:#DC2626">IdP sync failure · 5 controls failing</span><span style="font-family:var(--font-display);font-size:16px;font-weight:300;color:#DC2626">71</span></div>
+                    </div>
+                    <div style="height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden"><div style="height:100%;width:71%;background:#DC2626;border-radius:3px"></div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What we're doing -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
+                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">What we're doing</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Continuous monitoring</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Vanta collects evidence from 40+ integrations automatically. Controls are evaluated in real time, not just at audit time.</div>
+                  </div>
+                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Risk-based prioritization</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Critical and high-risk findings are surfaced first. Each program tracks severity separately so Pam can triage by business impact.</div>
+                  </div>
+                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Cross-BU shared controls</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">14 controls apply across all 3 business units — managed centrally and inherited by each program. Changes propagate automatically.</div>
+                  </div>
+                  <div style="padding:14px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;margin-bottom:4px">Audit-ready posture</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Forge is 89% evidence collected with 12 days to the SOC 2 window. Atlas and Orbit are managed to their own audit timelines.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── GOALS SECTION ── -->
+            <div id="gs-section-goals" style="display:none;padding:32px 36px">
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Program goals</div>
+              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:28px">Goals drive health scores. Each goal contributes a weighted score to its BU and to the overall program.</div>
+              <!-- BU tabs -->
+              <div style="display:flex;gap:2px;background:#F3F4F6;border-radius:10px;padding:3px;margin-bottom:20px;width:fit-content">
+                <button onclick="switchGoalsTab('org')" id="goals-tab-org" style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827;background:#fff;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.08)">Org</button>
+                <button onclick="switchGoalsTab('forge')" id="goals-tab-forge" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Forge</button>
+                <button onclick="switchGoalsTab('atlas')" id="goals-tab-atlas" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Atlas</button>
+                <button onclick="switchGoalsTab('orbit')" id="goals-tab-orbit" style="font-family:var(--font-ui);font-size:11px;font-weight:400;color:#6B7280;background:transparent;border:none;border-radius:7px;padding:6px 18px;cursor:pointer;transition:all 0.15s">Orbit</button>
+              </div>
+              <!-- goal list -->
+              <div id="goals-list" style="margin-bottom:16px"></div>
+              <button onclick="addGoalPrompt()" style="width:100%;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5B21B6;background:rgba(245,243,255,0.8);border:1.5px dashed rgba(109,40,217,0.25);border-radius:10px;padding:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px" onmouseenter="this.style.background='#EDE9FE';this.style.borderColor='rgba(109,40,217,0.5)'" onmouseleave="this.style.background='rgba(245,243,255,0.8)';this.style.borderColor='rgba(109,40,217,0.25)'">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="#5B21B6" stroke-width="1.8" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg>
+                Add goal
+              </button>
+            </div>
+
+            <!-- ── FRAMEWORKS SECTION ── -->
+            <div id="gs-section-frameworks" style="display:none;padding:32px 36px">
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Frameworks</div>
+              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Three active compliance frameworks across the portfolio, each mapped to specific business units and audit timelines.</div>
+
+              <!-- SOC 2 Type II -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:16px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                      <div style="background:#D1FAE5;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#059669">SOC 2 Type II</div>
+                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Forge</span>
+                    </div>
+                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">AICPA trust services criteria covering Security, Availability, and Confidentiality. Audit window opens May 24 — the most rigorous standard in the portfolio. Forge has maintained continuous evidence collection for 90 days.</div>
+                  </div>
+                  <div style="text-align:right;flex-shrink:0">
+                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#059669">89%</div>
+                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">evidence ready</div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC6 — Access</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 18 controls</div></div>
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC7 — Monitoring</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 11 controls</div></div>
+                  <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">CC8 — Change Mgmt</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">3 items open</div></div>
+                </div>
+              </div>
+
+              <!-- ISO 27001 -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:16px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                      <div style="background:#FEF3C7;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#D97706">ISO 27001</div>
+                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Atlas</span>
+                    </div>
+                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">International standard for information security management systems (ISMS). Atlas is in active surveillance — annual audit in September 2026. Two auditor information requests are overdue, slowing velocity.</div>
+                  </div>
+                  <div style="text-align:right;flex-shrink:0">
+                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#D97706">81</div>
+                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">health score</div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">A.9 — Access ctrl</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 14 controls</div></div>
+                  <div style="background:#FFF7ED;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;margin-bottom:2px">A.12 — Operations</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">2 requests overdue</div></div>
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">A.18 — Compliance</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 8 controls</div></div>
+                </div>
+              </div>
+
+              <!-- SOC 2 Type I -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+                  <div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                      <div style="background:#FEE2E2;border-radius:8px;padding:6px 10px;font-family:var(--font-ui);font-size:11px;font-weight:700;color:#DC2626">SOC 2 Type I</div>
+                      <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280">Orbit</span>
+                    </div>
+                    <div style="font-family:var(--font-body);font-size:12px;color:#6B7280;line-height:1.6;max-width:460px">Point-in-time assessment of control design. Orbit is the newest program — Type I is a stepping stone to Type II. Currently blocked on IdP sync failure which took 5 access management controls offline in April.</div>
+                  </div>
+                  <div style="text-align:right;flex-shrink:0">
+                    <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#DC2626">71</div>
+                    <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">health score</div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                  <div style="background:#FEE2E2;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#DC2626;margin-bottom:2px">CC6 — Access</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">5 controls failing</div></div>
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC2 — Communication</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 6 controls</div></div>
+                  <div style="background:#F0FDF4;border-radius:8px;padding:10px 12px"><div style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;margin-bottom:2px">CC9 — Risk</div><div style="font-family:var(--font-ui);font-size:11px;color:#374151">Passing · 9 controls</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── CONTROLS SECTION ── -->
+            <div id="gs-section-controls" style="display:none;padding:32px 36px">
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">Common controls</div>
+              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:28px">14 controls are shared across all three business units. These are managed centrally and inherited by each program automatically.</div>
+              <!-- Legend -->
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#059669"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Passing</span></div>
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#D97706"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Warning</span></div>
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#DC2626"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Failing</span></div>
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:#E5E7EB"></div><span style="font-family:var(--font-ui);font-size:10px;color:#6B7280">Not applicable</span></div>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;overflow:hidden">
+                <!-- Table header -->
+                <div style="display:grid;grid-template-columns:1fr 80px 80px 80px;gap:0;padding:10px 18px;background:#F9FAFB;border-bottom:1px solid rgba(0,0,0,0.07)">
+                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Control</span>
+                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Forge</span>
+                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#D97706;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Atlas</span>
+                  <span style="font-family:var(--font-ui);font-size:10px;font-weight:600;color:#DC2626;text-transform:uppercase;letter-spacing:0.05em;text-align:center">Orbit</span>
+                </div>
+                <!-- Rows -->
+                <div id="controls-table-rows"></div>
+              </div>
+            </div>
+
+            <!-- ── HEALTH CALC SECTION ── -->
+            <div id="gs-section-health" style="display:none;padding:32px 36px">
+              <div style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#111827;letter-spacing:-0.02em;margin-bottom:6px">How health is calculated</div>
+              <div style="font-family:var(--font-body);font-size:13px;color:#9CA3AF;margin-bottom:32px">Program health is a weighted composite score, not a simple average. Goals at higher risk carry more weight.</div>
+
+              <!-- Formula -->
+              <div style="background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid rgba(109,40,217,0.15);border-radius:16px;padding:24px 28px;margin-bottom:24px">
+                <div style="font-family:var(--font-ui);font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px">The formula</div>
+                <div style="font-family:var(--font-ui);font-size:13px;color:#374151;line-height:2;font-weight:500">
+                  Health = <span style="color:#5B21B6;font-weight:700">∑ (goal score × goal weight)</span> / total weight<br>
+                  <span style="font-size:11px;color:#9CA3AF;font-weight:400">Each goal is scored 0–100 based on its specific metric type, then multiplied by its weight</span>
+                </div>
+              </div>
+
+              <!-- Metric types -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px;margin-bottom:24px">
+                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">How each metric is scored</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Percentage goals</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = (current / target) × 100, capped at 100. Example: 83 controls passing of target 95 = 87/100.</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Binary goals</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = 100 if fully met, 0 if not. Example: "Zero critical alerts" scores 0 when any open, 100 when all resolved.</div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:140px 1fr;gap:16px;align-items:start;padding:12px;background:#F9FAFB;border-radius:10px">
+                    <div style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151">Health index goals</div>
+                    <div style="font-family:var(--font-body);font-size:11px;color:#6B7280;line-height:1.6">Score = current health score / target (e.g. 82/90 = 91/100 score toward this goal).</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live calculation example -->
+              <div style="background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:16px;padding:24px">
+                <div style="font-family:var(--font-ui);font-size:11px;font-weight:700;color:#374151;margin-bottom:16px">Live calculation · Org-level example</div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:8px 12px;background:#F9FAFB;border-radius:8px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.04em">
+                    <span>Goal</span><span style="text-align:center">Weight</span><span style="text-align:center">Score</span><span style="text-align:right">Contribution</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Overall health ≥ 90</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">30%</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">91</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">27.3</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Zero critical alerts</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">25%</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#DC2626;text-align:center">0</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#DC2626;text-align:right">0.0</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.05)">
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Controls passing ≥ 95%</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">25%</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">87</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">21.8</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 60px 60px 70px;gap:0;padding:10px 12px">
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151">Audit completion on time</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#6B7280;text-align:center">20%</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;color:#374151;text-align:center">100</span>
+                    <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;text-align:right">20.0</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border-radius:10px;padding:14px 16px">
+                  <span style="font-family:var(--font-ui);font-size:12px;font-weight:700;color:#5B21B6">Weighted health score</span>
+                  <span style="font-family:var(--font-display);font-size:28px;font-weight:300;color:#5B21B6">69<span style="font-size:12px;font-family:var(--font-ui)">/100</span></span>
+                </div>
+                <div style="font-family:var(--font-body);font-size:11px;color:#9CA3AF;margin-top:10px;line-height:1.6">The "Zero critical alerts" goal is dragging the org score down to 69 — even though health and controls are strong. Resolve the Orbit critical alert and the org score jumps above 80.</div>
+              </div>
+            </div>
+
+          </div><!-- /right content -->
+        </div><!-- /modal -->
+      </div><!-- /goals-modal-overlay -->
 </body>
 </html>
