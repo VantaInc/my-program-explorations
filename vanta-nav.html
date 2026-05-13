@@ -815,7 +815,7 @@
 <div id="ilma-sidebar">
   <!-- Header -->
   <div style="display:flex;align-items:center;gap:10px;padding:18px 20px 16px;border-bottom:1px solid rgba(0,0,0,0.07);flex-shrink:0">
-    <div style="flex-shrink:0">${ILMA_SVG(20)}</div>
+    <div id="ilma-header-avatar" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;overflow:hidden"></div>
     <div style="flex:1">
       <div style="font-family:var(--font-ui);font-size:14px;font-weight:600;color:#111827;letter-spacing:-0.01em">Ask Ilma</div>
       <div id="ilma-sidebar-ctx" style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.04em;text-transform:uppercase;margin-top:1px"></div>
@@ -1643,7 +1643,7 @@ const VIEWS = {
       </div><!-- /main col -->
 
       <!-- ── Right Sidebar ── -->
-      <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:16px">
+      <div style="display:flex;flex-direction:column;gap:12px">
 
         <!-- MORE FROM ILMA promo -->
         <div style="background:linear-gradient(135deg,#3B1F6E 0%,#5B21B6 60%,#7C3AED 100%);border-radius:16px;padding:20px;position:relative;overflow:hidden">
@@ -1713,56 +1713,66 @@ const VIEWS = {
               <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Recurring moments that matter</div>
             </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;flex-direction:column">
 
             <!-- Caesar weekly briefing -->
-            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Caesar's weekly brief</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#7C3AED;background:#EDE9FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Weekly</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06)">
+              <div style="flex:1;min-width:0;margin-right:8px">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Caesar's weekly brief</span>
+                  <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#7C3AED;background:#EDE9FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Weekly</span>
+                </div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Due Friday</div>
               </div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Due Friday · GRC summary for the CEO</div>
-              <button onclick="openIlmaSidebar('Caesar Brief','Help me prepare Caesar\'s weekly GRC briefing for this Friday.','On it. Here\'s a draft exec summary for Caesar covering program health, Orbit\'s risk status, and the Forge audit timeline — tight, no fluff, decision-ready.',['Draft the brief','Highlight Orbit risk','Add a recommendation'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+              <button onclick="openIlmaSidebar('Caesar Brief','Help me prepare Caesar\'s weekly GRC briefing for this Friday.','On it. Here\'s a draft exec summary for Caesar covering program health, Orbit\'s risk status, and the Forge audit timeline — tight, no fluff, decision-ready.',['Draft the brief','Highlight Orbit risk','Add a recommendation'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:rgba(109,40,217,0.08);border:none;border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='rgba(109,40,217,0.14)'" onmouseleave="this.style.background='rgba(109,40,217,0.08)'">Prepare →</button>
             </div>
 
-            <!-- Audit kickoff - highlighted as urgent -->
-            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 12px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Forge audit kickoff</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C2410C;background:#FFEDD5;border-radius:20px;padding:1px 6px;flex-shrink:0">⚡ May 24</span>
+            <!-- Audit kickoff - urgent -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,0.06);background:linear-gradient(135deg,rgba(255,247,237,0.8),rgba(255,237,213,0.4));margin:0 -16px">
+              <div style="flex:1;min-width:0;margin-right:8px">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Forge audit kickoff</span>
+                  <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#C2410C;background:#FFEDD5;border-radius:20px;padding:1px 6px;flex-shrink:0">⚡ May 24</span>
+                </div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#92400E">11 days out</div>
               </div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#92400E;margin-bottom:8px">SOC 2 Type II · 11 days out</div>
-              <button onclick="openIlmaSidebar('Audit Kickoff','Help me prep for the Forge SOC 2 audit kickoff call on May 24.','On it. I\'ll prep a kickoff package — auditor introductions, evidence status summary, open items list, and a timeline. You\'ll want to walk in with all 3 remaining items assigned.',['Prep the package','Review open items','Draft auditor email'])" style="width:100%;background:linear-gradient(135deg,#EA580C,#C2410C);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+              <button onclick="openIlmaSidebar('Audit Kickoff','Help me prep for the Forge SOC 2 audit kickoff call on May 24.','On it. I\'ll prep a kickoff package — auditor introductions, evidence status summary, open items list, and a timeline. You\'ll want to walk in with all 3 remaining items assigned.',['Prep the package','Review open items','Draft auditor email'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#C2410C;background:rgba(194,65,12,0.1);border:none;border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='rgba(194,65,12,0.18)'" onmouseleave="this.style.background='rgba(194,65,12,0.1)'">Prepare →</button>
             </div>
 
             <!-- Board meeting prep -->
-            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Board meeting prep</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06)">
+              <div style="flex:1;min-width:0;margin-right:8px">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Board meeting prep</span>
+                  <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+                </div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Jun 15</div>
               </div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 15 · Security &amp; risk update</div>
-              <button onclick="openIlmaSidebar('Board Prep','Help me prep the security and risk update for the June board meeting.','Sure. I\'ll pull together a board-ready narrative covering program health trends, the Orbit incident, Forge audit status, and any material risks worth flagging.',['Draft narrative','Pull risk themes','What needs action before Jun 15'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+              <button onclick="openIlmaSidebar('Board Prep','Help me prep the security and risk update for the June board meeting.','Sure. I\'ll pull together a board-ready narrative covering program health trends, the Orbit incident, Forge audit status, and any material risks worth flagging.',['Draft narrative','Pull risk themes','What needs action before Jun 15'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:rgba(109,40,217,0.08);border:none;border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='rgba(109,40,217,0.14)'" onmouseleave="this.style.background='rgba(109,40,217,0.08)'">Prepare →</button>
             </div>
 
             <!-- QBR -->
-            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Team QBR</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06)">
+              <div style="flex:1;min-width:0;margin-right:8px">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Team QBR</span>
+                  <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#0369A1;background:#E0F2FE;border-radius:20px;padding:1px 6px;flex-shrink:0">Quarterly</span>
+                </div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Jun 1</div>
               </div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 1 · Q2 GRC retrospective</div>
-              <button onclick="openIlmaSidebar('QBR Prep','Help me run the Q2 GRC team QBR on June 1.','Happy to help. I can pull together what we shipped in Q2, what slipped, where the program moved, and what the team should focus on in Q3.',['Build the agenda','Summarize Q2 wins','Flag what slipped'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+              <button onclick="openIlmaSidebar('QBR Prep','Help me run the Q2 GRC team QBR on June 1.','Happy to help. I can pull together what we shipped in Q2, what slipped, where the program moved, and what the team should focus on in Q3.',['Build the agenda','Summarize Q2 wins','Flag what slipped'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:rgba(109,40,217,0.08);border:none;border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='rgba(109,40,217,0.14)'" onmouseleave="this.style.background='rgba(109,40,217,0.08)'">Prepare →</button>
             </div>
 
             <!-- Vendor review -->
-            <div style="background:#FAFAFA;border:1px solid rgba(0,0,0,0.06);border-radius:10px;padding:10px 12px">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-                <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Vendor review</span>
-                <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#047857;background:#D1FAE5;border-radius:20px;padding:1px 6px;flex-shrink:0">Monthly</span>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0">
+              <div style="flex:1;min-width:0;margin-right:8px">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                  <span style="font-family:var(--font-ui);font-size:11px;font-weight:600;color:#111827">Vendor review</span>
+                  <span style="font-family:var(--font-ui);font-size:9px;font-weight:600;color:#047857;background:#D1FAE5;border-radius:20px;padding:1px 6px;flex-shrink:0">Monthly</span>
+                </div>
+                <div style="font-family:var(--font-ui);font-size:10px;color:#9CA3AF">Jun 1</div>
               </div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#6B7280;margin-bottom:8px">Jun 1 · Critical vendor risk check</div>
-              <button onclick="openIlmaSidebar('Vendor Review','Help me prep for the monthly critical vendor risk review.','Sure. I can scan your critical vendors, flag any that have new security advisories, updated SOC 2 reports, or overdue questionnaires — and draft a summary for the review.',['Scan critical vendors','Flag new risks','Draft the summary'])" style="width:100%;background:linear-gradient(135deg,#7C3AED,#6D28D9);border:none;border-radius:7px;padding:6px 10px;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#fff;cursor:pointer;text-align:left">Prepare with Ilma →</button>
+              <button onclick="openIlmaSidebar('Vendor Review','Help me prep for the monthly critical vendor risk review.','Sure. I can scan your critical vendors, flag any that have new security advisories, updated SOC 2 reports, or overdue questionnaires — and draft a summary for the review.',['Scan critical vendors','Flag new risks','Draft the summary'])" style="flex-shrink:0;font-family:var(--font-ui);font-size:10px;font-weight:600;color:#7C3AED;background:rgba(109,40,217,0.08);border:none;border-radius:7px;padding:5px 10px;cursor:pointer;white-space:nowrap;transition:background 0.12s" onmouseenter="this.style.background='rgba(109,40,217,0.14)'" onmouseleave="this.style.background='rgba(109,40,217,0.08)'">Prepare →</button>
             </div>
 
           </div>
@@ -5535,6 +5545,8 @@ function openIlmaSidebar(context, seedPrompt, seedReply, chips) {
 
   // Set context label
   document.getElementById('ilma-sidebar-ctx').textContent = context || ''
+  const _avatarEl = document.getElementById('ilma-header-avatar')
+  if (_avatarEl && !_avatarEl.innerHTML) _avatarEl.innerHTML = ILMA_SVG(32)
 
   // Seed with opening message + Ilma reply
   if (seedPrompt) {
