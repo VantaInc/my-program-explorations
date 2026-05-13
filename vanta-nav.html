@@ -1166,7 +1166,7 @@ const VIEWS = {
           <span style="font-family:var(--font-ui);font-size:11px;color:#C0BDB8">3 active · 1 seat available</span>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(3,1fr) 180px;gap:16px;margin-bottom:0">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:0">
         ${progs.map(p=>{
           const delta = p.slug==='forge'?'+2':p.slug==='atlas'?'±0':'-3'
           const deltaColor = p.slug==='forge'?'#059669':p.slug==='atlas'?'#9CA3AF':'#DC2626'
@@ -1227,14 +1227,6 @@ const VIEWS = {
           </div>`
         }).join('')}
 
-          <!-- Add BU card -->
-          <div style="background:rgba(255,255,255,0.45);border:1.5px dashed rgba(109,40,217,0.18);border-radius:18px;padding:24px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:all 0.18s" onmouseenter="this.style.background='rgba(237,233,254,0.5)';this.style.borderColor='rgba(109,40,217,0.35)'" onmouseleave="this.style.background='rgba(255,255,255,0.45)';this.style.borderColor='rgba(109,40,217,0.18)'">
-            <div style="width:36px;height:36px;border-radius:50%;border:1.5px dashed rgba(109,40,217,0.25);display:flex;align-items:center;justify-content:center;color:#A78BFA;font-size:20px;font-weight:300;line-height:1">+</div>
-            <div style="text-align:center">
-              <div style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:#7C3AED;margin-bottom:4px">Add Business Unit</div>
-              <div style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;line-height:1.5">Set up frameworks,<br>controls & teams</div>
-            </div>
-          </div>
         </div><!-- /BU grid -->
       </div><!-- /page-hero -->
 
