@@ -507,6 +507,7 @@
     padding-top: 16vh;
   }
   #ilma-spotlight.open { display: flex; animation: spotlight-bg-in 0.14s ease forwards; }
+  @keyframes spin { to { transform: rotate(360deg) } }
   @keyframes ilma-dot {
     0%,80%,100% { opacity:0.25; transform:scale(0.85) }
     40% { opacity:1; transform:scale(1.1) }
@@ -1148,11 +1149,22 @@ const VIEWS = {
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
           <div style="background:#111827;color:#fff;font-family:var(--font-ui);font-size:9px;font-weight:700;letter-spacing:0.1em;padding:4px 10px;border-radius:4px;white-space:nowrap">YOUR WEEK'S READ</div>
           <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;letter-spacing:0.06em;text-transform:uppercase">LAST VISIT &nbsp;·&nbsp; MONDAY, APRIL 28 &nbsp;·&nbsp; 6 DAYS AGO</span>
-          <button onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',metaKey:true,bubbles:true}))" style="margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--font-ui);font-size:11px;font-weight:500;color:#374151;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:5px 12px 5px 10px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.06)" onmouseenter="this.style.borderColor='rgba(109,40,217,0.3)';this.style.color='#5B21B6'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.1)';this.style.color='#374151'">
-            <div style="width:6px;height:6px;border-radius:50%;background:#059669;flex-shrink:0"></div>
-            Ask Ilma
-            <kbd style="font-family:var(--font-ui);font-size:9px;color:#9CA3AF;background:#F3F4F6;border:1px solid #E5E7EB;border-radius:4px;padding:1px 5px;letter-spacing:0.02em">⌘K</kbd>
-          </button>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <!-- Last synced -->
+            <div style="display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:10px;color:#9CA3AF">
+              <div style="width:5px;height:5px;border-radius:50%;background:#059669;flex-shrink:0"></div>
+              Synced 2h ago
+            </div>
+            <!-- Reload -->
+            <button id="home-reload-btn" onclick="(function(btn){btn.style.opacity='0.5';btn.style.pointerEvents='none';const icon=btn.querySelector('.reload-icon');icon.style.animation='spin 0.7s linear infinite';setTimeout(()=>{btn.style.opacity='1';btn.style.pointerEvents='auto';icon.style.animation='none';btn.previousElementSibling.querySelector('div').style.background='#059669';btn.previousElementSibling.innerHTML='<div style=\\'width:5px;height:5px;border-radius:50%;background:#059669;flex-shrink:0\\'></div> Synced just now'},900)})(this)" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.09);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.05)" title="Pull latest data" onmouseenter="this.style.borderColor='rgba(0,0,0,0.18)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.09)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'">
+              <svg class="reload-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="#6B7280" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 2.5A6 6 0 1 1 9 1.2"/><polyline points="9 1 12.5 1 12.5 4.5"/></svg>
+            </button>
+            <!-- Generate report -->
+            <button onclick="showGenerating('Cross-BU Program Report')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:11px;font-weight:600;color:#374151;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.09);border-radius:8px;padding:5px 13px;cursor:pointer;transition:all 0.15s;box-shadow:0 1px 3px rgba(0,0,0,0.05)" onmouseenter="this.style.borderColor='rgba(0,0,0,0.18)';this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)'" onmouseleave="this.style.borderColor='rgba(0,0,0,0.09)';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.05)'">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="#6B7280" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6.5" y2="8" stroke="#6B7280" stroke-width="1.2" stroke-linecap="round"/></svg>
+              Generate report
+            </button>
+          </div>
         </div>
 
         <!-- ── Editorial greeting ── -->
