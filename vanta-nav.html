@@ -1576,7 +1576,7 @@ const VIEWS = {
       <div id="home-ai-mode" style="display:none;position:absolute;inset:0;z-index:30;padding:0;border-radius:16px;opacity:0;transition:opacity 0.3s ease">
 
         <!-- Landing state -->
-        <div id="ai-landing" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:520px;padding:64px 48px;text-align:center">
+        <div id="ai-landing" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:64px 48px;text-align:center">
           <!-- Pulsing Ilma avatar -->
           <div style="position:relative;margin-bottom:28px">
             <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 0 rgba(124,58,237,0.4);animation:ilma-pulse 2s ease-in-out infinite">
@@ -1610,7 +1610,7 @@ const VIEWS = {
         </div>
 
         <!-- Generating state -->
-        <div id="ai-generating" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:520px;padding:64px 48px;text-align:center">
+        <div id="ai-generating" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:64px 48px;text-align:center">
           <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#7C3AED,#A78BFA);display:flex;align-items:center;justify-content:center;margin-bottom:28px;box-shadow:0 0 0 0 rgba(124,58,237,0.4);animation:ilma-pulse 1.2s ease-in-out infinite">
             <div style="display:flex;gap:4px;align-items:center">
               <span style="width:4px;height:4px;border-radius:50%;background:#fff;animation:ilma-dot 1.2s ease-in-out infinite 0s"></span>
