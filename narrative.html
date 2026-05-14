@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pitch — My Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #09051A;
+    --bg2: #0F0B24;
+    --border: rgba(255,255,255,0.07);
+    --text: #F0ECF8;
+    --muted: rgba(240,236,248,0.45);
+    --faint: rgba(240,236,248,0.2);
+    --purple: #6C47FF;
+    --purple-light: #A78BFA;
+    --purple-glow: rgba(108,71,255,0.15);
+    --green: #10B981;
+    --amber: #F59E0B;
+    --red: #EF4444;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Nav bar ── */
+  #topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: rgba(9,5,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    z-index: 100;
+    gap: 0;
+  }
+  .nav-back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted); text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-back:hover { color: var(--text); }
+  .nav-divider { width: 1px; height: 18px; background: var(--border); margin: 0 20px; }
+  .nav-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .nav-spacer { flex: 1; }
+  .nav-chapters {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .nav-chapter-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--faint); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-chapter-dot.active { background: var(--purple-light); transform: scale(1.3); }
+  .nav-chapter-dot:hover { background: rgba(167,139,250,0.5); }
+
+  /* ── Layout ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 120px 32px 160px;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 120px;
+    scroll-margin-top: 80px;
+  }
+
+  /* ── Chapter label ── */
+  .chapter-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--purple-light);
+    margin-bottom: 18px;
+  }
+  .chapter-label::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--purple-light);
+    opacity: 0.5;
+  }
+
+  /* ── Headlines ── */
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Body copy ── */
+  .lead {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  p {
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); font-weight: 500; }
+
+  /* ── Divider ── */
+  .rule {
+    width: 40px; height: 1px;
+    background: var(--purple);
+    opacity: 0.4;
+    margin: 32px 0;
+  }
+
+  /* ── Content placeholder ── */
+  .placeholder {
+    border: 1px dashed rgba(108,71,255,0.35);
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin: 32px 0;
+    background: rgba(108,71,255,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    min-height: 200px;
+  }
+  .placeholder-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(108,71,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .placeholder-label {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--purple-light); opacity: 0.7;
+  }
+  .placeholder-desc {
+    font-size: 13px; color: var(--faint);
+    max-width: 340px; line-height: 1.6;
+  }
+
+  /* ── Chapter card ── */
+  .chapter-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 40px 0;
+  }
+  .chapter-card-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .chapter-card-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .chapter-card-body { padding: 24px 28px; }
+  .chapter-card-body p { font-size: 14px; }
+
+  /* ── Feature pill row ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .pill {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+    background: rgba(255,255,255,0.06);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Quote / callout ── */
+  .callout {
+    border-left: 2px solid var(--purple);
+    padding: 16px 24px;
+    margin: 32px 0;
+    background: var(--purple-glow);
+    border-radius: 0 10px 10px 0;
+  }
+  .callout p {
+    font-size: 16px;
+    font-style: italic;
+    color: rgba(240,236,248,0.65);
+    margin: 0;
+  }
+  .callout-source {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--purple-light); opacity: 0.7;
+    margin-top: 10px;
+  }
+
+  /* ── Ritual card ── */
+  .ritual-row {
+    display: flex; gap: 16px; margin: 28px 0;
+  }
+  .ritual-card {
+    flex: 1; background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 22px;
+  }
+  .ritual-card-tag {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .ritual-card h3 { font-size: 15px; margin-bottom: 8px; }
+  .ritual-card p { font-size: 13px; }
+
+  /* ── Ask row ── */
+  .ask-item {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .ask-item:last-child { border-bottom: none; }
+  .ask-num {
+    font-family: 'Fraunces', serif;
+    font-size: 28px; font-weight: 300;
+    color: var(--purple-light); opacity: 0.4;
+    line-height: 1; flex-shrink: 0; width: 32px;
+    padding-top: 2px;
+  }
+  .ask-content h3 { margin-bottom: 4px; }
+  .ask-content p { font-size: 13px; margin: 0; }
+
+  /* ── Hero decoration ── */
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--purple-light);
+    margin-bottom: 28px;
+  }
+  .hero-tag-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple-light);
+    box-shadow: 0 0 8px var(--purple);
+  }
+
+  /* ── Progress bar on scroll ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6C47FF, #AC55FF);
+    z-index: 200;
+    transition: width 0.1s;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Nav -->
+<nav id="topnav">
+  <a href="/" class="nav-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 3L5 7l4 4"/></svg>
+    Back
+  </a>
+  <div class="nav-divider"></div>
+  <span class="nav-title">The Pitch — My Program</span>
+  <div class="nav-spacer"></div>
+  <div class="nav-chapters" id="chapter-dots"></div>
+</nav>
+
+<main>
+
+  <!-- ── HERO ── -->
+  <section class="section" id="s-hero" data-chapter="Intro">
+    <div class="hero-tag">
+      <div class="hero-tag-dot"></div>
+      GRC Design · Vanta
+    </div>
+    <h1>Program intelligence<br><em style="font-style:italic;color:var(--purple-light);">that thinks with you</em></h1>
+    <p class="lead">This is the case for a new kind of GRC experience — one that doesn't just store your compliance data, but actively helps you understand it, communicate it, and act on it.</p>
+    <p class="lead">What follows is the pitch, the vision, and the specific things we're asking to build.</p>
+  </section>
+
+  <!-- ── CONTEXT ── -->
+  <section class="section" id="s-context" data-chapter="Context">
+    <div class="chapter-label">01 — Context</div>
+    <h2>Where we are today</h2>
+    <p class="lead">GRC practitioners are drowning in data they can't use. They have evidence, controls, and audit trails — but not answers.</p>
+
+    <div class="placeholder">
+      <div class="placeholder-icon">
+        <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="14" height="11" rx="2"/><path d="M7 16h4M9 14v2"/><path d="M5 7h6M5 10h4"/></svg>
+      </div>
+      <div class="placeholder-label">Content placeholder</div>
+      <div class="placeholder-desc">Add context here — the current state of program management, the pain points, who's feeling them and how.</div>
+    </div>
+
+    <div class="callout">
+      <p>"I spend half my Monday just pulling numbers together so I can tell Caesar where we stand. By the time I've done that, I've lost the morning."</p>
+      <div class="callout-source">Placeholder quote — replace with real user voice</div>
+    </div>
+
+    <p>The problem isn't data. <strong>The problem is that the data doesn't talk.</strong> It sits in controls tables and evidence logs, waiting for a human to go find it, interpret it, and translate it into something a stakeholder can act on.</p>
+
+    <div class="placeholder" style="min-height:140px;">
+      <div class="placeholder-label">Content placeholder</div>
+      <div class="placeholder-desc">Supporting context, stats, or a quote about the gap between GRC tooling and real practitioner needs.</div>
+    </div>
+  </section>
+
+  <!-- ── THE PITCH ── -->
+  <section class="section" id="s-pitch" data-chapter="Pitch">
+    <div class="chapter-label">02 — The Pitch</div>
+    <h2>What if your program could brief you?</h2>
+
+    <p class="lead">Not a dashboard you open. Not a report you generate. A system that already knows what you need to know — and tells you.</p>
+
+    <div class="placeholder">
+      <div class="placeholder-icon">
+        <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V6z"/><path d="M9 10l1.5 1.5L13 9"/><path d="M6 7h3"/></svg>
+      </div>
+      <div class="placeholder-label">Narrative content</div>
+      <div class="placeholder-desc">The story-first pitch. Pam's Monday morning. Caesar's Tuesday check-in. The moment Ilma surfaces the right thing at the right time.</div>
+    </div>
+
+    <div class="rule"></div>
+
+    <p>The vision is a program layer that is <strong>proactive, not reactive</strong>. It doesn't wait for you to ask questions — it already knows your audit windows, your recurring syncs, your stakeholders' preferences, and what changed since last week.</p>
+
+    <div class="placeholder" style="min-height:140px;">
+      <div class="placeholder-label">Flow or demo embed</div>
+      <div class="placeholder-desc">Interactive prototype moment or annotated screenshot showing the "aha" — the before/after of program intelligence.</div>
+    </div>
+  </section>
+
+  <!-- ── WHAT WE'RE BUILDING ── -->
+  <section class="section" id="s-building" data-chapter="What we're building">
+    <div class="chapter-label">03 — What we're building</div>
+    <h2>Five bets, one coherent experience</h2>
+    <p class="lead">Each of these is a distinct surface, but they're designed to compound. Together they form a program intelligence layer that lives across Vanta.</p>
+
+    <!-- 3a: My Program view -->
+    <div class="chapter-card" id="s-myprogram">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(108,71,255,0.15);">
+          <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L9 2l7 6v7a1 1 0 01-1 1h-4v-4H6v4H2a1 1 0 01-1-1V8z"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">My Program view</h3>
+          <p style="font-size:13px;margin:0;">The home base. A single view that orients you on your entire program — health, momentum, what needs you today.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>This isn't a dashboard. It's a <strong>command center for your program</strong> — opinionated about what matters, quiet about what doesn't. Every widget earns its place.</p>
+        <div class="placeholder" style="min-height:220px;margin-top:20px;">
+          <div class="placeholder-label">Widget showcase</div>
+          <div class="placeholder-desc">Annotated walkthrough of the My Program view — specific widgets, their jobs, how they change over time.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Program health score</div>
+          <div class="pill">BU breakdown</div>
+          <div class="pill">What needs you</div>
+          <div class="pill">Upcoming milestones</div>
+          <div class="pill">Evidence pulse</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3b: Dataviz kit -->
+    <div class="chapter-card" id="s-dataviz">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(16,185,129,0.12);">
+          <svg width="18" height="18" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="10" width="3" height="6" rx="1"/><rect x="7.5" y="6" width="3" height="10" rx="1"/><rect x="13" y="2" width="3" height="14" rx="1"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Dataviz kit</h3>
+          <p style="font-size:13px;margin:0;">A consistent visual language for data that lives everywhere Vanta does — not just in reports.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>Right now, every surface in Vanta shows data differently. Numbers, tables, color-coded pills — but no visual system tying it together. The dataviz kit is a <strong>shared component library for data storytelling</strong> that permeates the whole product.</p>
+        <div class="placeholder" style="min-height:220px;margin-top:20px;">
+          <div class="placeholder-label">Component showcase</div>
+          <div class="placeholder-desc">Visual examples of the dataviz kit in context — trend lines, health rings, comparison bars, sparklines across different Vanta surfaces.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Trend sparklines</div>
+          <div class="pill">Health rings</div>
+          <div class="pill">Comparison bars</div>
+          <div class="pill">Audit timelines</div>
+          <div class="pill">Cross-surface tokens</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3c: Smart insights -->
+    <div class="chapter-card" id="s-insights">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(172,85,255,0.15);">
+          <svg width="18" height="18" fill="none" stroke="#AC55FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2l1.8 5.4L16 9l-5.2 1.6L9 16l-1.8-5.4L2 9l5.2-1.6z"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Smart insights</h3>
+          <p style="font-size:13px;margin:0;">Ilma surfaces what matters, when it matters — without being asked.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>The difference between data and insight is interpretation. Smart insights is the layer that reads your program and <strong>tells you what it sees</strong> — anomalies, momentum, risks you didn't know to look for.</p>
+        <div class="placeholder" style="min-height:220px;margin-top:20px;">
+          <div class="placeholder-label">Ilma insight flow</div>
+          <div class="placeholder-desc">Examples of Ilma surfacing proactive insights — a control that's trending wrong, an upcoming deadline the team hasn't prepped for, a pattern across BUs.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Proactive alerts</div>
+          <div class="pill">Trend detection</div>
+          <div class="pill">Cross-BU signals</div>
+          <div class="pill">Natural language summaries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3d: Reporting -->
+    <div class="chapter-card" id="s-reporting">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(245,158,11,0.12);">
+          <svg width="18" height="18" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"><path d="M4 2h8l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M12 2v5h5"/><path d="M6 9h6M6 12h6M6 15h4"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Reporting — data on ice</h3>
+          <p style="font-size:13px;margin:0;">Structured data that can generate real reports — not exports, not screenshots.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>Today's "reports" are PDFs of what your screen looks like. <strong>Data on ice</strong> is the concept that your program data is always structured, always ready — so when you need a QBR deck, a board update, or an audit package, it assembles itself from live data rather than getting manually assembled from stale exports.</p>
+        <div class="placeholder" style="min-height:220px;margin-top:20px;">
+          <div class="placeholder-label">Report generation flow</div>
+          <div class="placeholder-desc">Show the experience of generating a real report — selecting audience, format, date range — and what comes out the other end.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Audience-aware format</div>
+          <div class="pill">Live data assembly</div>
+          <div class="pill">Board-ready output</div>
+          <div class="pill">Audit packages</div>
+          <div class="pill">Shareable links</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3e: Forecasting -->
+    <div class="chapter-card" id="s-forecasting">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(59,130,246,0.12);">
+          <svg width="18" height="18" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round"><path d="M2 14l4-4 3 3 5-6 3 2"/><circle cx="14" cy="5" r="1.5" fill="#60A5FA" stroke="none"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Forecasting</h3>
+          <p style="font-size:13px;margin:0;">Planning tools for where your program is going — not just where it is.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>Compliance isn't a snapshot — it's a trajectory. Forecasting gives practitioners the tools to <strong>plan ahead, model scenarios, and communicate confidence</strong> about where the program will be at audit time, not just where it is today.</p>
+        <div class="placeholder" style="min-height:220px;margin-top:20px;">
+          <div class="placeholder-label">Forecasting tools</div>
+          <div class="placeholder-desc">Show trajectory views, what-if scenario modeling, and audit readiness forecasts — the planning layer that turns reactive compliance into proactive program management.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Audit readiness trajectory</div>
+          <div class="pill">Scenario modeling</div>
+          <div class="pill">Risk projection</div>
+          <div class="pill">Milestone planning</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── RITUALS ── -->
+  <section class="section" id="s-rituals" data-chapter="Rituals">
+    <div class="chapter-label">04 — Rituals</div>
+    <h2>The system that knows your rhythms</h2>
+    <p class="lead">The most valuable thing a tool can do is disappear into your workflow. Rituals is the idea that the system learns your cadences and shapes itself around them.</p>
+
+    <p>Not just calendar events — but <strong>the texture of how you actually work</strong>. The meetings you prepare for, the stakeholders you report to, the specific things each of them cares about.</p>
+
+    <div class="ritual-row">
+      <!-- Institutional -->
+      <div class="ritual-card">
+        <div class="ritual-card-tag" style="color:#F59E0B;">Institutional</div>
+        <h3>Org-wide moments</h3>
+        <p>QBRs, board meetings, audit windows, executive briefings — the recurring events that every program practitioner prepares for, regardless of their specific context.</p>
+        <div class="placeholder" style="min-height:120px;margin-top:16px;">
+          <div class="placeholder-label">Ritual examples</div>
+          <div class="placeholder-desc">QBR prep, board deck assembly, audit window countdown.</div>
+        </div>
+      </div>
+      <!-- Personal -->
+      <div class="ritual-card">
+        <div class="ritual-card-tag" style="color:#A78BFA;">Personal</div>
+        <h3>Your specific rhythms</h3>
+        <p>Every Tuesday you sync with Caesar. He wants a quick health update, one risk to watch, and anything that needs his sign-off. The system knows this — and has it ready before you open the meeting.</p>
+        <div class="placeholder" style="min-height:120px;margin-top:16px;">
+          <div class="placeholder-label">Personal ritual flow</div>
+          <div class="placeholder-desc">Show the Caesar Tuesday prep — what Ilma surfaces, how the briefing is shaped around his preferences.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p>"The goal isn't to automate your work. It's to make sure that when you walk into Caesar's office on Tuesday, you already know exactly what he's going to ask."</p>
+      <div class="callout-source">Design principle — replace with real framing</div>
+    </div>
+
+    <div class="placeholder" style="min-height:180px;">
+      <div class="placeholder-label">Ritual configuration flow</div>
+      <div class="placeholder-desc">How a practitioner sets up their rituals — connecting a recurring meeting, defining the stakeholder, and teaching the system what they care about.</div>
+    </div>
+  </section>
+
+  <!-- ── THE ASK ── -->
+  <section class="section" id="s-ask" data-chapter="The ask">
+    <div class="chapter-label">05 — The ask</div>
+    <h2>What we need to make this real</h2>
+    <p class="lead">This is what we're proposing to build, and what we need to do it.</p>
+
+    <div style="margin-top:32px;">
+      <div class="ask-item">
+        <div class="ask-num">1</div>
+        <div class="ask-content">
+          <h3>My Program view — M1 scope</h3>
+          <p>A scoped first version of the program home — the widgets that matter most, the layout that works, the foundation everything else builds on.</p>
+        </div>
+      </div>
+      <div class="ask-item">
+        <div class="ask-num">2</div>
+        <div class="ask-content">
+          <h3>Dataviz design system</h3>
+          <p>A shared visual language for data across Vanta. Tokens, components, patterns — so every surface tells the same kind of story.</p>
+        </div>
+      </div>
+      <div class="ask-item">
+        <div class="ask-num">3</div>
+        <div class="ask-content">
+          <h3>Smart insights integration</h3>
+          <p>Ilma as a proactive presence — not just a chat interface, but a layer that surfaces signals before you ask for them.</p>
+        </div>
+      </div>
+      <div class="ask-item">
+        <div class="ask-num">4</div>
+        <div class="ask-content">
+          <h3>Reporting infrastructure</h3>
+          <p>The data model and UX for structured, audience-aware reporting — the foundation of "data on ice."</p>
+        </div>
+      </div>
+      <div class="ask-item">
+        <div class="ask-num">5</div>
+        <div class="ask-content">
+          <h3>Forecasting + rituals</h3>
+          <p>Planning tools and ritual-aware prep — the layer that turns Vanta from a compliance recorder into a program partner.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="placeholder" style="min-height:140px;margin-top:40px;">
+      <div class="placeholder-label">Closing content</div>
+      <div class="placeholder-desc">Final framing — the "why now", the team, the timeline ask, or whatever closes the pitch.</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement
+  const scrolled = doc.scrollTop / (doc.scrollHeight - doc.clientHeight)
+  document.getElementById('progress-bar').style.width = (scrolled * 100) + '%'
+})
+
+// Chapter dots
+const sections = document.querySelectorAll('.section[data-chapter]')
+const dotsContainer = document.getElementById('chapter-dots')
+
+sections.forEach((s, i) => {
+  const dot = document.createElement('div')
+  dot.className = 'nav-chapter-dot' + (i === 0 ? ' active' : '')
+  dot.title = s.dataset.chapter
+  dot.addEventListener('click', () => s.scrollIntoView({ behavior: 'smooth' }))
+  dotsContainer.appendChild(dot)
+})
+
+// Highlight active dot on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = Array.from(sections).indexOf(entry.target)
+      document.querySelectorAll('.nav-chapter-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === idx)
+      })
+    }
+  })
+}, { threshold: 0.3 })
+
+sections.forEach(s => observer.observe(s))
+</script>
+</body>
+</html>
