@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Program — Design Explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #FAFAFA;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+  }
+
+  .wordmark {
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: #111827;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .cards {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .card {
+    width: 300px;
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: #D1D5DB;
+  }
+
+  .card-thumb {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-thumb.vision {
+    background: linear-gradient(135deg, #1e0a3c 0%, #3b0764 50%, #6d28d9 100%);
+  }
+  .card-thumb.m1 {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  /* Mini UI mockup for vision card */
+  .mock-vision {
+    width: 220px;
+    height: 120px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+    display: flex;
+  }
+  .mock-sidenav {
+    width: 44px;
+    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mock-nav-item {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.2);
+  }
+  .mock-nav-item.active { background: rgba(255,255,255,0.6); width: 70%; }
+  .mock-content {
+    flex: 1;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .mock-title { height: 7px; width: 60%; background: rgba(255,255,255,0.4); border-radius: 3px; }
+  .mock-row { display: flex; gap: 4px; }
+  .mock-card-mini {
+    flex: 1;
+    height: 28px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .mock-card-mini.green { background: rgba(16,185,129,0.25); border-color: rgba(16,185,129,0.3); }
+  .mock-card-mini.amber { background: rgba(245,158,11,0.25); border-color: rgba(245,158,11,0.3); }
+  .mock-card-mini.red   { background: rgba(239,68,68,0.25);  border-color: rgba(239,68,68,0.3);  }
+
+  /* Mini UI mockup for m1 card */
+  .mock-m1 {
+    width: 220px;
+    height: 120px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .mock-m1-nav {
+    width: 44px;
+    background: #F9FAFB;
+    border-right: 1px solid #E5E7EB;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mock-m1-item { height: 5px; border-radius: 2px; background: #E5E7EB; }
+  .mock-m1-item.active { background: #C4B5FD; width: 75%; }
+  .mock-m1-main { flex: 1; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .mock-m1-title { height: 6px; width: 55%; background: #D1D5DB; border-radius: 3px; }
+  .mock-m1-chart { flex: 1; background: #F3F4F6; border-radius: 4px; margin-top: 2px; }
+
+  .card-body {
+    padding: 20px 22px 22px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    width: fit-content;
+  }
+  .tag-vision { background: #EDE9FE; color: #6D28D9; }
+  .tag-m1 { background: #DBEAFE; color: #1D4ED8; }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 5px;
+    letter-spacing: -0.01em;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: #6B7280;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .card-cta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6C47FF;
+  }
+  .card:hover .card-cta { gap: 8px; }
+  .card-cta svg { transition: transform 0.15s; }
+  .card:hover .card-cta svg { transform: translateX(2px); }
+
+  .footer {
+    margin-top: 52px;
+    font-size: 11px;
+    color: #C4C4C4;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">GRC Design · Vanta</div>
+  <h1>My Program explorations</h1>
+  <p class="subtitle">Two prototypes, two bets — pick your adventure</p>
+
+  <div class="cards">
+
+    <!-- Vision prototype -->
+    <a href="/vision" class="card">
+      <div class="card-thumb vision">
+        <div class="mock-vision">
+          <div class="mock-sidenav">
+            <div class="mock-nav-item active"></div>
+            <div class="mock-nav-item"></div>
+            <div class="mock-nav-item"></div>
+            <div class="mock-nav-item"></div>
+            <div class="mock-nav-item"></div>
+          </div>
+          <div class="mock-content">
+            <div class="mock-title"></div>
+            <div class="mock-row">
+              <div class="mock-card-mini green"></div>
+              <div class="mock-card-mini amber"></div>
+              <div class="mock-card-mini red"></div>
+            </div>
+            <div class="mock-row">
+              <div class="mock-card-mini" style="flex:2;height:22px;"></div>
+              <div class="mock-card-mini" style="flex:1;height:22px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag tag-vision">Vision</div>
+        <div class="card-title">Meridian</div>
+        <div class="card-desc">Full future-state vision — AI-native program management with Ilma, BU intelligence, and the complete Meridian narrative.</div>
+        <div class="card-cta">
+          Open prototype
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6.5h9M7 3l4 3.5L7 10"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- M1 exploration -->
+    <a href="/m1-exploration" class="card">
+      <div class="card-thumb m1">
+        <div class="mock-m1">
+          <div class="mock-m1-nav">
+            <div class="mock-m1-item active"></div>
+            <div class="mock-m1-item"></div>
+            <div class="mock-m1-item"></div>
+            <div class="mock-m1-item"></div>
+            <div class="mock-m1-item"></div>
+          </div>
+          <div class="mock-m1-main">
+            <div class="mock-m1-title"></div>
+            <div class="mock-m1-chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag tag-m1">M1 Proposal</div>
+        <div class="card-title">My Program</div>
+        <div class="card-desc">Scoped M1 exploration — current Vanta UI baseline, showing the near-term path from where we are to where we're going.</div>
+        <div class="card-cta">
+          Open prototype
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6.5h9M7 3l4 3.5L7 10"/></svg>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer">my-program-explorations.vercel.app</div>
+
+</body>
+</html>
