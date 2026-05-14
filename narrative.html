@@ -456,7 +456,11 @@
   }
   .sig-input::placeholder { color: var(--faint); letter-spacing: 0.05em; font-size: 12px; text-transform: uppercase; }
   .sig-input:focus { border-bottom-color: rgba(108,71,255,0.6); }
-  .sig-hint { font-size: 10px; color: var(--faint); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .sig-hint {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; margin-top: 6px;
+    font-size: 10px; color: var(--faint); letter-spacing: 0.05em; text-transform: uppercase;
+  }
   .sig-submit {
     margin-top: 8px;
     background: rgba(108,71,255,0.2);
@@ -1010,7 +1014,7 @@
       <div class="sig-preview" id="sig-preview">Your name</div>
       <div class="sig-line">
         <input type="text" id="sig-input" class="sig-input" placeholder="Sign your name" maxlength="40" autocomplete="name"/>
-        <div class="sig-hint">x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign here</div>
+        <div class="sig-hint"><span>x</span><span>Sign here</span></div>
       </div>
       <button id="sig-btn" class="sig-submit">Sign the record</button>
     </div>
@@ -1020,7 +1024,7 @@
   </div>
 </div>
 
-<script><script>
+<script>
 // Progress bar
 window.addEventListener('scroll', () => {
   const doc = document.documentElement
