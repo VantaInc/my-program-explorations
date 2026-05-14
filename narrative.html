@@ -275,6 +275,50 @@
     box-shadow: 0 0 8px var(--purple);
   }
 
+  /* ── Vision band ── */
+  #vision-band {
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(108,71,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 60%, rgba(172,85,255,0.07) 0%, transparent 60%),
+      linear-gradient(180deg, #09051A 0%, #0D0726 4%, #110A30 20%, #0E0828 80%, #09051A 100%);
+    position: relative;
+  }
+  #vision-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,71,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,71,255,0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  #vision-band::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(180deg, #09051A, transparent);
+    pointer-events: none;
+  }
+  .vision-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 32px 160px;
+    position: relative;
+    z-index: 1;
+  }
+  #vision-band .chapter-label { color: #C4B5FD; }
+  #vision-band .chapter-label::before { background: #C4B5FD; }
+  #vision-band .chapter-card {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.09);
+  }
+  #vision-band .chapter-card:hover {
+    border-color: rgba(108,71,255,0.3);
+    background: rgba(108,71,255,0.05);
+  }
+
   /* ── Progress bar on scroll ── */
   #progress-bar {
     position: fixed;
@@ -600,8 +644,11 @@
     </div>
   </section>
 
-  <!-- ── VISION CONSIDERATIONS ── -->
-  <section class="section" id="s-vision" data-chapter="Vision considerations">
+  <!-- ── VISION CONSIDERATIONS — full bleed ── -->
+</main>
+<div id="vision-band">
+  <div class="vision-inner">
+    <section class="section" id="s-vision" data-chapter="Vision considerations">
     <div class="chapter-label">06 — Vision considerations</div>
     <h2>The bigger structural questions</h2>
     <p class="lead">Before we can build program intelligence, we need to resolve what the foundation looks like. These aren't feature decisions — they're architectural ones that shape everything downstream.</p>
@@ -771,8 +818,8 @@
     </div>
 
   </section>
-
-</main>
+  </div><!-- /.vision-inner -->
+  </div><!-- /#vision-band -->
 
 <script>
 // Progress bar
