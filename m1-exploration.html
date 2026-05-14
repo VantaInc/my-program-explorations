@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My program — Vanta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #F5F5F5; display: flex; height: 100vh; overflow: hidden; color: #111827; font-size: 13px; }
+
+  /* ── Left nav ── */
+  #sidenav {
+    width: 48px;
+    background: #fff;
+    border-right: 1px solid #E5E7EB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .nav-logo {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-bottom: 1px solid #E5E7EB;
+    margin-bottom: 4px;
+  }
+  .nav-icons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    width: 100%;
+    padding: 4px 6px;
+    flex: 1;
+  }
+  .nav-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.12s;
+    color: #6B7280;
+    position: relative;
+  }
+  .nav-icon:hover { background: #F3F4F6; color: #374151; }
+  .nav-icon.active { background: #EEF2FF; color: #4F46E5; }
+  .nav-icon.active svg { stroke: #4F46E5; }
+  .nav-divider { width: 28px; height: 1px; background: #E5E7EB; margin: 4px 0; }
+  .nav-bottom {
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .nav-collapse {
+    width: 36px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #9CA3AF;
+    transition: all 0.12s;
+  }
+  .nav-collapse:hover { background: #F3F4F6; color: #6B7280; }
+
+  /* ── Main layout ── */
+  #main { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
+
+  /* ── Top bar ── */
+  #topbar {
+    height: 48px;
+    background: #fff;
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 12px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .org-selector {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px 5px 7px;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s;
+    background: #fff;
+  }
+  .org-selector:hover { background: #F9FAFB; }
+  .org-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: linear-gradient(135deg, #6C47FF, #4F46E5);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .org-name { font-size: 13px; font-weight: 500; color: #111827; }
+  .topbar-spacer { flex: 1; }
+  .topbar-actions { display: flex; align-items: center; gap: 4px; }
+  .topbar-btn {
+    width: 32px; height: 32px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6B7280; transition: background 0.12s;
+    border: none; background: transparent;
+  }
+  .topbar-btn:hover { background: #F3F4F6; color: #374151; }
+  .avatar-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #8B5CF6, #6C47FF);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: #fff; cursor: pointer;
+    margin-left: 2px;
+  }
+
+  /* ── Page content ── */
+  #page { flex: 1; overflow-y: auto; padding: 28px 32px; }
+  h1 { font-size: 22px; font-weight: 600; color: #111827; margin-bottom: 12px; letter-spacing: -0.01em; }
+
+  /* ── Filter pills ── */
+  .filters { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+  .filter-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border: 1px solid #E5E7EB; border-radius: 6px;
+    background: #fff; font-size: 12px; font-weight: 500; color: #374151;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .filter-pill:hover { border-color: #D1D5DB; background: #F9FAFB; }
+  .filter-info {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #9CA3AF; cursor: pointer;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 22px 0;
+  }
+  .card-title { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 3px; }
+  .card-subtitle { font-size: 12px; color: #6B7280; margin-bottom: 16px; }
+
+  /* ── Chart ── */
+  #chart-wrap { padding: 0 22px 20px; }
+  .chart-area { position: relative; height: 220px; }
+  .chart-legend { display: flex; align-items: center; gap: 20px; padding-top: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #6B7280; }
+  .legend-line { width: 24px; height: 2px; border-radius: 1px; }
+
+  /* ── Table ── */
+  .table-wrap { padding: 0 0 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    padding: 10px 16px; text-align: left;
+    font-size: 11px; font-weight: 600; color: #6B7280;
+    background: #F9FAFB; border-bottom: 1px solid #E5E7EB;
+    text-transform: none; letter-spacing: 0;
+  }
+  th.right { text-align: right; }
+  td {
+    padding: 11px 16px; font-size: 12px; color: #374151;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAFA; }
+
+  /* ── Progress bar ── */
+  .prog-wrap { display: flex; align-items: center; gap: 10px; }
+  .prog-bar { flex: 1; height: 6px; background: #F3F4F6; border-radius: 3px; overflow: hidden; min-width: 80px; max-width: 110px; }
+  .prog-fill { height: 100%; border-radius: 3px; }
+  .prog-fill.green { background: #16A34A; }
+  .prog-fill.red { background: #DC2626; }
+  .prog-pct { font-size: 12px; font-weight: 500; color: #374151; min-width: 34px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .dot.red { background: #DC2626; }
+
+  /* ── Audit tracker ── */
+  .audit-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; min-width: 120px; gap: 1px; }
+  .audit-seg { height: 100%; }
+
+  /* ── Table footer ── */
+  .table-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-top: 1px solid #F3F4F6;
+    font-size: 12px; color: #6B7280;
+  }
+  .page-controls { display: flex; align-items: center; gap: 8px; }
+  .per-page {
+    display: flex; align-items: center; gap: 5px;
+    border: 1px solid #E5E7EB; border-radius: 6px;
+    padding: 4px 8px; font-size: 12px; cursor: pointer;
+  }
+  .page-btn {
+    width: 28px; height: 28px; border: 1px solid #E5E7EB; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: #fff; color: #374151; transition: background 0.12s;
+  }
+  .page-btn:hover { background: #F9FAFB; }
+
+  /* ── Status badge ── */
+  .status-badge {
+    font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+  .status-audit { color: #4F46E5; background: #EEF2FF; }
+  .status-scheduled { color: #6B7280; }
+</style>
+</head>
+<body>
+
+<!-- ── Left nav ── -->
+<nav id="sidenav">
+  <div class="nav-logo">
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#6C47FF"/><path d="M8 22L16 10L24 22H8Z" fill="white" opacity="0.9"/><path d="M12 22L16 16L20 22H12Z" fill="white"/></svg>
+  </div>
+  <div class="nav-icons">
+    <!-- Search -->
+    <div class="nav-icon" title="Search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+    </div>
+    <!-- Home (active) -->
+    <div class="nav-icon active" title="My program">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7.5L8 2L14 7.5V14a.5.5 0 01-.5.5H10V11H6v3.5H2.5A.5.5 0 012 14V7.5z"/></svg>
+    </div>
+    <!-- Roadmap -->
+    <div class="nav-icon" title="Roadmap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 14V6M5 11l3 3 3-3M2 3h12"/></svg>
+    </div>
+    <!-- Agent -->
+    <div class="nav-icon" title="Vanta Agent">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M6 8.5c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2"/><circle cx="8" cy="8" r="1"/></svg>
+    </div>
+    <!-- Tests -->
+    <div class="nav-icon" title="Tests">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 8l2 2 4-4"/><rect x="2" y="2" width="12" height="12" rx="3"/></svg>
+    </div>
+    <!-- Reports -->
+    <div class="nav-icon" title="Reports">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="2" width="5" height="12" rx="1.5"/><rect x="9" y="6" width="5" height="8" rx="1.5"/></svg>
+    </div>
+    <div class="nav-divider"></div>
+    <!-- Compliance -->
+    <div class="nav-icon" title="Compliance">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 2L14 5v4c0 3.5-2.5 5.8-6 7C2.5 14.8 2 12.5 2 9V5L8 2z"/></svg>
+    </div>
+    <!-- Risk -->
+    <div class="nav-icon" title="Risk">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 2L15 14H1L8 2z"/><path d="M8 7v3M8 12v.5"/></svg>
+    </div>
+    <!-- Vendors -->
+    <div class="nav-icon" title="Vendors">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="5" width="12" height="9" rx="2"/><path d="M5 5V4a3 3 0 016 0v1"/></svg>
+    </div>
+    <!-- Assets -->
+    <div class="nav-icon" title="Assets">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 7h12M7 7v7"/></svg>
+    </div>
+    <!-- Personnel -->
+    <div class="nav-icon" title="Personnel">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="6" cy="5" r="2.5"/><path d="M2 14c0-2.2 1.8-4 4-4"/><circle cx="11" cy="7" r="2"/><path d="M14 14c0-1.7-1.3-3-3-3H9"/></svg>
+    </div>
+    <div class="nav-divider"></div>
+    <!-- Integrations -->
+    <div class="nav-icon" title="Integrations">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 2L8 6h4L6 14M5 8H3M13 8h-2"/></svg>
+    </div>
+  </div>
+  <div class="nav-bottom">
+    <div class="nav-collapse" title="Expand nav">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 7H4M7 4l-3 3 3 3"/><path d="M13 2v10" stroke-width="1.5" opacity="0.5"/></svg>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<div id="main">
+
+  <!-- Top bar -->
+  <div id="topbar">
+    <div class="org-selector">
+      <div class="org-dot">
+        <svg width="10" height="10" fill="none" stroke="white" stroke-width="2"><path d="M5 2l3.5 6H1.5L5 2z"/></svg>
+      </div>
+      <span class="org-name">TruSecure</span>
+      <svg width="12" height="12" fill="none" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <!-- AI/sparkle -->
+      <button class="topbar-btn" title="Vanta Agent">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2v1M8 13v1M2 8h1M13 8h1M4.2 4.2l.7.7M11.1 11.1l.7.7M11.1 4.9l-.7.7M4.9 11.1l-.7.7"/><circle cx="8" cy="8" r="2.5"/></svg>
+      </button>
+      <button class="topbar-btn" title="Help">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M6.5 6.5a1.5 1.5 0 013 .5c0 1.5-1.5 1.5-1.5 3"/><circle cx="8" cy="12" r=".5" fill="currentColor"/></svg>
+      </button>
+      <button class="topbar-btn" title="Announcements">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8.5V11a1 1 0 001 1h.5M13 5v6a5.5 5.5 0 01-10 0V5L8 2l5 3z"/></svg>
+      </button>
+      <button class="topbar-btn" title="Notifications">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5.5 13.5a2.5 2.5 0 005 0M8 3V2M8 3a4 4 0 014 4v2l1 2H3l1-2V7a4 4 0 014-4z"/></svg>
+      </button>
+      <button class="topbar-btn" title="Settings">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="2"/><path d="M7.5 1v1.2M7.5 12.3v1.2M1 7.5h1.2M12.3 7.5h1.2M3.1 3.1l.85.85M10.55 10.55l.85.85M10.9 3.1l-.85.85M3.95 10.55l-.85.85"/></svg>
+      </button>
+      <div class="avatar-btn" title="Account">AP</div>
+    </div>
+  </div>
+
+  <!-- Page -->
+  <div id="page">
+    <h1>My program</h1>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-pill">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="8" rx="1.5"/><path d="M4.5 2.5v-1M8.5 2.5v-1"/></svg>
+        All business units
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 4.5l3 3 3-3"/></svg>
+      </div>
+      <div class="filter-pill">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="2"/><path d="M1.5 5h10M5 1.5v3.5"/></svg>
+        All frameworks
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 4.5l3 3 3-3"/></svg>
+      </div>
+      <div class="filter-info">
+        <svg width="15" height="15" fill="none" stroke="#9CA3AF" stroke-width="1.6" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5.5v-.1M7.5 7.5v4"/></svg>
+      </div>
+    </div>
+
+    <!-- Program progress -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Program progress</div>
+        <div class="card-subtitle">Control implementation progress over time</div>
+      </div>
+      <div id="chart-wrap">
+        <div class="chart-area">
+          <canvas id="prog-chart" style="width:100%;height:100%"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-line" style="background:#6C47FF"></div>TruSecure · SOC 2</div>
+          <div class="legend-item"><div class="legend-line" style="background:#06B6D4;height:1.5px;border-style:dashed;background:none;border-color:#06B6D4;border-width:0 0 2px;width:24px"></div>TruSecure · ISO 27001</div>
+          <div class="legend-item"><div class="legend-line" style="background:#EC4899;height:1.5px;border-style:dashed;background:none;border-color:#EC4899;border-width:0 0 2px;width:24px"></div>TruSecure · GDPR</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Program status -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Program status</div>
+        <div class="card-subtitle">Status of business unit frameworks</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Business Unit</th>
+              <th>Framework</th>
+              <th>Controls status ↑</th>
+              <th>Tests passing</th>
+              <th>Documents okay</th>
+              <th>Policies approved</th>
+            </tr>
+          </thead>
+          <tbody id="status-tbody"></tbody>
+        </table>
+        <div class="table-footer">
+          <span>1 to 20 of 40 results</span>
+          <div class="page-controls">
+            <span>Show per page</span>
+            <div class="per-page">20 <svg width="10" height="10" fill="none" stroke="#6B7280" stroke-width="1.7"><path d="M2.5 4l2.5 2.5L8 4"/></svg></div>
+            <div class="page-btn"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3L5 6l3 3"/></svg></div>
+            <div class="page-btn"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 3l3 3-3 3"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audit progress -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Audit progress</div>
+        <div class="card-subtitle">Total progress completion of frameworks over time</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Business unit</th>
+              <th>Framework</th>
+              <th>Controls status ↑</th>
+              <th>Audit request tracker</th>
+              <th>Audit</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Program status data ──
+const statusRows = [
+  { bu:'TruSecure · Engineering', fw:'SOC 2 Type II', ctrl:25, tests:1, docs:71, policies:89, bad:true },
+  { bu:'TruSecure · Product', fw:'ISO 27001', ctrl:25, tests:1, docs:65, policies:57, bad:true },
+  { bu:'TruSecure · Ops', fw:'GDPR', ctrl:25, tests:10, docs:48, policies:100, bad:true },
+  { bu:'TruSecure · Engineering', fw:'US Data Privacy', ctrl:25, tests:1, docs:100, policies:13, bad:true },
+  { bu:'TruSecure · Ops', fw:'SOC 2 Type II', ctrl:50, tests:60, docs:30, policies:25 },
+  { bu:'TruSecure · Ops', fw:'SOC 2 Type II', ctrl:50, tests:60, docs:57, policies:25 },
+  { bu:'TruSecure · Engineering', fw:'ISO 27001', ctrl:50, tests:60, docs:30, policies:25 },
+  { bu:'TruSecure · Product', fw:'SOC 2 Type II', ctrl:100, tests:100, docs:100, policies:100 },
+  { bu:'TruSecure · Engineering', fw:'GDPR', ctrl:100, tests:100, docs:100, policies:100 },
+  { bu:'TruSecure · Product', fw:'ISO 27001', ctrl:100, tests:100, docs:100, policies:100 },
+  { bu:'TruSecure · Product', fw:'CIS v8.1', ctrl:100, tests:100, docs:100, policies:100 },
+]
+
+function progBar(pct, bad) {
+  const cls = bad ? 'red' : 'green'
+  return `<div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div>
+    <span class="prog-pct">${pct}%</span>
+  </div>`
+}
+
+function testCell(pct, bad) {
+  return bad
+    ? `<span class="dot red"></span>${pct}%`
+    : `${pct}%`
+}
+
+const tbody = document.getElementById('status-tbody')
+statusRows.forEach(r => {
+  const tr = document.createElement('tr')
+  tr.innerHTML = `
+    <td>${r.bu}</td>
+    <td>${r.fw}</td>
+    <td>${progBar(r.ctrl, r.bad)}</td>
+    <td>${testCell(r.tests, r.bad && r.tests < 5)}</td>
+    <td>${r.docs}%</td>
+    <td>${r.policies}%</td>
+  `
+  tbody.appendChild(tr)
+})
+
+// ── Audit data ──
+const auditRows = [
+  { bu:'TruSecure · Engineering', fw:'SOC 2 Type II', ctrl:66, segs:[{w:55,c:'#16A34A'},{w:20,c:'#3B82F6'},{w:10,c:'#F59E0B'},{w:15,c:'#D1D5DB'}], status:'In audit', statusClass:'status-audit' },
+  { bu:'TruSecure · Ops', fw:'ISO 27001', ctrl:25, segs:[{w:25,c:'#DC2626'},{w:75,c:'#3B82F6'}], status:'In audit', statusClass:'status-audit' },
+  { bu:'TruSecure · Product', fw:'SOC 2 Type II', ctrl:0, segs:[{w:70,c:'#D1D5DB'},{w:30,c:'#9CA3AF'}], status:'Scheduled: Mar 14', statusClass:'status-scheduled' },
+]
+
+function auditBar(segs) {
+  return `<div class="audit-bar">${segs.map(s=>`<div class="audit-seg" style="flex:${s.w};background:${s.c}"></div>`).join('')}</div>`
+}
+
+const atbody = document.getElementById('audit-tbody')
+auditRows.forEach(r => {
+  const tr = document.createElement('tr')
+  tr.innerHTML = `
+    <td>${r.bu}</td>
+    <td>${r.fw}</td>
+    <td>${progBar(r.ctrl, r.ctrl < 30)}</td>
+    <td>${auditBar(r.segs)}</td>
+    <td><span class="status-badge ${r.statusClass}">${r.status}</span></td>
+  `
+  atbody.appendChild(tr)
+})
+
+// ── Line chart ──
+function drawChart() {
+  const canvas = document.getElementById('prog-chart')
+  const wrap = canvas.parentElement
+  const W = wrap.offsetWidth
+  const H = 200
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')
+
+  const pL=52, pR=20, pT=10, pB=36
+  const cW=W-pL-pR, cH=H-pT-pB
+
+  // Data series (% values over 8 time points: Feb 8 to Mar 4)
+  const labels = ['Feb 8','Feb 11','Feb 14','Feb 17','Feb 20','Feb 23','Feb 26','Mar 1','Mar 4']
+  const series = [
+    { color:'#6C47FF', dash:[], pts:[30,38,46,55,63,72,80,87,92] },
+    { color:'#06B6D4', dash:[4,3], pts:[50,54,58,63,67,71,75,79,82] },
+    { color:'#EC4899', dash:[4,3], pts:[22,28,34,42,50,58,65,70,74] },
+  ]
+
+  const allVals = series.flatMap(s=>s.pts)
+  const lo = 0, hi = 100
+
+  function px(i) { return pL + (i/(labels.length-1))*cW }
+  function py(v) { return pT + (1-(v-lo)/(hi-lo))*cH }
+
+  // Grid lines
+  ctx.strokeStyle = '#F3F4F6'
+  ctx.lineWidth = 1
+  ;[0,25,50,75,100].forEach(v => {
+    const y = py(v)
+    ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(pL+cW,y); ctx.stroke()
+    ctx.fillStyle = '#9CA3AF'
+    ctx.font = '10px Inter, sans-serif'
+    ctx.textAlign = 'right'
+    ctx.fillText(v+'%', pL-7, y+3.5)
+  })
+
+  // X labels
+  ctx.fillStyle = '#9CA3AF'
+  ctx.textAlign = 'center'
+  ctx.font = '10px Inter, sans-serif'
+  labels.forEach((l,i) => {
+    if (i % 2 === 0 || i === labels.length-1) {
+      ctx.fillText(l, px(i), pT+cH+16)
+    }
+  })
+
+  // Lines
+  series.forEach(s => {
+    ctx.save()
+    ctx.setLineDash(s.dash)
+    ctx.strokeStyle = s.color
+    ctx.lineWidth = 2
+    ctx.lineJoin = 'round'
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    s.pts.forEach((v,i) => i===0 ? ctx.moveTo(px(i),py(v)) : ctx.lineTo(px(i),py(v)))
+    ctx.stroke()
+
+    // Dots at endpoints
+    ctx.setLineDash([])
+    ctx.fillStyle = s.color
+    ctx.beginPath()
+    ctx.arc(px(s.pts.length-1), py(s.pts[s.pts.length-1]), 3.5, 0, Math.PI*2)
+    ctx.fill()
+    ctx.restore()
+  })
+}
+
+window.addEventListener('load', () => {
+  drawChart()
+  window.addEventListener('resize', drawChart)
+})
+</script>
+</body>
+</html>
