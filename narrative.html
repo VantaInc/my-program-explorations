@@ -988,18 +988,11 @@
   </div><!-- /#vision-band -->
 
 <!--
-  SETUP (5 min — one time):
-  1. supabase.com → New project (free, no credit card)
-  2. SQL Editor → run:
-       create table signatures (
-         id uuid default gen_random_uuid() primary key,
-         name text not null,
-         created_at timestamptz default now()
-       );
-       alter table signatures enable row level security;
-       create policy "public" on signatures for all using (true) with check (true);
-  3. Settings → API → copy Project URL and anon key
-  4. Replace SUPABASE_URL and SUPABASE_ANON_KEY below
+  SETUP (60 seconds — one time):
+  1. Go to npoint.io
+  2. Paste {"signatures":[]} into the editor → click Save
+  3. Copy your ID and token from the dashboard
+  4. Replace NPOINT_ID and NPOINT_TOKEN in the script below
 -->
 <div id="sig-band">
   <div class="sig-inner">
@@ -1062,21 +1055,25 @@ const observer = new IntersectionObserver(entries => {
 sections.forEach(s => observer.observe(s))
 
 // ── Signature wall ──
-// Replace these with your Supabase project values (see setup comment above)
-const SUPABASE_URL = 'SUPABASE_URL'
-const SUPABASE_KEY = 'SUPABASE_ANON_KEY'
+// Setup (60 seconds):
+//  1. Go to npoint.io
+//  2. Paste {"signatures":[]} into the editor, click Save
+//  3. Copy the ID and token from your dashboard, paste below
+const NPOINT_ID    = 'NPOINT_ID'     // e.g. 'abc12345'
+const NPOINT_TOKEN = 'NPOINT_TOKEN'  // e.g. 'xyz...' (from npoint.io dashboard)
 
-const sigInput  = document.getElementById('sig-input')
+const DEMO_MODE = NPOINT_ID === 'NPOINT_ID'
+
+const sigInput   = document.getElementById('sig-input')
 const sigPreview = document.getElementById('sig-preview')
-const sigBtn    = document.getElementById('sig-btn')
-const sigWall   = document.getElementById('sig-wall')
-const sigEmpty  = document.getElementById('sig-empty')
+const sigBtn     = document.getElementById('sig-btn')
+const sigWall    = document.getElementById('sig-wall')
+const sigEmpty   = document.getElementById('sig-empty')
 
 const ROTATIONS = [-4,-3,-2,-1,0,1,2,3,4]
 const SIZES     = [26,28,30,32,34,36,38]
 
 function randOf(arr, seed) {
-  // Deterministic pseudo-random from a string seed
   let h = 0
   for (let i = 0; i < seed.length; i++) h = Math.imul(31, h) + seed.charCodeAt(i) | 0
   return arr[Math.abs(h) % arr.length]
@@ -1088,11 +1085,10 @@ function formatDate(iso) {
 }
 
 function renderSignature(sig, isNew = false) {
-  const rot = randOf(ROTATIONS, sig.name)
+  const rot  = randOf(ROTATIONS, sig.name)
   const size = randOf(SIZES, sig.name + '!')
-  const el = document.createElement('div')
+  const el   = document.createElement('div')
   el.className = 'sig-entry'
-  el.style.setProperty('--r', rot + 'deg')
   el.style.transform = `rotate(${rot}deg)`
   el.innerHTML = `
     <span class="sig-name" style="font-size:${size}px">${sig.name}</span>
@@ -1102,21 +1098,44 @@ function renderSignature(sig, isNew = false) {
   return el
 }
 
+async function npointGet() {
+  const res = await fetch(`https://api.npoint.io/${NPOINT_ID}`)
+  if (!res.ok) throw new Error('npoint fetch failed')
+  return await res.json() // { signatures: [...] }
+}
+
+async function npointSet(data) {
+  const res = await fetch(`https://api.npoint.io/${NPOINT_ID}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Token': NPOINT_TOKEN
+    },
+    body: JSON.stringify(data)
+  })
+  if (!res.ok) throw new Error('npoint write failed')
+}
+
 async function loadSignatures() {
-  if (SUPABASE_URL === 'SUPABASE_URL') {
-    sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+  if (DEMO_MODE) {
+    // Pull from localStorage so local sigs persist across refresh
+    const local = JSON.parse(localStorage.getItem('sig-demo-list') || '[]')
+    if (!local.length) {
+      sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+      return
+    }
+    sigEmpty.style.display = 'none'
+    local.forEach(s => sigWall.appendChild(renderSignature(s)))
     return
   }
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures?select=*&order=created_at.asc`, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-    })
-    const sigs = await res.json()
-    sigEmpty.style.display = 'none'
+    const data = await npointGet()
+    const sigs = data.signatures || []
     if (!sigs.length) {
-      sigEmpty.style.display = 'block'
       sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+      return
     }
+    sigEmpty.style.display = 'none'
     sigs.forEach(s => sigWall.appendChild(renderSignature(s)))
   } catch(e) {
     sigEmpty.textContent = 'Couldn\'t load signatures right now.'
@@ -1124,28 +1143,27 @@ async function loadSignatures() {
 }
 
 async function submitSignature(name) {
-  if (SUPABASE_URL === 'SUPABASE_URL') {
-    // Demo mode — just show locally
-    const fake = { name, created_at: new Date().toISOString() }
+  const newSig = { name, created_at: new Date().toISOString() }
+
+  if (DEMO_MODE) {
+    const local = JSON.parse(localStorage.getItem('sig-demo-list') || '[]')
+    local.push(newSig)
+    localStorage.setItem('sig-demo-list', JSON.stringify(local))
     sigEmpty.style.display = 'none'
-    sigWall.appendChild(renderSignature(fake, true))
+    sigWall.appendChild(renderSignature(newSig, true))
     localStorage.setItem('narrative-signed', name)
     showSigned(name)
     return
   }
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures`, {
-    method: 'POST',
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation'
-    },
-    body: JSON.stringify({ name })
-  })
-  const [sig] = await res.json()
+
+  // GET current list, append, POST back
+  const data = await npointGet()
+  const sigs = data.signatures || []
+  sigs.push(newSig)
+  await npointSet({ signatures: sigs })
+
   sigEmpty.style.display = 'none'
-  sigWall.appendChild(renderSignature(sig, true))
+  sigWall.appendChild(renderSignature(newSig, true))
   localStorage.setItem('narrative-signed', name)
   showSigned(name)
 }
