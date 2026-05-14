@@ -600,6 +600,178 @@
     </div>
   </section>
 
+  <!-- ── VISION CONSIDERATIONS ── -->
+  <section class="section" id="s-vision" data-chapter="Vision considerations">
+    <div class="chapter-label">06 — Vision considerations</div>
+    <h2>The bigger structural questions</h2>
+    <p class="lead">Before we can build program intelligence, we need to resolve what the foundation looks like. These aren't feature decisions — they're architectural ones that shape everything downstream.</p>
+
+    <!-- Home + Onboarding overlap -->
+    <div class="chapter-card">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(245,158,11,0.12);">
+          <svg width="18" height="18" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L9 2l7 6v7a1 1 0 01-1 1h-4v-4H6v4H2a1 1 0 01-1-1V8z"/><circle cx="9" cy="11" r="2" stroke-width="1.3"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Untangle Home and Onboarding</h3>
+          <p style="font-size:13px;margin:0;">SOC-2 guide, My Work, and My Program all blur together as entry points. They need to become distinct, intentional experiences.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>Right now, new users land in a product that's trying to be a guide, a dashboard, a task list, and a home all at once. <strong>The result is none of them.</strong> We need to make a clear decision about what each surface is for — and who it's for.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:20px 0;">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#F59E0B;margin-bottom:8px;">SOC-2 Guide</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Onboarding and framework setup. Temporal — it gets you to live, then gets out of the way.</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#60A5FA;margin-bottom:8px;">My Work</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Task and evidence management. Operational — the daily grind for practitioners and contributors.</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A78BFA;margin-bottom:8px;">My Program</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Program-level intelligence. Strategic — for managers and leads who need the signal, not the noise.</div>
+          </div>
+        </div>
+        <p>These three can coexist — but only if they have clear, non-overlapping jobs. The friction today comes from each one trying to serve all users at all stages.</p>
+        <div class="placeholder" style="min-height:180px;margin-top:20px;">
+          <div class="placeholder-label">Experience map</div>
+          <div class="placeholder-desc">Diagram showing the three surfaces, their distinct jobs, and how users move between them over time — new to live to expert.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Home -->
+    <div class="chapter-card">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(16,185,129,0.12);">
+          <svg width="18" height="18" fill="none" stroke="#10B981" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M6 9l2 2 4-4"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Home as a dynamic, user-aware surface</h3>
+          <p style="font-size:13px;margin:0;">Home shouldn't be the same for a first-day contributor and a seasoned program lead. It should know who you are.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>A <strong>true home experience</strong> adapts to user type, role, tenure, and context. What a contributor sees on day 3 is completely different from what a program manager sees heading into audit week. The surface shape-shifts — not in a jarring way, but in a way that makes every person feel like it was built for them.</p>
+        <div style="display:flex;gap:12px;margin:20px 0;flex-wrap:wrap;">
+          <div style="flex:1;min-width:160px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:11px;font-weight:600;color:#10B981;margin-bottom:6px;">New user</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Guided, progressive, milestone-driven. Gets them to value fast.</div>
+          </div>
+          <div style="flex:1;min-width:160px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:11px;font-weight:600;color:#60A5FA;margin-bottom:6px;">Contributor</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Task-focused, quick-action oriented. Get in, get it done.</div>
+          </div>
+          <div style="flex:1;min-width:160px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:11px;font-weight:600;color:#A78BFA;margin-bottom:6px;">Program lead</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Intelligence-first. Status, signals, what needs a decision.</div>
+          </div>
+          <div style="flex:1;min-width:160px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-size:11px;font-weight:600;color:#F472B6;margin-bottom:6px;">Executive</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">Digest view. One number, one risk, one ask.</div>
+          </div>
+        </div>
+        <div class="placeholder" style="min-height:200px;margin-top:8px;">
+          <div class="placeholder-label">Home state variations</div>
+          <div class="placeholder-desc">Side-by-side views of Home across user types — show how the same surface adapts its content, density, and emphasis.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav modernization + ScoSeg -->
+    <div class="chapter-card">
+      <div class="chapter-card-header">
+        <div class="chapter-card-icon" style="background:rgba(108,71,255,0.15);">
+          <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="5" height="14" rx="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5"/><rect x="10" y="11" width="6" height="5" rx="1.5"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Modernize the nav — ScoSeg integration</h3>
+          <p style="font-size:13px;margin:0;">The nav is currently a static list. It should be a dynamic, context-aware surface — and ScoSeg needs to live inside it, not beside it.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>ScoSeg today feels like a separate mode you switch into. The opportunity is to make scope and segmentation a <strong>first-class nav concept</strong> — something that's always present, always shaping what you see, rather than a separate flow you opt into.</p>
+        <p>A modernized nav understands what you're currently focused on. If you're in audit prep mode, the nav surfaces audit-relevant items. If you're in a vendor review, vendor-related tools come forward. <strong>The nav becomes a context layer, not just a link list.</strong></p>
+        <div class="placeholder" style="min-height:200px;margin-top:20px;">
+          <div class="placeholder-label">ScoSeg × nav integration</div>
+          <div class="placeholder-desc">Show how scope and segment selection integrates into the nav — how the nav shifts when you change context, and how ScoSeg becomes ambient rather than explicit.</div>
+        </div>
+        <div class="pills">
+          <div class="pill">Contextual surfacing</div>
+          <div class="pill">Scope as nav state</div>
+          <div class="pill">Segment-aware items</div>
+          <div class="pill">Ambient, not modal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Left nav / Right canvas split -->
+    <div class="chapter-card" style="border-color:rgba(108,71,255,0.3);background:linear-gradient(135deg,rgba(108,71,255,0.06),rgba(15,11,36,0.8));">
+      <div class="chapter-card-header" style="border-color:rgba(108,71,255,0.2);">
+        <div class="chapter-card-icon" style="background:rgba(108,71,255,0.2);">
+          <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="5" height="12" rx="1.5"/><rect x="10" y="3" width="6" height="12" rx="1.5"/><path d="M7.5 9h2.5" stroke-dasharray="1.5 1.5"/></svg>
+        </div>
+        <div>
+          <h3 style="margin-bottom:4px;">Left nav ↔ Right canvas — the architecture</h3>
+          <p style="font-size:13px;margin:0;">The most important structural idea: the nav operates independently from the workspace. This is the unlock for flexibility, focus modes, and scale.</p>
+        </div>
+      </div>
+      <div class="chapter-card-body">
+        <p>Today the nav and the content are coupled — the nav points to a page, the page fills the canvas, full stop. The vision decouples them. <strong>The left nav becomes a persistent context layer.</strong> The right canvas becomes a composable workspace that can hold any combination of views, panels, and tools.</p>
+
+        <div style="margin:24px 0;display:flex;gap:0;border:1px solid rgba(108,71,255,0.25);border-radius:12px;overflow:hidden;min-height:160px;">
+          <!-- Left nav mockup -->
+          <div style="width:160px;background:rgba(108,71,255,0.08);border-right:1px solid rgba(108,71,255,0.2);padding:16px 12px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-light);opacity:0.6;margin-bottom:4px;">Nav context</div>
+            <div style="height:6px;background:rgba(255,255,255,0.15);border-radius:3px;width:80%;"></div>
+            <div style="height:6px;background:var(--purple);opacity:0.5;border-radius:3px;width:60%;"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;width:70%;"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;width:55%;"></div>
+            <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;width:75%;"></div>
+            <div style="margin-top:auto;font-size:9px;color:var(--purple-light);opacity:0.5;">Persists across canvas</div>
+          </div>
+          <!-- Right canvas mockup -->
+          <div style="flex:1;padding:16px;display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:4px;">Composable canvas</div>
+            <div style="display:flex;gap:8px;flex:1;">
+              <div style="flex:2;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:9px;color:var(--faint);">Widget A</div>
+              <div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:9px;color:var(--faint);">Widget B</div>
+            </div>
+            <div style="height:32px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:9px;color:var(--faint);">Ilma sidebar / panel</div>
+          </div>
+        </div>
+
+        <p>This split enables <strong>focus modes</strong> — the nav can collapse to a minimal rail, or expand into a rich context panel, while the canvas reconfigures to match the task at hand. An audit deep-dive looks different from a weekly check-in. The architecture supports both without building two separate products.</p>
+
+        <div class="placeholder" style="min-height:200px;margin-top:20px;">
+          <div class="placeholder-label">Focus mode explorations</div>
+          <div class="placeholder-desc">Show 2–3 focus modes side by side — audit prep mode, executive digest mode, contributor task mode — illustrating how the nav + canvas adapt together.</div>
+        </div>
+
+        <div class="pills" style="margin-top:20px;">
+          <div class="pill">Nav as context layer</div>
+          <div class="pill">Composable canvas</div>
+          <div class="pill">Focus modes</div>
+          <div class="pill">Collapsible rail</div>
+          <div class="pill">Scalable to any workflow</div>
+          <div class="pill">Ilma as panel, not modal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:40px;">
+      <p>"The left nav and right canvas operating independently isn't just a layout decision. It's a statement about how the product scales — any workflow, any user, any depth — without rebuilding the app."</p>
+      <div class="callout-source">Design principle</div>
+    </div>
+
+    <div class="placeholder" style="min-height:140px;margin-top:32px;">
+      <div class="placeholder-label">Open questions / next steps</div>
+      <div class="placeholder-desc">What do we need to align on before we can design against these? Where are the open debates, the dependencies, the things we need to spike on first.</div>
+    </div>
+
+  </section>
+
 </main>
 
 <script>
