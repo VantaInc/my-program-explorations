@@ -1522,6 +1522,21 @@ async function loadSignatures() {
     if (!res.ok) throw new Error('load failed')
     const data = await res.json()
     const sigs = data.signatures || []
+
+    // Reconcile localStorage: if we think we're signed but the sig isn't
+    // actually in the backend, clear the stale state and show the form
+    const storedName = mySignedName()
+    const storedAt   = mySignedAt()
+    if (storedName) {
+      const stillExists = sigs.some(s => s.name === storedName && s.created_at === storedAt)
+      if (!stillExists) {
+        localStorage.removeItem('narrative-signed')
+        localStorage.removeItem('narrative-signed-at')
+        document.getElementById('sig-signed-area').style.display = 'none'
+        document.getElementById('sig-form-area').style.display = 'flex'
+      }
+    }
+
     if (!sigs.length) { sigEmpty.textContent = 'No signatures yet — be the first to sign.'; return }
     sigEmpty.style.display = 'none'
     sigs.forEach(s => sigWall.appendChild(renderSignature(s)))
