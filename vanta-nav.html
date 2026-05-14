@@ -1684,6 +1684,18 @@ const VIEWS = {
         </div>
       </div>
 
+      <!-- ── Mode tab strip ── -->
+      <div id="home-tab-strip" style="display:flex;align-items:center;gap:4px;margin-bottom:24px;margin-top:4px">
+        <button id="tab-overview" onclick="setHomeTab('overview')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;border:1.5px solid rgba(0,0,0,0.1);cursor:pointer;transition:all 0.15s;background:#111827;color:#fff;border-color:#111827">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="6.5" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx="1"/></svg>
+          Overview
+        </button>
+        <button id="ai-mode-toggle-btn" onclick="setHomeTab('ai')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;border:1.5px solid rgba(0,0,0,0.09);cursor:pointer;transition:all 0.15s;background:#fff;color:#6B7280">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.5" fill="#7C3AED"/><circle cx="6" cy="6" r="5" stroke="#7C3AED" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
+          AI Mode
+        </button>
+      </div>
+
       <!-- ── Editorial subhead ── -->
       <p style="font-family:var(--font-display);font-size:34px;font-weight:400;font-style:italic;color:#5B21B6;letter-spacing:-0.02em;line-height:1.2;margin-bottom:14px">Forge held steady. Atlas is fine. Orbit needs you this week.</p>
       <p style="font-family:var(--font-body);font-size:14px;color:#6B7280;line-height:1.75;margin-bottom:36px">Six things changed while you were out. Vanta has triaged them — three are already handled, two need your judgment, one is worth a conversation with Caesar.</p>
@@ -2150,6 +2162,11 @@ const VIEWS = {
       <script>
       let _aiModeOn = false
 
+      function setHomeTab(tab) {
+        if (tab === 'ai' && !_aiModeOn) toggleAIMode()
+        else if (tab === 'overview' && _aiModeOn) toggleAIMode()
+      }
+
       function toggleAIMode() {
         _aiModeOn = !_aiModeOn
         const root = document.getElementById('home-page-root')
@@ -2159,7 +2176,7 @@ const VIEWS = {
         if (_aiModeOn) {
           // Fade standard content
           Array.from(root.children).forEach(el => {
-            if (el.id === 'home-ai-mode' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
+            if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
             el.style.transition = 'opacity 0.3s ease, transform 0.35s ease'
             el.style.opacity = '0'
             el.style.transform = 'scale(0.97) translateY(8px)'
@@ -2172,9 +2189,13 @@ const VIEWS = {
           document.getElementById('ai-landing').style.display = 'flex'
           document.getElementById('ai-generating').style.display = 'none'
           document.getElementById('ai-result').style.display = 'none'
-          // Update button
-          btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#5B21B6" stroke-width="2" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg> Exit AI Mode'
-          btn.style.background = '#EDE9FE'
+          // Update tab active state
+          document.getElementById('tab-overview').style.background = '#fff'
+          document.getElementById('tab-overview').style.color = '#6B7280'
+          document.getElementById('tab-overview').style.borderColor = 'rgba(0,0,0,0.09)'
+          btn.style.background = '#111827'
+          btn.style.color = '#fff'
+          btn.style.borderColor = '#111827'
           // Focus input
           setTimeout(() => { const inp = document.getElementById('ai-mode-input'); if(inp) inp.focus() }, 350)
         } else {
@@ -2183,15 +2204,19 @@ const VIEWS = {
           setTimeout(() => { overlay.style.display = 'none' }, 300)
           // Restore standard content
           Array.from(root.children).forEach(el => {
-            if (el.id === 'home-ai-mode' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
+            if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
             el.style.transition = 'opacity 0.35s ease, transform 0.4s ease'
             el.style.opacity = '1'
             el.style.transform = 'none'
             el.style.pointerEvents = ''
           })
-          // Reset button
-          btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.5" fill="#7C3AED"/><circle cx="6" cy="6" r="5" stroke="#7C3AED" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg> AI Mode'
-          btn.style.background = 'rgba(245,243,255,0.9)'
+          // Reset tab active state
+          document.getElementById('tab-overview').style.background = '#111827'
+          document.getElementById('tab-overview').style.color = '#fff'
+          document.getElementById('tab-overview').style.borderColor = '#111827'
+          btn.style.background = '#fff'
+          btn.style.color = '#6B7280'
+          btn.style.borderColor = 'rgba(0,0,0,0.09)'
           _aiModeOn = false
         }
       }
