@@ -385,33 +385,6 @@
 
   </div>
 
-    <!-- Full story -->
-    <a href="/story" class="card" style="background:#09051A;border:1px solid rgba(108,71,255,0.25);">
-      <div class="card-thumb" style="background:linear-gradient(135deg,#09051A 0%,#130d30 50%,#1a0d3d 100%);position:relative;overflow:hidden;">
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 70%,rgba(108,71,255,0.2) 0%,transparent 70%);"></div>
-        <div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:5px;padding:16px;">
-          <div style="display:flex;gap:5px;align-items:center;">
-            <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(167,139,250,0.7);">Scene</div>
-            <div style="flex:1;height:1px;background:rgba(108,71,255,0.2);"></div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;">
-            <div style="background:rgba(108,71,255,0.12);border:1px solid rgba(108,71,255,0.2);border-radius:5px;padding:5px 8px;font-size:10px;color:rgba(167,139,250,0.8);">0 — The Setup</div>
-            <div style="background:rgba(108,71,255,0.08);border:1px solid rgba(108,71,255,0.15);border-radius:5px;padding:5px 8px;font-size:10px;color:rgba(167,139,250,0.6);">1 — First Login</div>
-            <div style="background:rgba(108,71,255,0.06);border:1px solid rgba(108,71,255,0.1);border-radius:5px;padding:5px 8px;font-size:10px;color:rgba(167,139,250,0.4);">2 — Synthesize</div>
-            <div style="background:rgba(108,71,255,0.04);border:1px solid rgba(108,71,255,0.08);border-radius:5px;padding:5px 8px;font-size:10px;color:rgba(167,139,250,0.25);">··· 9 more scenes</div>
-          </div>
-        </div>
-      </div>
-      <div class="card-body" style="background:#09051A;">
-        <div class="card-tag" style="background:rgba(108,71,255,0.15);color:#A78BFA;border:1px solid rgba(108,71,255,0.25);">Full story</div>
-        <div class="card-title" style="color:#F0ECF8;">The complete narrative</div>
-        <div class="card-desc" style="color:rgba(240,236,248,0.45);">12 scenes. Pam, Caesar, Denise. Video and GIF for every flow.</div>
-        <div class="card-cta" style="color:#A78BFA;">
-          Enter
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6.5h9M7 3l4 3.5L7 10"/></svg>
-        </div>
-      </div>
-    </a>
   </div>
 
   <!-- Narrative walkthrough -->
@@ -452,6 +425,24 @@
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6.5h9M7 3l4 3.5L7 10"/></svg>
       </div>
     </div>
+  </a>
+
+  <!-- Full story — diminished, below separator -->
+  <div style="display:flex;align-items:center;gap:16px;margin-top:8px;margin-bottom:16px;">
+    <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+    <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.18);">Also</span>
+    <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+  </div>
+
+  <a href="/story" style="display:flex;align-items:center;gap:18px;padding:16px 20px;border:1px solid rgba(255,255,255,0.07);border-radius:12px;background:rgba(255,255,255,0.02);text-decoration:none;transition:background 0.15s,border-color 0.15s;" onmouseover="this.style.background='rgba(108,71,255,0.05)';this.style.borderColor='rgba(108,71,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.07)'">
+    <div style="width:36px;height:36px;border-radius:8px;background:rgba(108,71,255,0.1);border:1px solid rgba(108,71,255,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg width="16" height="16" fill="none" stroke="rgba(167,139,250,0.7)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="2"/><path d="M7 7l3 2-3 2V7z" fill="rgba(167,139,250,0.7)" stroke="none"/></svg>
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:500;color:rgba(240,236,248,0.55);margin-bottom:2px;">The full story — 12 scenes</div>
+      <div style="font-size:11px;color:rgba(240,236,248,0.28);">Complete scene-by-scene narrative with video and GIF for every flow</div>
+    </div>
+    <svg width="14" height="14" fill="none" stroke="rgba(167,139,250,0.4)" stroke-width="1.8" stroke-linecap="round"><path d="M2 7h9M7 3.5l4 3.5-4 3.5"/></svg>
   </a>
 
   <div class="footer">my-program-explorations.vercel.app</div>
