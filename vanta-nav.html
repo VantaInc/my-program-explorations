@@ -1659,7 +1659,7 @@ const VIEWS = {
     return `<div class="page" id="home-page-root" style="position:relative">
 
       <!-- ── Top bar ── -->
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
+      <div id="home-top-bar" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
         <div>
           <h1 style="font-family:var(--font-display);font-size:36px;font-weight:300;color:#111827;letter-spacing:-0.02em;line-height:1.1;margin-bottom:6px">Good morning, Pam.</h1>
           <div style="font-family:var(--font-ui);font-size:12px;color:#9CA3AF">Tuesday, May 12 &nbsp;·&nbsp; 3 business units active</div>
@@ -4558,7 +4558,7 @@ function toggleAIMode() {
   if (_aiModeOn) {
     // Fade standard content (keep tab strip + overlay visible)
     Array.from(root.children).forEach(el => {
-      if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
+      if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.id === 'home-top-bar' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
       el.style.transition = 'opacity 0.3s ease, transform 0.35s ease'
       el.style.opacity = '0'
       el.style.transform = 'scale(0.97) translateY(8px)'
@@ -4585,7 +4585,7 @@ function toggleAIMode() {
     setTimeout(() => { overlay.style.display = 'none' }, 300)
     // Restore standard content
     Array.from(root.children).forEach(el => {
-      if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
+      if (el.id === 'home-ai-mode' || el.id === 'home-tab-strip' || el.id === 'home-top-bar' || el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return
       el.style.transition = 'opacity 0.35s ease, transform 0.4s ease'
       el.style.opacity = '1'
       el.style.transform = 'none'
