@@ -1561,13 +1561,10 @@ async function submitSignature(name) {
 }
 
 async function removeSignature(sig, el) {
-  const res = await fetch('/api/signatures', {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: sig.name, created_at: sig.created_at })
-  })
-  if (!res.ok) throw new Error('remove failed')
-  el.remove()
+  const scrollY = window.scrollY
+
+  // Optimistic: update UI immediately
+  if (el && el.parentNode) el.remove()
   localStorage.removeItem('narrative-signed')
   localStorage.removeItem('narrative-signed-at')
   document.getElementById('sig-signed-area').style.display = 'none'
@@ -1580,6 +1577,21 @@ async function removeSignature(sig, el) {
   if (!sigWall.querySelector('.sig-entry')) {
     sigEmpty.style.display = 'block'
     sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+  }
+  // Hold scroll position through the layout shift
+  window.scrollTo({ top: scrollY, behavior: 'instant' })
+
+  // API call in background — restore if it fails
+  try {
+    const res = await fetch('/api/signatures', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: sig.name, created_at: sig.created_at })
+    })
+    if (!res.ok) throw new Error('remove failed')
+  } catch(e) {
+    // Rollback: reload to restore accurate state
+    loadSignatures()
   }
 }
 
