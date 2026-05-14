@@ -364,6 +364,89 @@
     color: var(--muted);
   }
 
+  /* Pam memo card */
+  .pam-memo {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(108,71,255,0.2);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pam-memo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6C47FF, #A78BFA, #6C47FF);
+  }
+  .pam-memo-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .pam-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #6C47FF, #A78BFA);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+  .pam-meta {
+    flex: 1;
+  }
+  .pam-meta-row {
+    display: flex; gap: 8px; align-items: baseline;
+    font-size: 12px; margin-bottom: 3px;
+  }
+  .pam-meta-label {
+    color: var(--faint); text-transform: uppercase;
+    letter-spacing: 0.07em; font-size: 10px; font-weight: 600;
+    flex-shrink: 0; width: 44px;
+  }
+  .pam-meta-value { color: var(--muted); }
+  .pam-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.25);
+    color: #F59E0B;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 20px;
+    flex-shrink: 0;
+  }
+  .pam-badge::before { content: '●'; font-size: 6px; }
+  .pam-body {
+    font-size: 14px;
+    color: rgba(240,236,248,0.6);
+    line-height: 1.75;
+  }
+  .pam-body em {
+    font-style: normal;
+    color: var(--purple-light);
+    font-weight: 500;
+  }
+  .pam-sign-off {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pam-sign-off::before {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+
   /* Signatures wall */
   #sig-wall {
     min-height: 200px;
@@ -482,7 +565,20 @@
     font-size: 13px;
     color: var(--faint);
     font-style: italic;
+    text-align: center;
   }
+  .sig-compliant {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.25);
+    color: #10B981;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 20px;
+    font-style: normal;
+    margin-bottom: 10px;
+  }
+  .sig-compliant::before { content: '✓'; }
   @keyframes sigpop {
     0% { opacity: 0; transform: scale(0.8) rotate(var(--r)); }
     100% { opacity: 1; transform: scale(1) rotate(var(--r)); }
@@ -1001,9 +1097,27 @@
 <div id="sig-band">
   <div class="sig-inner">
     <div class="sig-header">
-      <div class="sig-eyebrow">Those who've seen it</div>
-      <h2 class="sig-title">Sign the record</h2>
-      <p class="sig-sub">Leave your name. Let the others know you were here.</p>
+      <div class="sig-eyebrow">Policy VNT-2024-M1 &nbsp;·&nbsp; Required Action</div>
+      <h2 class="sig-title">Signature Required</h2>
+    </div>
+
+    <div class="pam-memo">
+      <div class="pam-memo-header">
+        <div class="pam-avatar">PP</div>
+        <div class="pam-meta">
+          <div class="pam-meta-row"><span class="pam-meta-label">To</span><span class="pam-meta-value">All Stakeholders &amp; Reviewers</span></div>
+          <div class="pam-meta-row"><span class="pam-meta-label">From</span><span class="pam-meta-value">Pam &mdash; Program Manager, GRC</span></div>
+          <div class="pam-meta-row"><span class="pam-meta-label">Re</span><span class="pam-meta-value">M1 Proposal Review &mdash; Acknowledgment Required</span></div>
+        </div>
+        <div class="pam-badge">Action Required</div>
+      </div>
+      <p class="pam-body">
+        Hi team &mdash; per <em>Policy VNT-2024-M1</em>, all individuals who have reviewed the M1 proposal are required to sign below to confirm receipt and acknowledgment. This keeps the record clean, the team aligned, and my action item queue at zero.
+      </p>
+      <p class="pam-body" style="margin-top:10px;">
+        I will be tracking who has and hasn't signed. <em>Don&rsquo;t make me send a follow-up.</em>
+      </p>
+      <div class="pam-sign-off">Pam &nbsp;📋</div>
     </div>
 
     <div id="sig-wall">
@@ -1013,13 +1127,14 @@
     <div class="sig-form-area" id="sig-form-area">
       <div class="sig-preview" id="sig-preview">Your name</div>
       <div class="sig-line">
-        <input type="text" id="sig-input" class="sig-input" placeholder="Sign your name" maxlength="40" autocomplete="name"/>
+        <input type="text" id="sig-input" class="sig-input" placeholder="Full name" maxlength="40" autocomplete="name"/>
         <div class="sig-hint"><span>x</span><span>Sign here</span></div>
       </div>
-      <button id="sig-btn" class="sig-submit">Sign the record</button>
+      <button id="sig-btn" class="sig-submit">Acknowledge &amp; Sign</button>
     </div>
     <div class="sig-form-area" id="sig-signed-area" style="display:none;">
-      <p class="sig-already" id="sig-already-msg">You signed this.</p>
+      <span class="sig-compliant">In Compliance</span>
+      <p class="sig-already" id="sig-already-msg">You&rsquo;re on the record.</p>
     </div>
   </div>
 </div>
@@ -1149,7 +1264,7 @@ function showSigned(name) {
   const area = document.getElementById('sig-signed-area')
   area.style.display = 'flex'
   document.getElementById('sig-already-msg').innerHTML =
-    `You signed this as <em style="font-family:'Dancing Script',cursive;font-size:17px;color:rgba(200,185,255,0.8)">${name}</em>.`
+    `Signed as <em style="font-family:'Dancing Script',cursive;font-size:17px;color:rgba(200,185,255,0.8)">${name}</em>. Pam has been notified.`
 }
 
 // Live preview as you type
