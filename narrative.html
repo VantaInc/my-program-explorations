@@ -585,6 +585,126 @@
   }
   .sig-entry { animation: sigpop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
 
+  /* ── Pam voice callout ── */
+  .pam-voice {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 28px 0;
+    padding: 20px 22px;
+    background: rgba(108,71,255,0.06);
+    border: 1px solid rgba(108,71,255,0.18);
+    border-radius: 12px;
+    position: relative;
+  }
+  .pam-voice::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #6C47FF, #A78BFA);
+    border-radius: 3px 0 0 3px;
+  }
+  .pam-v-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #6C47FF, #A78BFA);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0; margin-top: 1px;
+    letter-spacing: 0;
+  }
+  .pam-v-text {
+    font-size: 14px;
+    color: rgba(240,236,248,0.72);
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .pam-v-name {
+    font-size: 10px; font-weight: 700;
+    color: var(--purple-light);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    font-style: normal;
+  }
+
+  /* ── Pam day view ── */
+  .pam-day {
+    margin: 40px 0;
+    position: relative;
+  }
+  .pam-day::before {
+    content: '';
+    position: absolute;
+    left: 52px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: rgba(108,71,255,0.2);
+  }
+  .pam-moment {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 36px;
+    align-items: flex-start;
+  }
+  .pam-moment:last-child { margin-bottom: 0; }
+  .pam-moment-time {
+    font-size: 11px; font-weight: 600;
+    color: var(--purple-light); opacity: 0.6;
+    letter-spacing: 0.04em;
+    width: 44px; flex-shrink: 0;
+    padding-top: 3px;
+    text-align: right;
+  }
+  .pam-moment-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--purple);
+    flex-shrink: 0;
+    margin-top: 5px;
+    box-shadow: 0 0 0 3px rgba(108,71,255,0.2);
+  }
+  .pam-moment-body {
+    flex: 1;
+  }
+  .pam-moment-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--purple-light);
+    margin-bottom: 8px;
+  }
+  .pam-moment-body p {
+    font-size: 14px;
+    color: rgba(240,236,248,0.6);
+    margin-bottom: 12px;
+  }
+  .pam-ilma-bubble {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(172,85,255,0.07);
+    border: 1px solid rgba(172,85,255,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 10px;
+  }
+  .pam-ilma-icon {
+    font-size: 14px;
+    color: #AC55FF;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .pam-ilma-bubble p {
+    font-size: 13px;
+    color: rgba(240,236,248,0.65);
+    font-style: italic;
+    margin: 0;
+    line-height: 1.65;
+  }
+  .pam-ilma-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #AC55FF;
+    margin-bottom: 6px;
+  }
+
   /* ── Progress bar on scroll ── */
   #progress-bar {
     position: fixed;
@@ -640,9 +760,12 @@
       <div class="placeholder-desc">Add context here — the current state of program management, the pain points, who's feeling them and how.</div>
     </div>
 
-    <div class="callout">
-      <p>"I spend half my Monday just pulling numbers together so I can tell Caesar where we stand. By the time I've done that, I've lost the morning."</p>
-      <div class="callout-source">Placeholder quote — replace with real user voice</div>
+    <div class="pam-voice">
+      <div class="pam-v-avatar">PP</div>
+      <div>
+        <p class="pam-v-text">"I spend half my Monday just pulling numbers together so I can tell Caesar where we stand. By the time I've done that, I've lost the morning. And the worst part? I do it again the following Monday."</p>
+        <p class="pam-v-name">Pam — GRC Program Manager</p>
+      </div>
     </div>
 
     <p>The problem isn't data. <strong>The problem is that the data doesn't talk.</strong> It sits in controls tables and evidence logs, waiting for a human to go find it, interpret it, and translate it into something a stakeholder can act on.</p>
@@ -669,6 +792,14 @@
     </div>
 
     <div class="rule"></div>
+
+    <div class="pam-voice">
+      <div class="pam-v-avatar">PP</div>
+      <div>
+        <p class="pam-v-text">"I don't want another tool I have to go query. I want something that already knows what I need to know when I sit down in the morning. If it can tell me what's changed, what needs me, and what I should tell Caesar — I'd use it every single day."</p>
+        <p class="pam-v-name">Pam — GRC Program Manager</p>
+      </div>
+    </div>
 
     <p>The vision is a program layer that is <strong>proactive, not reactive</strong>. It doesn't wait for you to ask questions — it already knows your audit windows, your recurring syncs, your stakeholders' preferences, and what changed since last week.</p>
 
@@ -697,6 +828,13 @@
       </div>
       <div class="chapter-card-body">
         <p>This isn't a dashboard. It's a <strong>command center for your program</strong> — opinionated about what matters, quiet about what doesn't. Every widget earns its place.</p>
+        <div class="pam-voice">
+          <div class="pam-v-avatar">PP</div>
+          <div>
+            <p class="pam-v-text">"Right now my 'program view' is four browser tabs and a spreadsheet I update manually. This is the view I'd have open every morning before my first meeting."</p>
+            <p class="pam-v-name">Pam</p>
+          </div>
+        </div>
         <div class="placeholder" style="min-height:220px;margin-top:20px;">
           <div class="placeholder-label">Widget showcase</div>
           <div class="placeholder-desc">Annotated walkthrough of the My Program view — specific widgets, their jobs, how they change over time.</div>
@@ -724,6 +862,13 @@
       </div>
       <div class="chapter-card-body">
         <p>Right now, every surface in Vanta shows data differently. Numbers, tables, color-coded pills — but no visual system tying it together. The dataviz kit is a <strong>shared component library for data storytelling</strong> that permeates the whole product.</p>
+        <div class="pam-voice">
+          <div class="pam-v-avatar">PP</div>
+          <div>
+            <p class="pam-v-text">"I've been apologizing for the way my charts look for two years. I copy data into separate tools to make it presentable before I can share it with Caesar. A consistent visual language that's built in would save me hours a week."</p>
+            <p class="pam-v-name">Pam</p>
+          </div>
+        </div>
         <div class="placeholder" style="min-height:220px;margin-top:20px;">
           <div class="placeholder-label">Component showcase</div>
           <div class="placeholder-desc">Visual examples of the dataviz kit in context — trend lines, health rings, comparison bars, sparklines across different Vanta surfaces.</div>
@@ -751,6 +896,13 @@
       </div>
       <div class="chapter-card-body">
         <p>The difference between data and insight is interpretation. Smart insights is the layer that reads your program and <strong>tells you what it sees</strong> — anomalies, momentum, risks you didn't know to look for.</p>
+        <div class="pam-voice">
+          <div class="pam-v-avatar">PP</div>
+          <div>
+            <p class="pam-v-text">"I can't watch every control every day. I need something that watches for me and tells me when something's off — before it becomes a problem heading into audit. That's the version of Ilma I actually want."</p>
+            <p class="pam-v-name">Pam</p>
+          </div>
+        </div>
         <div class="placeholder" style="min-height:220px;margin-top:20px;">
           <div class="placeholder-label">Ilma insight flow</div>
           <div class="placeholder-desc">Examples of Ilma surfacing proactive insights — a control that's trending wrong, an upcoming deadline the team hasn't prepped for, a pattern across BUs.</div>
@@ -777,6 +929,13 @@
       </div>
       <div class="chapter-card-body">
         <p>Today's "reports" are PDFs of what your screen looks like. <strong>Data on ice</strong> is the concept that your program data is always structured, always ready — so when you need a QBR deck, a board update, or an audit package, it assembles itself from live data rather than getting manually assembled from stale exports.</p>
+        <div class="pam-voice">
+          <div class="pam-v-avatar">PP</div>
+          <div>
+            <p class="pam-v-text">"Last quarter's board deck took me two full days. Most of that was just finding the right numbers, checking they were current, and making them look like they belong on the same slide. If the data was always structured and ready, that deck would take an hour."</p>
+            <p class="pam-v-name">Pam</p>
+          </div>
+        </div>
         <div class="placeholder" style="min-height:220px;margin-top:20px;">
           <div class="placeholder-label">Report generation flow</div>
           <div class="placeholder-desc">Show the experience of generating a real report — selecting audience, format, date range — and what comes out the other end.</div>
@@ -804,6 +963,13 @@
       </div>
       <div class="chapter-card-body">
         <p>Compliance isn't a snapshot — it's a trajectory. Forecasting gives practitioners the tools to <strong>plan ahead, model scenarios, and communicate confidence</strong> about where the program will be at audit time, not just where it is today.</p>
+        <div class="pam-voice">
+          <div class="pam-v-avatar">PP</div>
+          <div>
+            <p class="pam-v-text">"Caesar always asks me where we'll be at audit time. Right now I'm essentially guessing — with a confident face. I want to actually know. And I want to be able to show him a trajectory, not just a number."</p>
+            <p class="pam-v-name">Pam</p>
+          </div>
+        </div>
         <div class="placeholder" style="min-height:220px;margin-top:20px;">
           <div class="placeholder-label">Forecasting tools</div>
           <div class="placeholder-desc">Show trajectory views, what-if scenario modeling, and audit readiness forecasts — the planning layer that turns reactive compliance into proactive program management.</div>
@@ -815,6 +981,89 @@
           <div class="pill">Milestone planning</div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ── PAM AT ALTITUDE ── -->
+  <section class="section" id="s-pam" data-chapter="Through Pam's eyes">
+    <div class="chapter-label">04 — Through Pam's eyes</div>
+    <h2>What program altitude actually looks like</h2>
+    <p class="lead">Pam manages compliance across four frameworks for a 400-person company. She can't be in the weeds — she needs to be above them. Here's what her morning looks like when the product works.</p>
+
+    <div class="pam-day">
+
+      <div class="pam-moment">
+        <div class="pam-moment-time">8:47am</div>
+        <div class="pam-moment-dot"></div>
+        <div class="pam-moment-body">
+          <div class="pam-moment-label">Morning brief</div>
+          <p>Pam opens My Program. She didn't have to ask anything. The system already ran the math: 91% posture across all frameworks, one control flagged in the Infrastructure BU, two items needing her sign-off before EOD. She has the full picture before her first coffee.</p>
+        </div>
+      </div>
+
+      <div class="pam-moment">
+        <div class="pam-moment-time">9:12am</div>
+        <div class="pam-moment-dot"></div>
+        <div class="pam-moment-body">
+          <div class="pam-moment-label">Ilma flags a pattern</div>
+          <p>Ilma surfaces something Pam wouldn't have thought to check: vendor access reviews are running 12 days late in Engineering — the same pattern that appeared before each of the last two audits. The window opens in 18 days.</p>
+          <div class="pam-ilma-bubble">
+            <div class="pam-ilma-icon">✦</div>
+            <div>
+              <div class="pam-ilma-label">Ask Ilma</div>
+              <p>"Engineering vendor access reviews are running 12 days behind — this same pattern appeared in Q3 and Q1 before your last two audit windows. You have 18 days before your next window opens. Want me to flag this for Denise?"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pam-moment">
+        <div class="pam-moment-time">9:14am</div>
+        <div class="pam-moment-dot"></div>
+        <div class="pam-moment-body">
+          <div class="pam-moment-label">Delegate — two taps</div>
+          <p>Pam assigns the remediation to Denise. Vanta creates the task, sets the deadline, ties it to the specific controls at risk, and adds the relevant evidence requirements. Denise gets a clear task with everything she needs. Pam doesn't write a single word of the brief.</p>
+        </div>
+      </div>
+
+      <div class="pam-moment">
+        <div class="pam-moment-time">10:30am</div>
+        <div class="pam-moment-dot"></div>
+        <div class="pam-moment-body">
+          <div class="pam-moment-label">Caesar prep — Ask Ilma</div>
+          <p>Tuesday sync with Caesar is tomorrow. Pam asks Ilma to draft her talking points. Ilma already knows what Caesar cares about — one health number, one risk to watch, one decision. The brief is ready in seconds. Pam edits two sentences.</p>
+          <div class="pam-ilma-bubble">
+            <div class="pam-ilma-icon">✦</div>
+            <div>
+              <div class="pam-ilma-label">Ask Ilma</div>
+              <p>"Here's your Tuesday brief for Caesar: Posture is 91%, up 3pts from last month. Watch item: vendor access reviews in Engineering — Denise is on it, resolving by Thursday. No decisions needed from him today. Want me to add the trajectory chart?"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pam-moment">
+        <div class="pam-moment-time">11:00am</div>
+        <div class="pam-moment-dot"></div>
+        <div class="pam-moment-body">
+          <div class="pam-moment-label">Posture trajectory</div>
+          <p>Before the next QBR, Pam pulls a forecast. At current velocity, the program hits 96% posture by audit day. She drops the trajectory view into the board deck. The whole thing — from opening Vanta to closing the deck — took four minutes.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pam-voice" style="margin-top: 8px;">
+      <div class="pam-v-avatar">PP</div>
+      <div>
+        <p class="pam-v-text">"I used to spend my mornings finding the state of my program. Now I spend them running it."</p>
+        <p class="pam-v-name">Pam — GRC Program Manager</p>
+      </div>
+    </div>
+
+    <div class="placeholder" style="min-height:200px;margin-top:32px;">
+      <div class="placeholder-label">Pam day-in-life prototype</div>
+      <div class="placeholder-desc">Interactive walkthrough of Pam's morning — the My Program view, the Ilma delegation flow, and the Caesar brief — as a clickable prototype.</div>
     </div>
   </section>
 
@@ -841,7 +1090,7 @@
       <div class="ritual-card">
         <div class="ritual-card-tag" style="color:#A78BFA;">Personal</div>
         <h3>Your specific rhythms</h3>
-        <p>Every Tuesday you sync with Caesar. He wants a quick health update, one risk to watch, and anything that needs his sign-off. The system knows this — and has it ready before you open the meeting.</p>
+        <p>Every Tuesday Pam syncs with Caesar. He wants a quick health update, one risk to watch, and anything that needs his sign-off. The system knows this — and has it ready before she opens the meeting.</p>
         <div class="placeholder" style="min-height:120px;margin-top:16px;">
           <div class="placeholder-label">Personal ritual flow</div>
           <div class="placeholder-desc">Show the Caesar Tuesday prep — what Ilma surfaces, how the briefing is shaped around his preferences.</div>
@@ -849,9 +1098,12 @@
       </div>
     </div>
 
-    <div class="callout">
-      <p>"The goal isn't to automate your work. It's to make sure that when you walk into Caesar's office on Tuesday, you already know exactly what he's going to ask."</p>
-      <div class="callout-source">Design principle — replace with real framing</div>
+    <div class="pam-voice">
+      <div class="pam-v-avatar">PP</div>
+      <div>
+        <p class="pam-v-text">"Caesar asks the same three questions every Tuesday. Where are we, what's the risk, and what do you need from me. I want Vanta to already have those answers drafted before I walk in the door."</p>
+        <p class="pam-v-name">Pam — GRC Program Manager</p>
+      </div>
     </div>
 
     <div class="placeholder" style="min-height:180px;">
