@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/", "destination": "/vanta-nav.html" }]
+  "rewrites": [
+    { "source": "/vision", "destination": "/vanta-nav.html" },
+    { "source": "/m1-exploration", "destination": "/m1-exploration.html" }
+  ]
 }
