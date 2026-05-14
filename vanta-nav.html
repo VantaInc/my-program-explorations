@@ -2106,6 +2106,25 @@ const VIEWS = {
                 </div>
               </div>
 
+              <!-- Framework filter dropdown -->
+              <div style="position:relative;">
+                <button id="ai-fw-btn" onclick="toggleAIFrameworkDropdown()" style="display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:11px;font-weight:500;color:#6B7280;background:transparent;border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:5px 10px;cursor:pointer;transition:all 0.12s;white-space:nowrap" onmouseenter="this.style.background='#F9FAFB';this.style.borderColor='rgba(0,0,0,0.18)'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(0,0,0,0.1)'">
+                  <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>
+                  <span id="ai-fw-label">All frameworks</span>
+                  <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 3.5l3 3 3-3"/></svg>
+                </button>
+                <div id="ai-fw-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.1);z-index:50;min-width:180px;overflow:hidden;">
+                  ${[
+                    {label:'All frameworks', sub:'No filter applied', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h10M4 7h6M6 10h2"/></svg>'},
+                    {label:'SOC 2', sub:'Trust Services Criteria', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" fill="rgba(124,58,237,0.12)" stroke="#7C3AED" stroke-width="1.4"/><path d="M4.5 7l2 2 3-3" stroke="#7C3AED" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+                    {label:'ISO 27001', sub:'Information security', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" fill="rgba(5,150,105,0.12)" stroke="#059669" stroke-width="1.4"/><path d="M4.5 7l2 2 3-3" stroke="#059669" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+                    {label:'HIPAA', sub:'Healthcare compliance', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" fill="rgba(37,99,235,0.1)" stroke="#2563EB" stroke-width="1.4"/><path d="M4.5 7l2 2 3-3" stroke="#2563EB" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+                    {label:'GDPR', sub:'Data privacy', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" fill="rgba(217,119,6,0.1)" stroke="#D97706" stroke-width="1.4"/><path d="M4.5 7l2 2 3-3" stroke="#D97706" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+                    {label:'PCI DSS', sub:'Payment card security', icon:'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="1.5" width="11" height="11" rx="2" fill="rgba(220,38,38,0.1)" stroke="#DC2626" stroke-width="1.4"/><path d="M4.5 7l2 2 3-3" stroke="#DC2626" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+                  ].map(o => `<button onclick="setAIFramework(${JSON.stringify(o.label)});event.stopPropagation()" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;background:transparent;border:none;cursor:pointer;font-family:var(--font-ui);text-align:left;transition:background 0.1s" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">${o.icon}<div><div style="font-size:12px;font-weight:500;color:#111827">${o.label}</div><div style="font-size:10px;color:#9CA3AF;margin-top:1px">${o.sub}</div></div></button>`).join('')}
+                </div>
+              </div>
+
               <!-- Use my data -->
               <button style="display:flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:11px;font-weight:500;color:#6B7280;background:transparent;border:1px solid rgba(0,0,0,0.1);border-radius:8px;padding:5px 10px;cursor:pointer;transition:all 0.12s;white-space:nowrap" onmouseenter="this.style.background='#F9FAFB';this.style.borderColor='rgba(0,0,0,0.18)'" onmouseleave="this.style.background='transparent';this.style.borderColor='rgba(0,0,0,0.1)'">
                 <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="1.5" width="10" height="11" rx="1.5"/><path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3"/></svg>
@@ -4539,6 +4558,38 @@ function setAIScope(label) {
   if (lbl) lbl.textContent = label
   const dd = document.getElementById('ai-scope-dropdown')
   if (dd) dd.style.display = 'none'
+}
+
+let _aiFramework = 'All frameworks'
+function toggleAIFrameworkDropdown() {
+  const dd = document.getElementById('ai-fw-dropdown')
+  if (!dd) return
+  const isOpen = dd.style.display !== 'none'
+  dd.style.display = isOpen ? 'none' : 'block'
+  if (!isOpen) {
+    const close = (e) => { if (!dd.contains(e.target) && e.target.id !== 'ai-fw-btn') { dd.style.display = 'none'; document.removeEventListener('click', close) } }
+    setTimeout(() => document.addEventListener('click', close), 0)
+  }
+}
+function setAIFramework(label) {
+  _aiFramework = label
+  const lbl = document.getElementById('ai-fw-label')
+  if (lbl) lbl.textContent = label
+  const dd = document.getElementById('ai-fw-dropdown')
+  if (dd) dd.style.display = 'none'
+  // Tint the button purple when a specific framework is selected
+  const btn = document.getElementById('ai-fw-btn')
+  if (btn) {
+    if (label !== 'All frameworks') {
+      btn.style.color = '#5B21B6'
+      btn.style.borderColor = 'rgba(109,40,217,0.3)'
+      btn.style.background = 'rgba(245,243,255,0.85)'
+    } else {
+      btn.style.color = '#6B7280'
+      btn.style.borderColor = 'rgba(0,0,0,0.1)'
+      btn.style.background = 'transparent'
+    }
+  }
 }
 
 let _aiModeOn = false
