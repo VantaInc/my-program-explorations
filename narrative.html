@@ -567,6 +567,47 @@
     font-style: italic;
     text-align: center;
   }
+  .sig-remove-link {
+    font-size: 11px;
+    color: var(--faint);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none; border: none;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.03em;
+    transition: color 0.15s;
+    margin-top: 4px;
+  }
+  .sig-remove-link:hover { color: rgba(239,68,68,0.7); }
+  /* Remove × on own sig entry */
+  .sig-entry { position: relative; }
+  .sig-entry-remove {
+    position: absolute;
+    top: 6px; right: 2px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--faint);
+    font-size: 13px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+    padding: 0;
+  }
+  .sig-entry:hover .sig-entry-remove {
+    opacity: 1;
+    border-color: rgba(239,68,68,0.25);
+    background: rgba(239,68,68,0.07);
+    color: rgba(239,68,68,0.6);
+  }
+  .sig-entry-remove:hover {
+    background: rgba(239,68,68,0.18) !important;
+    color: #EF4444 !important;
+  }
   .sig-compliant {
     display: inline-flex; align-items: center; gap: 7px;
     background: rgba(16,185,129,0.1);
@@ -1387,6 +1428,7 @@
     <div class="sig-form-area" id="sig-signed-area" style="display:none;">
       <span class="sig-compliant">In Compliance</span>
       <p class="sig-already" id="sig-already-msg">You&rsquo;re on the record.</p>
+      <button class="sig-remove-link" id="sig-remove-own">Remove my signature</button>
     </div>
   </div>
 </div>
@@ -1426,10 +1468,6 @@ const observer = new IntersectionObserver(entries => {
 sections.forEach(s => observer.observe(s))
 
 // ── Signature wall ──
-// Reads + writes go through /api/signatures (Vercel serverless fn)
-// Token lives in Vercel env vars — never touches the browser
-const DEMO_MODE = false
-
 const sigInput   = document.getElementById('sig-input')
 const sigPreview = document.getElementById('sig-preview')
 const sigBtn     = document.getElementById('sig-btn')
@@ -1450,30 +1488,38 @@ function formatDate(iso) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+function mySignedName()  { return localStorage.getItem('narrative-signed') }
+function mySignedAt()    { return localStorage.getItem('narrative-signed-at') }
+function isMySig(sig)    { return sig.name === mySignedName() && sig.created_at === mySignedAt() }
+
 function renderSignature(sig, isNew = false) {
   const rot  = randOf(ROTATIONS, sig.name)
   const size = randOf(SIZES, sig.name + '!')
   const el   = document.createElement('div')
   el.className = 'sig-entry'
   el.style.transform = `rotate(${rot}deg)`
+  el.dataset.sigName = sig.name
+  el.dataset.sigAt   = sig.created_at
   el.innerHTML = `
     <span class="sig-name" style="font-size:${size}px">${sig.name}</span>
     <span class="sig-date">${formatDate(sig.created_at)}</span>
   `
+  if (isMySig(sig)) {
+    const btn = document.createElement('button')
+    btn.className = 'sig-entry-remove'
+    btn.title = 'Remove your signature'
+    btn.textContent = '×'
+    btn.addEventListener('click', (e) => { e.stopPropagation(); removeSignature(sig, el) })
+    el.appendChild(btn)
+  }
   if (isNew) el.style.animationDelay = '0s'
   return el
 }
 
 async function loadSignatures() {
-  if (DEMO_MODE) {
-    const local = JSON.parse(localStorage.getItem('sig-demo-list') || '[]')
-    if (!local.length) { sigEmpty.textContent = 'No signatures yet — be the first to sign.'; return }
-    sigEmpty.style.display = 'none'
-    local.forEach(s => sigWall.appendChild(renderSignature(s)))
-    return
-  }
   try {
     const res = await fetch('/api/signatures')
+    if (!res.ok) throw new Error('load failed')
     const data = await res.json()
     const sigs = data.signatures || []
     if (!sigs.length) { sigEmpty.textContent = 'No signatures yet — be the first to sign.'; return }
@@ -1485,30 +1531,41 @@ async function loadSignatures() {
 }
 
 async function submitSignature(name) {
-  const newSig = { name, created_at: new Date().toISOString() }
-
-  if (DEMO_MODE) {
-    const local = JSON.parse(localStorage.getItem('sig-demo-list') || '[]')
-    local.push(newSig)
-    localStorage.setItem('sig-demo-list', JSON.stringify(local))
-    sigEmpty.style.display = 'none'
-    sigWall.appendChild(renderSignature(newSig, true))
-    localStorage.setItem('narrative-signed', name)
-    showSigned(name)
-    return
-  }
-
   const res = await fetch('/api/signatures', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name })
   })
   if (!res.ok) throw new Error('submit failed')
-
+  const sig = await res.json() // server returns { name, created_at }
+  localStorage.setItem('narrative-signed', sig.name)
+  localStorage.setItem('narrative-signed-at', sig.created_at)
   sigEmpty.style.display = 'none'
-  sigWall.appendChild(renderSignature(newSig, true))
-  localStorage.setItem('narrative-signed', name)
-  showSigned(name)
+  sigWall.appendChild(renderSignature(sig, true))
+  showSigned(sig.name)
+}
+
+async function removeSignature(sig, el) {
+  const res = await fetch('/api/signatures', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: sig.name, created_at: sig.created_at })
+  })
+  if (!res.ok) throw new Error('remove failed')
+  el.remove()
+  localStorage.removeItem('narrative-signed')
+  localStorage.removeItem('narrative-signed-at')
+  document.getElementById('sig-signed-area').style.display = 'none'
+  document.getElementById('sig-form-area').style.display = 'flex'
+  sigInput.value = ''
+  sigPreview.textContent = 'Your name'
+  sigPreview.classList.remove('has-text')
+  sigBtn.disabled = false
+  sigBtn.textContent = 'Acknowledge & Sign'
+  if (!sigWall.querySelector('.sig-entry')) {
+    sigEmpty.style.display = 'block'
+    sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+  }
 }
 
 function showSigned(name) {
@@ -1519,7 +1576,7 @@ function showSigned(name) {
     `Signed as <em style="font-family:'Dancing Script',cursive;font-size:17px;color:rgba(200,185,255,0.8)">${name}</em>. Pam has been notified.`
 }
 
-// Live preview as you type
+// Live preview
 sigInput.addEventListener('input', () => {
   const val = sigInput.value
   sigPreview.textContent = val || 'Your name'
@@ -1533,18 +1590,31 @@ sigBtn.addEventListener('click', async () => {
   sigBtn.disabled = true
   sigBtn.textContent = 'Signing...'
   try { await submitSignature(name) }
-  catch(e) { sigBtn.disabled = false; sigBtn.textContent = 'Sign the record' }
+  catch(e) { sigBtn.disabled = false; sigBtn.textContent = 'Acknowledge & Sign' }
 })
 
-sigInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') sigBtn.click()
+sigInput.addEventListener('keydown', e => { if (e.key === 'Enter') sigBtn.click() })
+
+// Remove own sig button
+document.getElementById('sig-remove-own').addEventListener('click', async function() {
+  const name = mySignedName()
+  const at   = mySignedAt()
+  if (!name || !at) return
+  this.textContent = 'Removing...'
+  this.disabled = true
+  try {
+    const el = sigWall.querySelector(`[data-sig-name="${CSS.escape(name)}"][data-sig-at="${CSS.escape(at)}"]`)
+    await removeSignature({ name, created_at: at }, el || document.createElement('div'))
+  } catch(e) {
+    this.disabled = false
+    this.textContent = 'Remove my signature'
+  }
 })
 
-// Check if already signed
-const alreadySigned = localStorage.getItem('narrative-signed')
+// Restore signed state on load (show "in compliance" if localStorage says signed)
+const alreadySigned = mySignedName()
 if (alreadySigned) showSigned(alreadySigned)
 
-// Load on mount
 loadSignatures()
 </script>
 </body>
