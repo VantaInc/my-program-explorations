@@ -1059,8 +1059,8 @@ sections.forEach(s => observer.observe(s))
 //  1. Go to npoint.io
 //  2. Paste {"signatures":[]} into the editor, click Save
 //  3. Copy the ID and token from your dashboard, paste below
-const NPOINT_ID    = 'NPOINT_ID'     // e.g. 'abc12345'
-const NPOINT_TOKEN = 'NPOINT_TOKEN'  // e.g. 'xyz...' (from npoint.io dashboard)
+const NPOINT_ID    = '16b41a9ebd9f02c76ec5'
+const NPOINT_TOKEN = ''  // leave empty for public documents
 
 const DEMO_MODE = NPOINT_ID === 'NPOINT_ID'
 
@@ -1105,12 +1105,11 @@ async function npointGet() {
 }
 
 async function npointSet(data) {
+  const headers = { 'Content-Type': 'application/json' }
+  if (NPOINT_TOKEN) headers['X-Token'] = NPOINT_TOKEN
   const res = await fetch(`https://api.npoint.io/${NPOINT_ID}`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Token': NPOINT_TOKEN
-    },
+    headers,
     body: JSON.stringify(data)
   })
   if (!res.ok) throw new Error('npoint write failed')
