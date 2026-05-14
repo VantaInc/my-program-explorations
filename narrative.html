@@ -319,86 +319,171 @@
     background: rgba(108,71,255,0.05);
   }
 
-  /* ── Seen band ── */
-  #seen-band {
-    background: #060312;
-    border-top: 1px solid rgba(108,71,255,0.2);
+  /* ── Signature wall ── */
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap');
+
+  #sig-band {
+    background: #04020F;
+    border-top: 1px solid rgba(108,71,255,0.15);
     padding: 80px 32px 100px;
-    text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  .seen-inner {
-    max-width: 440px;
+  #sig-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(108,71,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .sig-inner {
+    max-width: 760px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
-  .seen-eye {
-    width: 48px; height: 48px;
-    border-radius: 14px;
-    background: rgba(108,71,255,0.15);
-    border: 1px solid rgba(108,71,255,0.25);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    color: var(--purple-light);
+  .sig-header {
+    text-align: center;
+    margin-bottom: 56px;
   }
-  .seen-title {
+  .sig-eyebrow {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--purple-light); opacity: 0.6;
+    margin-bottom: 12px;
+  }
+  .sig-title {
     font-family: 'Fraunces', serif;
-    font-size: 26px; font-weight: 300;
+    font-size: 32px; font-weight: 300;
     color: var(--text);
     letter-spacing: -0.02em;
     margin-bottom: 8px;
   }
-  .seen-sub {
+  .sig-sub {
     font-size: 14px;
     color: var(--muted);
-    margin-bottom: 28px;
   }
-  .seen-row {
-    display: flex; gap: 10px;
-    justify-content: center;
+
+  /* Signatures wall */
+  #sig-wall {
+    min-height: 200px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.02);
+    padding: 36px 40px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: flex-start;
+    position: relative;
   }
-  .seen-input {
-    flex: 1; max-width: 220px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px;
-    padding: 11px 16px;
-    font-size: 14px;
+  .sig-wall-empty {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: var(--faint);
+    padding: 40px 0;
+    font-style: italic;
+  }
+  .sig-entry {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 18px;
+    position: relative;
+  }
+  .sig-name {
+    font-family: 'Dancing Script', cursive;
+    font-size: 28px;
+    color: rgba(200,185,255,0.85);
+    line-height: 1.1;
+    white-space: nowrap;
+    display: block;
+    transition: color 0.2s;
+  }
+  .sig-name:hover { color: rgba(200,185,255,1); }
+  .sig-date {
+    font-size: 9px;
+    color: var(--faint);
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  .sig-entry::after {
+    content: '';
+    position: absolute;
+    bottom: 6px; left: 18px; right: 18px;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Sign form */
+  .sig-form-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .sig-preview {
+    font-family: 'Dancing Script', cursive;
+    font-size: 40px;
+    color: rgba(200,185,255,0.5);
+    min-height: 56px;
+    transition: color 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .sig-preview.has-text { color: rgba(200,185,255,0.9); }
+  .sig-line {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .sig-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 0;
+    font-size: 15px;
     color: var(--text);
     font-family: 'Inter', sans-serif;
+    text-align: center;
     outline: none;
-    transition: border-color 0.15s, background 0.15s;
+    transition: border-color 0.15s;
+    letter-spacing: 0.02em;
   }
-  .seen-input::placeholder { color: var(--faint); }
-  .seen-input:focus {
-    border-color: rgba(108,71,255,0.5);
-    background: rgba(108,71,255,0.08);
-  }
-  .seen-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--purple);
-    color: #fff;
-    border: none;
+  .sig-input::placeholder { color: var(--faint); letter-spacing: 0.05em; font-size: 12px; text-transform: uppercase; }
+  .sig-input:focus { border-bottom-color: rgba(108,71,255,0.6); }
+  .sig-hint { font-size: 10px; color: var(--faint); margin-top: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .sig-submit {
+    margin-top: 8px;
+    background: rgba(108,71,255,0.2);
+    color: var(--purple-light);
+    border: 1px solid rgba(108,71,255,0.35);
     border-radius: 10px;
-    padding: 11px 22px;
+    padding: 11px 28px;
     font-size: 14px;
     font-weight: 500;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
   }
-  .seen-btn:hover { background: #7C5AFF; }
-  .seen-btn:active { transform: scale(0.97); }
-  .seen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .seen-check {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    background: rgba(16,185,129,0.12);
-    border: 1px solid rgba(16,185,129,0.3);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    color: #10B981;
+  .sig-submit:hover { background: rgba(108,71,255,0.35); border-color: rgba(108,71,255,0.5); color: #fff; }
+  .sig-submit:active { transform: scale(0.97); }
+  .sig-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .sig-already {
+    font-size: 13px;
+    color: var(--faint);
+    font-style: italic;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes sigpop {
+    0% { opacity: 0; transform: scale(0.8) rotate(var(--r)); }
+    100% { opacity: 1; transform: scale(1) rotate(var(--r)); }
+  }
+  .sig-entry { animation: sigpop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
 
   /* ── Progress bar on scroll ── */
   #progress-bar {
@@ -902,52 +987,47 @@
   </div><!-- /.vision-inner -->
   </div><!-- /#vision-band -->
 
-<!-- ── WHO'S SEEN THIS ── -->
 <!--
-  SETUP (2 min):
-  1. Go to formspree.io → New Form → enter your email
-  2. Replace FORMSPREE_FORM_ID below with your form ID (looks like "xabcdefg")
-  3. Submit once to activate (Formspree sends a confirmation email)
-  Done — responses come straight to your inbox.
+  SETUP (5 min — one time):
+  1. supabase.com → New project (free, no credit card)
+  2. SQL Editor → run:
+       create table signatures (
+         id uuid default gen_random_uuid() primary key,
+         name text not null,
+         created_at timestamptz default now()
+       );
+       alter table signatures enable row level security;
+       create policy "public" on signatures for all using (true) with check (true);
+  3. Settings → API → copy Project URL and anon key
+  4. Replace SUPABASE_URL and SUPABASE_ANON_KEY below
 -->
-<div id="seen-band">
-  <div class="seen-inner">
-    <div id="seen-idle">
-      <div class="seen-eye">
-        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="11" cy="11" rx="9" ry="6"/><circle cx="11" cy="11" r="3"/><circle cx="11" cy="11" r="1" fill="currentColor" stroke="none"/></svg>
-      </div>
-      <h3 class="seen-title">Leave your mark</h3>
-      <p class="seen-sub">Let Cam know you saw this.</p>
-      <form id="seen-form" action="https://formspree.io/f/FORMSPREE_FORM_ID" method="POST">
-        <input type="hidden" name="_subject" value="👁 Someone saw the pitch deck">
-        <div class="seen-row">
-          <input
-            type="text"
-            name="name"
-            id="seen-name"
-            class="seen-input"
-            placeholder="Your name"
-            autocomplete="name"
-            required
-          />
-          <button type="submit" class="seen-btn" id="seen-submit">
-            <span id="seen-btn-label">I saw this</span>
-            <svg id="seen-btn-spinner" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;animation:spin 0.8s linear infinite"><path d="M8 2a6 6 0 110 12A6 6 0 018 2z" opacity="0.3"/><path d="M8 2a6 6 0 016 6"/></svg>
-          </button>
-        </div>
-      </form>
+<div id="sig-band">
+  <div class="sig-inner">
+    <div class="sig-header">
+      <div class="sig-eyebrow">Those who've seen it</div>
+      <h2 class="sig-title">Sign the record</h2>
+      <p class="sig-sub">Leave your name. Let the others know you were here.</p>
     </div>
-    <div id="seen-done" style="display:none;">
-      <div class="seen-check">
-        <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="13" cy="13" r="11"/><path d="M8 13l3.5 3.5L18 9"/></svg>
+
+    <div id="sig-wall">
+      <div class="sig-wall-empty" id="sig-empty">Loading signatures...</div>
+    </div>
+
+    <div class="sig-form-area" id="sig-form-area">
+      <div class="sig-preview" id="sig-preview">Your name</div>
+      <div class="sig-line">
+        <input type="text" id="sig-input" class="sig-input" placeholder="Sign your name" maxlength="40" autocomplete="name"/>
+        <div class="sig-hint">x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sign here</div>
       </div>
-      <h3 class="seen-title">Logged.</h3>
-      <p class="seen-sub" id="seen-confirm-msg">Thanks for taking a look.</p>
+      <button id="sig-btn" class="sig-submit">Sign the record</button>
+    </div>
+    <div class="sig-form-area" id="sig-signed-area" style="display:none;">
+      <p class="sig-already" id="sig-already-msg">You signed this.</p>
     </div>
   </div>
 </div>
 
-<script>
+<script><script>
 // Progress bar
 window.addEventListener('scroll', () => {
   const doc = document.documentElement
@@ -981,54 +1061,130 @@ const observer = new IntersectionObserver(entries => {
 
 sections.forEach(s => observer.observe(s))
 
-// ── Seen form ──
-const seenForm = document.getElementById('seen-form')
-const seenInput = document.getElementById('seen-name')
-const seenBtn = document.getElementById('seen-submit')
-const seenBtnLabel = document.getElementById('seen-btn-label')
-const seenSpinner = document.getElementById('seen-btn-spinner')
+// ── Signature wall ──
+// Replace these with your Supabase project values (see setup comment above)
+const SUPABASE_URL = 'SUPABASE_URL'
+const SUPABASE_KEY = 'SUPABASE_ANON_KEY'
 
-// If already submitted, skip to done state
-const savedName = localStorage.getItem('narrative-seen-name')
-if (savedName) {
-  showDone(savedName)
+const sigInput  = document.getElementById('sig-input')
+const sigPreview = document.getElementById('sig-preview')
+const sigBtn    = document.getElementById('sig-btn')
+const sigWall   = document.getElementById('sig-wall')
+const sigEmpty  = document.getElementById('sig-empty')
+
+const ROTATIONS = [-4,-3,-2,-1,0,1,2,3,4]
+const SIZES     = [26,28,30,32,34,36,38]
+
+function randOf(arr, seed) {
+  // Deterministic pseudo-random from a string seed
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = Math.imul(31, h) + seed.charCodeAt(i) | 0
+  return arr[Math.abs(h) % arr.length]
 }
 
-seenForm.addEventListener('submit', async e => {
-  e.preventDefault()
-  const name = seenInput.value.trim()
-  if (!name) return
+function formatDate(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
-  // Loading state
-  seenBtnLabel.textContent = 'Logging...'
-  seenSpinner.style.display = 'block'
-  seenBtn.disabled = true
+function renderSignature(sig, isNew = false) {
+  const rot = randOf(ROTATIONS, sig.name)
+  const size = randOf(SIZES, sig.name + '!')
+  const el = document.createElement('div')
+  el.className = 'sig-entry'
+  el.style.setProperty('--r', rot + 'deg')
+  el.style.transform = `rotate(${rot}deg)`
+  el.innerHTML = `
+    <span class="sig-name" style="font-size:${size}px">${sig.name}</span>
+    <span class="sig-date">${formatDate(sig.created_at)}</span>
+  `
+  if (isNew) el.style.animationDelay = '0s'
+  return el
+}
 
-  try {
-    const res = await fetch(seenForm.action, {
-      method: 'POST',
-      body: new FormData(seenForm),
-      headers: { 'Accept': 'application/json' }
-    })
-    if (res.ok) {
-      localStorage.setItem('narrative-seen-name', name)
-      showDone(name)
-    } else {
-      // Still show done — don't block on backend errors
-      localStorage.setItem('narrative-seen-name', name)
-      showDone(name)
-    }
-  } catch {
-    localStorage.setItem('narrative-seen-name', name)
-    showDone(name)
+async function loadSignatures() {
+  if (SUPABASE_URL === 'SUPABASE_URL') {
+    sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+    return
   }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures?select=*&order=created_at.asc`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+    })
+    const sigs = await res.json()
+    sigEmpty.style.display = 'none'
+    if (!sigs.length) {
+      sigEmpty.style.display = 'block'
+      sigEmpty.textContent = 'No signatures yet — be the first to sign.'
+    }
+    sigs.forEach(s => sigWall.appendChild(renderSignature(s)))
+  } catch(e) {
+    sigEmpty.textContent = 'Couldn\'t load signatures right now.'
+  }
+}
+
+async function submitSignature(name) {
+  if (SUPABASE_URL === 'SUPABASE_URL') {
+    // Demo mode — just show locally
+    const fake = { name, created_at: new Date().toISOString() }
+    sigEmpty.style.display = 'none'
+    sigWall.appendChild(renderSignature(fake, true))
+    localStorage.setItem('narrative-signed', name)
+    showSigned(name)
+    return
+  }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/signatures`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation'
+    },
+    body: JSON.stringify({ name })
+  })
+  const [sig] = await res.json()
+  sigEmpty.style.display = 'none'
+  sigWall.appendChild(renderSignature(sig, true))
+  localStorage.setItem('narrative-signed', name)
+  showSigned(name)
+}
+
+function showSigned(name) {
+  document.getElementById('sig-form-area').style.display = 'none'
+  const area = document.getElementById('sig-signed-area')
+  area.style.display = 'flex'
+  document.getElementById('sig-already-msg').innerHTML =
+    `You signed this as <em style="font-family:'Dancing Script',cursive;font-size:17px;color:rgba(200,185,255,0.8)">${name}</em>.`
+}
+
+// Live preview as you type
+sigInput.addEventListener('input', () => {
+  const val = sigInput.value
+  sigPreview.textContent = val || 'Your name'
+  sigPreview.classList.toggle('has-text', !!val)
 })
 
-function showDone(name) {
-  document.getElementById('seen-idle').style.display = 'none'
-  document.getElementById('seen-done').style.display = 'block'
-  document.getElementById('seen-confirm-msg').textContent = `Thanks for looking, ${name}.`
-}
+// Submit
+sigBtn.addEventListener('click', async () => {
+  const name = sigInput.value.trim()
+  if (!name) { sigInput.focus(); return }
+  sigBtn.disabled = true
+  sigBtn.textContent = 'Signing...'
+  try { await submitSignature(name) }
+  catch(e) { sigBtn.disabled = false; sigBtn.textContent = 'Sign the record' }
+})
+
+sigInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sigBtn.click()
+})
+
+// Check if already signed
+const alreadySigned = localStorage.getItem('narrative-signed')
+if (alreadySigned) showSigned(alreadySigned)
+
+// Load on mount
+loadSignatures()
 </script>
 </body>
 </html>
