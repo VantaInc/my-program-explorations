@@ -1055,14 +1055,19 @@ const observer = new IntersectionObserver(entries => {
 sections.forEach(s => observer.observe(s))
 
 // ── Signature wall ──
-// Setup (60 seconds):
-//  1. Go to npoint.io
-//  2. Paste {"signatures":[]} into the editor, click Save
-//  3. Copy the ID and token from your dashboard, paste below
-const NPOINT_ID    = '16b41a9ebd9f02c76ec5'
-const NPOINT_TOKEN = ''  // leave empty for public documents
+// Setup (30 seconds):
+//  1. Go to github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens
+//  2. New token → name it "signatures" → expiration: no expiration
+//     Repository access: Only select repositories → my-program-explorations
+//     Permissions → Contents: Read and write → Generate token
+//  3. Paste your token below
+const GITHUB_TOKEN = 'GITHUB_PAT'   // ← paste your token here
+const GITHUB_REPO  = 'VantaInc/my-program-explorations'
+const GITHUB_BRANCH = 'main'
+const SIGS_PATH    = 'signatures.json'
+const RAW_URL      = `https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${SIGS_PATH}`
 
-const DEMO_MODE = NPOINT_ID === 'NPOINT_ID'
+const DEMO_MODE = GITHUB_TOKEN === 'GITHUB_PAT'
 
 const sigInput   = document.getElementById('sig-input')
 const sigPreview = document.getElementById('sig-preview')
@@ -1098,26 +1103,45 @@ function renderSignature(sig, isNew = false) {
   return el
 }
 
-async function npointGet() {
-  const res = await fetch(`https://api.npoint.io/${NPOINT_ID}`)
-  if (!res.ok) throw new Error('npoint fetch failed')
+// Read via public raw URL — no auth, no CORS issues
+async function ghRead() {
+  const res = await fetch(RAW_URL + '?bust=' + Date.now())
+  if (!res.ok) throw new Error('read failed')
   return await res.json() // { signatures: [...] }
 }
 
-async function npointSet(data) {
-  const headers = { 'Content-Type': 'application/json' }
-  if (NPOINT_TOKEN) headers['X-Token'] = NPOINT_TOKEN
-  const res = await fetch(`https://api.npoint.io/${NPOINT_ID}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(data)
-  })
-  if (!res.ok) throw new Error('npoint write failed')
+// Write via GitHub Contents API (needs PAT)
+async function ghWrite(data) {
+  // First get current file SHA (required for update)
+  const metaRes = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${SIGS_PATH}?ref=${GITHUB_BRANCH}`,
+    { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: 'application/vnd.github+json' } }
+  )
+  if (!metaRes.ok) throw new Error('could not get file SHA')
+  const { sha } = await metaRes.json()
+
+  const putRes = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${SIGS_PATH}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `sig: ${data.signatures[data.signatures.length - 1].name}`,
+        content: btoa(JSON.stringify(data, null, 2)),
+        sha,
+        branch: GITHUB_BRANCH
+      })
+    }
+  )
+  if (!putRes.ok) throw new Error('write failed')
 }
 
 async function loadSignatures() {
   if (DEMO_MODE) {
-    // Pull from localStorage so local sigs persist across refresh
     const local = JSON.parse(localStorage.getItem('sig-demo-list') || '[]')
     if (!local.length) {
       sigEmpty.textContent = 'No signatures yet — be the first to sign.'
@@ -1128,7 +1152,7 @@ async function loadSignatures() {
     return
   }
   try {
-    const data = await npointGet()
+    const data = await ghRead()
     const sigs = data.signatures || []
     if (!sigs.length) {
       sigEmpty.textContent = 'No signatures yet — be the first to sign.'
@@ -1137,7 +1161,7 @@ async function loadSignatures() {
     sigEmpty.style.display = 'none'
     sigs.forEach(s => sigWall.appendChild(renderSignature(s)))
   } catch(e) {
-    sigEmpty.textContent = 'Couldn\'t load signatures right now.'
+    sigEmpty.textContent = 'Couldn\'t load signatures — check back soon.'
   }
 }
 
@@ -1155,11 +1179,11 @@ async function submitSignature(name) {
     return
   }
 
-  // GET current list, append, POST back
-  const data = await npointGet()
+  // Read → append → write
+  const data = await ghRead()
   const sigs = data.signatures || []
   sigs.push(newSig)
-  await npointSet({ signatures: sigs })
+  await ghWrite({ signatures: sigs })
 
   sigEmpty.style.display = 'none'
   sigWall.appendChild(renderSignature(newSig, true))
