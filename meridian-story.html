@@ -619,6 +619,165 @@
     font-weight: 600;
   }
 
+  /* ── Hero trailer slot ── */
+  .trailer-slot {
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+    background: #000;
+    position: relative;
+    cursor: pointer;
+  }
+  .trailer-slot video {
+    width: 100%;
+    display: block;
+    max-height: 540px;
+    object-fit: cover;
+  }
+  .trailer-empty {
+    aspect-ratio: 16/9;
+    max-height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: linear-gradient(160deg, #0c0820 0%, #09051A 60%, #120d2a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .trailer-empty::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 60%, rgba(108,71,255,0.18) 0%, transparent 70%);
+  }
+  .trailer-play-btn {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(108,71,255,0.15);
+    border: 1.5px solid rgba(108,71,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .trailer-slot:hover .trailer-play-btn {
+    background: rgba(108,71,255,0.3);
+    transform: scale(1.06);
+  }
+  .trailer-empty-label {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .trailer-empty-label strong {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .trailer-empty-label span {
+    font-size: 11px;
+    color: var(--faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .trailer-badge {
+    position: absolute;
+    top: 20px; left: 24px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--purple-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+  }
+  .trailer-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--purple);
+    box-shadow: 0 0 8px var(--purple);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .trailer-upload-hint {
+    position: absolute;
+    bottom: 16px;
+    font-size: 11px;
+    color: var(--faint);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Scene media slot ── */
+  .scene-media {
+    margin: 32px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+    position: relative;
+  }
+  .scene-media video,
+  .scene-media img {
+    width: 100%;
+    display: block;
+    border-radius: 12px;
+  }
+  .scene-media-empty {
+    aspect-ratio: 16/9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .scene-media-empty:hover { background: rgba(108,71,255,0.05); }
+  .scene-media-empty input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .scene-media-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(108,71,255,0.1);
+    border: 1px solid rgba(108,71,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scene-media-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--faint);
+  }
+  .scene-media-hint {
+    font-size: 11px;
+    color: rgba(240,236,248,0.12);
+  }
+
   /* ── Scrollspy active state ── */
   @media (max-width: 900px) {
     :root { --sidebar-w: 0px; }
@@ -672,6 +831,25 @@
       <div class="hero-meta-item"><strong>12,000</strong>Employees</div>
       <div class="hero-meta-item"><strong>3</strong>Business units</div>
       <div class="hero-meta-item"><strong>90 days</strong>Audit window</div>
+    </div>
+  </div>
+
+  <!-- Teaser trailer -->
+  <div class="trailer-slot" id="trailer-slot">
+    <div class="trailer-empty" id="trailer-empty">
+      <div class="trailer-badge">Teaser trailer</div>
+      <div class="trailer-play-btn">
+        <svg width="24" height="24" fill="var(--purple-light)" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="trailer-empty-label">
+        <strong>3 programs. 1 manager. 0 missed deadlines.</strong>
+        <span>Drop an MP4 or paste a video URL to embed</span>
+      </div>
+      <div class="trailer-upload-hint">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1v7M3 5l3-4 3 4M1 10v1a1 1 0 001 1h8a1 1 0 001-1v-1"/></svg>
+        Drop video file here
+      </div>
+      <input type="file" accept="video/*" id="trailer-file" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
     </div>
   </div>
 
@@ -1190,6 +1368,105 @@
 </div>
 
 <script>
+  // ── Trailer file drop ──
+  const trailerFile = document.getElementById('trailer-file')
+  const trailerEmpty = document.getElementById('trailer-empty')
+  const trailerSlot  = document.getElementById('trailer-slot')
+
+  function loadTrailerFile(file) {
+    if (!file || !file.type.startsWith('video/')) return
+    const url = URL.createObjectURL(file)
+    swapTrailerToVideo(url)
+    localStorage.setItem('trailer-src-name', file.name)
+  }
+
+  function swapTrailerToVideo(src) {
+    trailerEmpty.style.display = 'none'
+    const vid = document.createElement('video')
+    vid.src = src
+    vid.controls = true
+    vid.autoplay = false
+    vid.style.maxHeight = '540px'
+    trailerSlot.appendChild(vid)
+  }
+
+  trailerFile.addEventListener('change', e => loadTrailerFile(e.target.files[0]))
+
+  // Drag-and-drop onto trailer
+  trailerSlot.addEventListener('dragover', e => { e.preventDefault(); trailerSlot.style.outline = '2px solid var(--purple)'; })
+  trailerSlot.addEventListener('dragleave', () => { trailerSlot.style.outline = '' })
+  trailerSlot.addEventListener('drop', e => {
+    e.preventDefault()
+    trailerSlot.style.outline = ''
+    loadTrailerFile(e.dataTransfer.files[0])
+  })
+
+  // ── Scene media slots — inject before each .what-shows ──
+  document.querySelectorAll('.scene').forEach(scene => {
+    const ws = scene.querySelector('.what-shows')
+    if (!ws) return
+    const sceneId = scene.id // e.g. "scene-3"
+    const num = sceneId.replace('scene-', '')
+
+    const wrapper = document.createElement('div')
+    wrapper.className = 'scene-media'
+    wrapper.id = `media-${sceneId}`
+
+    const stored = localStorage.getItem(`scene-media-${sceneId}`)
+
+    if (stored) {
+      // restore from localStorage (data URL — works for GIFs and short clips)
+      const ext = localStorage.getItem(`scene-media-${sceneId}-ext`) || 'mp4'
+      if (ext === 'gif' || ext === 'png' || ext === 'jpg' || ext === 'webp') {
+        const img = document.createElement('img')
+        img.src = stored
+        wrapper.appendChild(img)
+      } else {
+        const vid = document.createElement('video')
+        vid.src = stored; vid.controls = true
+        wrapper.appendChild(vid)
+      }
+    } else {
+      wrapper.innerHTML = `
+        <div class="scene-media-empty">
+          <input type="file" accept="video/*,image/gif,image/png,image/webp" class="scene-file-input" data-scene="${sceneId}">
+          <div class="scene-media-icon">
+            <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round">
+              <rect x="2" y="4" width="14" height="11" rx="2"/>
+              <path d="M8 8l4 2.5L8 13V8z" fill="var(--purple-light)" stroke="none"/>
+            </svg>
+          </div>
+          <div class="scene-media-label">Scene ${num} — Flow GIF / Video</div>
+          <div class="scene-media-hint">Drop a GIF or MP4 here</div>
+        </div>`
+    }
+
+    scene.insertBefore(wrapper, ws)
+  })
+
+  // Handle scene file drops
+  document.addEventListener('change', e => {
+    if (!e.target.classList.contains('scene-file-input')) return
+    const file = e.target.files[0]
+    if (!file) return
+    const sceneId = e.target.dataset.scene
+    const wrapper = document.getElementById(`media-${sceneId}`)
+    const ext = file.name.split('.').pop().toLowerCase()
+
+    const reader = new FileReader()
+    reader.onload = ev => {
+      const src = ev.target.result
+      try { localStorage.setItem(`scene-media-${sceneId}`, src); localStorage.setItem(`scene-media-${sceneId}-ext`, ext) } catch(e) {}
+      wrapper.innerHTML = ''
+      if (ext === 'gif' || ext === 'png' || ext === 'webp') {
+        const img = document.createElement('img'); img.src = src; wrapper.appendChild(img)
+      } else {
+        const vid = document.createElement('video'); vid.src = src; vid.controls = true; wrapper.appendChild(vid)
+      }
+    }
+    reader.readAsDataURL(file)
+  })
+
   // Scrollspy — highlight active scene in sidebar
   const items = document.querySelectorAll('.nav-item[href^="#"]')
   const sections = [...items].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean)
