@@ -101,6 +101,14 @@
     transition: color 0.12s;
   }
   .nav-collapse:hover { color: #6B7280; }
+  .org-option {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; border-radius: 7px; cursor: pointer;
+    font-size: 13px; color: #111827; font-weight: 400;
+    transition: background 0.1s;
+  }
+  .org-option:hover { background: #F3F4F6; }
+  .org-option.active-org { background: #F5F3FF; }
 
   /* ── Top bar ── */
   #topbar {
@@ -240,13 +248,38 @@
 <!-- ── Top bar (full width) ── -->
 <div id="topbar">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97.438 24" width="74" height="18" fill="none"><g fill="#240642" clip-path="url(#vanta-clip)"><path d="M63.53 21.622a3.93 3.93 0 0 1-.88-2.478v-6.518c0-4.625-2.179-7.274-6.032-7.274-5.132 0-6.125 2.796-7.491 5.176a.246.246 0 0 1-.33.093l-.285-.153a.246.246 0 0 1-.097-.34l.39-.681c.246-.423.377-.903.377-1.393v-.983c0-.635-.514-1.15-1.148-1.15h-5.587c-.842 0-1.295.99-.747 1.628l.814.947a5.27 5.27 0 0 1 1.272 3.433v6.766c0 .75-.16 1.493-.47 2.176l-.647 1.427a.985.985 0 0 0 .897 1.392h6.98a.985.985 0 0 0 .76-1.61l-.564-.688a3.93 3.93 0 0 1-.892-2.493v-3.733c0-1.303.312-2.597.965-3.724.792-1.369 1.827-2.068 3.122-2.068 1.744 0 2.681 1.242 2.681 3.487v6.064c0 .733-.153 1.457-.448 2.127l-.555 1.256a.985.985 0 0 0 .9 1.383h6.627a.985.985 0 0 0 .763-1.607zM75.974 21.09a4 4 0 0 1-.634.08c-1.8 0-2.667-1.135-2.667-3.468v-9.27h3.28c.379 0 .686-.309.686-.688V6.621a.69.69 0 0 0-.687-.688h-4.196a.213.213 0 0 1-.214-.213v-.315c0-.117.095-.212.212-.213h.426a.49.49 0 0 0 .492-.492V2.247a.847.847 0 0 0-.846-.847h-2.413c-.44 0-.829.285-.959.705-.278.92-.949 3.828-3.13 3.828h-.648a.686.686 0 0 0-.685.688v1.123c0 .38.307.688.685.688h2v9.505c0 3.867 1.966 6 5.53 6 1.779 0 3.392-.649 4.369-1.82.38-.459-.016-1.142-.601-1.027M40.937 20.392c-1.062.191-1.781-.641-1.781-1.948v-6.291c0-4.486-2.842-6.896-8.362-6.896-4.943 0-8.319 1.902-8.328 4.773-.003.516.191 1.021.476 1.508.458.703 1.285 1.175 2.234 1.175 1.443 0 2.612-1.089 2.612-2.432-.005-1.378-1.166-2.076-1.52-2.208A4.67 4.67 0 0 1 29.2 7.025c2.541 0 3.902 1.927 3.902 4.927v1.193c-1.907 0-4.046.191-5.55.558-3.682.805-5.622 2.901-5.622 5.512 0 2.945 2.342 4.785 6.054 4.785 2.577 0 4.718-.902 5.721-2.41.635 1.273 2.04 2.076 3.847 2.076 2.338 0 3.562-1.22 3.949-2.67.1-.414-.212-.673-.564-.604m-7.835-1.411c-.2 1.404-1.17 2.242-2.575 2.242-1.54 0-2.576-1.037-2.576-2.678 0-1.271.568-2.384 1.807-2.919.835-.369 2.139-.57 3.343-.603zM96.856 20.392c-1.062.191-1.781-.641-1.781-1.948v-6.291c0-4.486-2.842-6.896-8.362-6.896-4.943 0-8.32 1.902-8.328 4.773-.003.516.191 1.021.476 1.508.458.703 1.285 1.175 2.233 1.175 1.444 0 2.613-1.089 2.613-2.432-.005-1.378-1.167-2.076-1.52-2.208a4.67 4.67 0 0 1 2.932-1.048c2.54 0 3.901 1.927 3.901 4.927v1.193c-1.906 0-4.046.191-5.55.558-3.681.805-5.621 2.901-5.621 5.512 0 2.945 2.342 4.785 6.054 4.785 2.577 0 4.718-.902 5.721-2.41.635 1.273 2.04 2.076 3.847 2.076 2.338 0 3.562-1.22 3.949-2.67.1-.414-.212-.673-.564-.604m-7.835-1.411c-.2 1.404-1.17 2.242-2.575 2.242-1.54 0-2.576-1.037-2.576-2.678 0-1.271.567-2.384 1.807-2.919.835-.369 2.139-.57 3.343-.603v3.958M22.88.001h-3.034a.82.82 0 0 0-.685 1.272l.52.79c.444.675.53 1.525.232 2.276L14.47 18.038c-.25.66-.504 1.111-.62 1.223a.19.19 0 0 1-.245.017l-.287-.229c-.09-.068-.085-.168-.002-.262.16-.212.259-.467.315-.7.067-.28.044-.573-.058-.842L8.963 5.053a3.4 3.4 0 0 1 .033-2.491l.493-1.204A.985.985 0 0 0 8.578 0H1.15C.15 0-.372 1.19.306 1.928l.472.513a10.4 10.4 0 0 1 2.025 3.23L9.42 22.979c.173.44.597.727 1.069.727h3.664c.47 0 .894-.287 1.068-.725L23.794 1.35A.985.985 0 0 0 22.88 0"/></g><defs><clipPath id="vanta-clip"><path fill="#fff" d="M0 0h97.438v24H0z"/></clipPath></defs></svg>
-  <!-- Org selector -->
-  <div style="display:flex;align-items:center;gap:7px;padding:5px 10px 5px 7px;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;margin-left:10px;transition:background 0.12s;" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="this.style.background='transparent'">
-    <div style="width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#3B82F6,#1D4ED8);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l4.3 2.5v5L6 11 1.7 8.5v-5z" fill="white" fill-opacity="0.9"/></svg>
+  <!-- Org / BU selector -->
+  <div style="position:relative;margin-left:10px;" id="org-selector">
+    <div id="org-trigger" onclick="toggleOrgDropdown()" style="display:flex;align-items:center;gap:7px;padding:5px 10px 5px 7px;border:1px solid #E5E7EB;border-radius:8px;cursor:pointer;transition:background 0.12s;background:transparent;" onmouseenter="this.style.background='#F9FAFB'" onmouseleave="if(!document.getElementById('org-dropdown').classList.contains('open'))this.style.background='transparent'">
+      <div style="width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#7C3AED,#4F46E5);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1l4.3 2.5v5L6 11 1.7 8.5v-5z" fill="white" fill-opacity="0.85"/></svg>
+      </div>
+      <span id="org-label" style="font-size:13px;font-weight:500;color:#111827;">Meridian</span>
+      <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
     </div>
-    <span style="font-size:13px;font-weight:500;color:#111827;">TruSecure</span>
-    <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+    <div id="org-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid #E5E7EB;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.1);padding:6px;min-width:190px;z-index:100;">
+      <div style="font-size:10px;font-weight:600;color:#9CA3AF;letter-spacing:0.06em;text-transform:uppercase;padding:4px 10px 6px;">Programs</div>
+      <div class="org-option active-org" onclick="selectOrg('Meridian','linear-gradient(135deg,#7C3AED,#4F46E5)')" data-label="Meridian">
+        <div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#7C3AED,#4F46E5);flex-shrink:0;"></div>
+        <span>Meridian</span>
+        <svg style="margin-left:auto" width="13" height="13" fill="none" stroke="#6C47FF" stroke-width="2" stroke-linecap="round"><path d="M2.5 6.5l3 3 5-5"/></svg>
+      </div>
+      <div class="org-option" onclick="selectOrg('Forge','linear-gradient(135deg,#059669,#047857)')" data-label="Forge">
+        <div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#059669,#047857);flex-shrink:0;"></div>
+        <span>Forge</span>
+        <span style="margin-left:auto;font-size:11px;color:#059669;background:#D1FAE5;padding:1px 7px;border-radius:20px;font-weight:500;">91</span>
+      </div>
+      <div class="org-option" onclick="selectOrg('Atlas','linear-gradient(135deg,#D97706,#B45309)')" data-label="Atlas">
+        <div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#D97706,#B45309);flex-shrink:0;"></div>
+        <span>Atlas</span>
+        <span style="margin-left:auto;font-size:11px;color:#92400E;background:#FEF3C7;padding:1px 7px;border-radius:20px;font-weight:500;">84</span>
+      </div>
+      <div class="org-option" onclick="selectOrg('Orbit','linear-gradient(135deg,#DC2626,#991B1B)')" data-label="Orbit">
+        <div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#DC2626,#991B1B);flex-shrink:0;"></div>
+        <span>Orbit</span>
+        <span style="margin-left:auto;font-size:11px;color:#991B1B;background:#FEE2E2;padding:1px 7px;border-radius:20px;font-weight:500;">71</span>
+      </div>
+    </div>
   </div>
   <div class="topbar-spacer"></div>
   <div class="topbar-actions">
@@ -625,6 +658,33 @@ function drawChart() {
 window.addEventListener('load', () => {
   drawChart()
   window.addEventListener('resize', drawChart)
+})
+
+function toggleOrgDropdown() {
+  const dd = document.getElementById('org-dropdown')
+  const isOpen = dd.style.display === 'block'
+  dd.style.display = isOpen ? 'none' : 'block'
+}
+
+function selectOrg(label, gradient) {
+  document.getElementById('org-label').textContent = label
+  // Update icon gradient
+  const icon = document.querySelector('#org-trigger > div')
+  icon.style.background = gradient
+  // Update active state
+  document.querySelectorAll('.org-option').forEach(el => {
+    el.classList.toggle('active-org', el.dataset.label === label)
+    const check = el.querySelector('svg')
+    if (check) check.style.display = el.dataset.label === label ? '' : 'none'
+  })
+  document.getElementById('org-dropdown').style.display = 'none'
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!document.getElementById('org-selector').contains(e.target)) {
+    document.getElementById('org-dropdown').style.display = 'none'
+  }
 })
 </script>
 </div><!-- /#app -->
