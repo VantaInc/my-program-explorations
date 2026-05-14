@@ -214,6 +214,95 @@
   .card-cta svg { transition: transform 0.15s; }
   .card:hover .card-cta svg { transform: translateX(2px); }
 
+  .narrative-card {
+    width: 620px;
+    margin-top: 20px;
+    background: #0F0720;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+    text-decoration: none;
+    display: flex;
+    align-items: stretch;
+    min-height: 148px;
+    position: relative;
+  }
+  .narrative-card:hover {
+    box-shadow: 0 12px 48px rgba(108,71,255,0.25);
+    transform: translateY(-2px);
+    border-color: rgba(108,71,255,0.4);
+  }
+  .narrative-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(108,71,255,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 30%, rgba(172,85,255,0.12) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .narrative-scenes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 28px 24px;
+    flex-shrink: 0;
+  }
+  .scene-dot {
+    width: 36px;
+    height: 52px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 5px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+  }
+  .scene-dot.s1 { background: rgba(108,71,255,0.3); }
+  .scene-dot.s1::before { background: linear-gradient(180deg,#6C47FF,transparent); }
+  .scene-dot.s2 { background: rgba(16,185,129,0.2); }
+  .scene-dot.s2::before { background: linear-gradient(180deg,#059669,transparent); }
+  .scene-dot.s3 { background: rgba(245,158,11,0.2); }
+  .scene-dot.s3::before { background: linear-gradient(180deg,#D97706,transparent); }
+  .scene-dot.s4 { background: rgba(239,68,68,0.2); }
+  .scene-dot.s4::before { background: linear-gradient(180deg,#DC2626,transparent); }
+  .scene-dot.s5 { background: rgba(172,85,255,0.2); }
+  .scene-dot.s5::before { background: linear-gradient(180deg,#AC55FF,transparent); }
+  .scene-line { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.25); }
+  .scene-line.w80 { width: 80%; }
+  .scene-line.w60 { width: 60%; }
+  .scene-arrow {
+    width: 14px;
+    height: 14px;
+    color: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+  .narrative-body {
+    padding: 28px 24px 28px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .tag-narrative {
+    background: rgba(108,71,255,0.25);
+    color: #C4B5FD;
+    border: 1px solid rgba(108,71,255,0.3);
+  }
+  .narrative-card .card-title { color: #F9FAFB; }
+  .narrative-card .card-desc { color: rgba(255,255,255,0.5); }
+  .narrative-card .card-cta { color: #A78BFA; }
+
   .footer {
     margin-top: 52px;
     font-size: 11px;
@@ -226,7 +315,7 @@
 
   <div class="eyebrow">GRC Design · Vanta</div>
   <h1>My Program explorations</h1>
-  <p class="subtitle">Two prototypes, two bets — pick your adventure</p>
+  <p class="subtitle">Prototypes, proposals, and the pitch — all in one place</p>
 
   <div class="cards">
 
@@ -295,6 +384,46 @@
     </a>
 
   </div>
+
+  <!-- Narrative walkthrough -->
+  <a href="/narrative" class="narrative-card">
+    <div class="narrative-glow"></div>
+    <div class="narrative-scenes">
+      <div class="scene-dot s1">
+        <div class="scene-line w80"></div>
+        <div class="scene-line w60"></div>
+      </div>
+      <svg class="scene-arrow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+      <div class="scene-dot s2">
+        <div class="scene-line w80"></div>
+        <div class="scene-line w60"></div>
+      </div>
+      <svg class="scene-arrow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+      <div class="scene-dot s3">
+        <div class="scene-line w80"></div>
+        <div class="scene-line w60"></div>
+      </div>
+      <svg class="scene-arrow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+      <div class="scene-dot s4">
+        <div class="scene-line w80"></div>
+        <div class="scene-line w60"></div>
+      </div>
+      <svg class="scene-arrow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 7h10M8 4l4 3-4 3"/></svg>
+      <div class="scene-dot s5">
+        <div class="scene-line w80"></div>
+        <div class="scene-line w60"></div>
+      </div>
+    </div>
+    <div class="narrative-body">
+      <div class="card-tag card-tag tag-narrative" style="background:rgba(108,71,255,0.2);color:#C4B5FD;border:1px solid rgba(108,71,255,0.3);">Walkthrough</div>
+      <div class="card-title" style="color:#F9FAFB;margin-bottom:5px;">The pitch</div>
+      <div class="card-desc" style="color:rgba(255,255,255,0.45);font-size:12px;line-height:1.6;">Scene-by-scene narrative walkthrough — the story of where we're going, why it matters, and what the experience feels like for real users.</div>
+      <div class="card-cta" style="color:#A78BFA;margin-top:16px;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;">
+        Coming soon
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6.5h9M7 3l4 3.5L7 10"/></svg>
+      </div>
+    </div>
+  </a>
 
   <div class="footer">my-program-explorations.vercel.app</div>
 
