@@ -778,6 +778,64 @@
     color: rgba(240,236,248,0.12);
   }
 
+  /* ── Scene placeholder frames ── */
+  .sp-frame {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-family: 'Inter', sans-serif;
+  }
+  .sp-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .sp-title { font-size: 11px; font-weight: 600; color: var(--muted); display:flex;align-items:center;gap:7px; }
+  .sp-title::before { content:''; width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0; }
+  .sp-badge { font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:100px;padding:3px 8px; }
+  .sp-body { padding: 18px; }
+  .sp-row { display:flex;align-items:center;gap:10px;margin-bottom:10px; }
+  .sp-label { font-size:11px;font-weight:600;color:var(--muted);width:48px;flex-shrink:0; }
+  .sp-bar-track { flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden; }
+  .sp-bar { height:100%;border-radius:3px; }
+  .sp-pct { font-size:11px;font-weight:700;min-width:34px;text-align:right; }
+  .sp-note { font-size:11px;color:var(--faint);flex:1; }
+  .sp-callout { background:rgba(108,71,255,0.07);border:1px solid rgba(108,71,255,0.18);border-radius:8px;padding:11px 14px;font-size:12px;color:var(--muted);line-height:1.55; }
+  .sp-callout-label { font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--purple-light);margin-bottom:6px;display:flex;align-items:center;gap:5px; }
+  .sp-callout-label::before { content:'✦';font-size:8px; }
+  .sp-alert { background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:11px 14px;font-size:12px;color:var(--muted);line-height:1.55; }
+  .sp-alert-label { font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#FCA5A5;margin-bottom:6px; }
+  .sp-task { display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted); }
+  .sp-task:last-child { border-bottom:none; }
+  .sp-check { width:16px;height:16px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .sp-check.done { background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3); }
+  .sp-check.pend { background:rgba(255,255,255,0.05);border:1px solid var(--border); }
+  .sp-cols { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+  .sp-col-head { font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px; }
+  .sp-pill { display:inline-block;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--muted);margin:3px 3px 0 0; }
+  .sp-pill.green { background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#10B981; }
+  .sp-pill.red { background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#FCA5A5; }
+  .sp-pill.amber { background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.25);color:#F59E0B; }
+  .sp-divider { height:1px;background:var(--border);margin:12px 0; }
+  .sp-mini-stat { text-align:center; }
+  .sp-mini-stat .num { font-family:'Fraunces',serif;font-size:28px;font-weight:300;color:var(--purple-light);line-height:1; }
+  .sp-mini-stat .lbl { font-size:10px;color:var(--faint);margin-top:3px; }
+  /* drop overlay on hover */
+  .sp-frame .sp-drop-overlay {
+    position:absolute;inset:0;
+    background:rgba(9,5,26,0.85);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    opacity:0;transition:opacity 0.2s;border-radius:12px;
+  }
+  .sp-frame:hover .sp-drop-overlay { opacity:1; }
+  .sp-drop-overlay span { font-size:12px;color:var(--muted); }
+  .sp-drop-overlay .sp-file-input { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+
   /* ── Scrollspy active state ── */
   @media (max-width: 900px) {
     :root { --sidebar-w: 0px; }
@@ -1401,46 +1459,158 @@
     loadTrailerFile(e.dataTransfer.files[0])
   })
 
+  // ── Scene placeholder mockups ──
+  const PLACEHOLDERS = {
+    'scene-0': `
+      <div class="sp-topbar"><span class="sp-title">Scene 0 — The Setup</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div class="sp-row"><span class="sp-label">Forge</span><div class="sp-bar-track"><div class="sp-bar" style="width:87%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">87%</span><span class="sp-note">Connected — 90-day evidence current</span></div>
+        <div class="sp-row"><span class="sp-label">Atlas</span><div class="sp-bar-track"><div class="sp-bar" style="width:87%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">87%</span><span class="sp-note">Connected — 90-day evidence current</span></div>
+        <div class="sp-row"><span class="sp-label">Orbit</span><div class="sp-bar-track"><div class="sp-bar" style="width:41%;background:#EF4444;"></div></div><span class="sp-pct" style="color:#EF4444;">41%</span><span class="sp-note">⚠ Action needed</span></div>
+        <div class="sp-divider"></div>
+        <div class="sp-callout"><div class="sp-callout-label">Vanta AI — Onboarding Assessment</div>"Forge and Atlas are in good shape. Orbit has 14 integrations — 6 are stale, 3 have never pulled evidence. Here's what I'd fix first."</div>
+      </div>`,
+
+    'scene-1': `
+      <div class="sp-topbar"><span class="sp-title">Scene 1 — First Login</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="margin-bottom:12px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);">My Program — All programs</div>
+        <div class="sp-row"><span class="sp-label">Forge</span><div class="sp-bar-track"><div class="sp-bar" style="width:91%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">91%</span><span class="sp-note">On track for SOC 2</span></div>
+        <div class="sp-row"><span class="sp-label">Atlas</span><div class="sp-bar-track"><div class="sp-bar" style="width:84%;background:#F59E0B;"></div></div><span class="sp-pct" style="color:#F59E0B;">84%</span><span class="sp-note">2 open risk items</span></div>
+        <div class="sp-row"><span class="sp-label">Orbit</span><div class="sp-bar-track"><div class="sp-bar" style="width:71%;background:#F97316;"></div></div><span class="sp-pct" style="color:#F97316;">71%</span><span class="sp-note">Integration cleanup underway</span></div>
+        <div class="sp-divider"></div>
+        <div><span class="sp-pill amber">Access Management — attention across Forge + Orbit</span><span class="sp-pill amber">Vendor assessment overdue — Atlas</span></div>
+      </div>`,
+
+    'scene-2': `
+      <div class="sp-topbar"><span class="sp-title">Scene 2 — Synthesize</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:8px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#F59E0B;flex-shrink:0;">C</div>
+          <span style="font-size:12px;color:var(--muted);font-style:italic;">"Board meeting in 10 days. Just the highlights."</span>
+        </div>
+        <div class="sp-callout"><div class="sp-callout-label">Vanta AI — Executive Summary</div>"Across Forge, Atlas, and Orbit, your overall SOC 2 readiness is 82%. Primary risk: vendor assessment coverage in Atlas and Orbit — 5 assessments overdue. Atlas ISO 27001 on schedule."</div>
+        <div style="display:flex;gap:8px;margin-top:10px;"><div style="flex:1;background:rgba(108,71,255,0.12);border:1px solid rgba(108,71,255,0.25);border-radius:6px;padding:7px;text-align:center;font-size:11px;color:var(--purple-light);">Copy</div><div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:7px;text-align:center;font-size:11px;color:var(--muted);">Forward to Caesar</div></div>
+      </div>`,
+
+    'scene-3': `
+      <div class="sp-topbar"><span class="sp-title">Scene 3 — The Wrench</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;font-weight:600;color:var(--text);">Atlas — ISO 27001</span><span style="font-size:12px;font-weight:700;color:#F59E0B;">76%</span></div>
+          <div class="sp-bar-track" style="height:7px;"><div class="sp-bar" style="width:76%;background:#F59E0B;"></div></div>
+        </div>
+        <div class="sp-callout" style="margin-bottom:10px;"><div class="sp-callout-label">Vanta AI — Blockers</div>"3 incomplete vendor assessments · 1 open policy review. At current velocity, these will not close before your target date."</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;"><div style="width:22px;height:22px;border-radius:50%;background:rgba(108,71,255,0.2);font-size:9px;font-weight:700;color:var(--purple-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">D</div><span style="font-size:12px;color:var(--muted);flex:1;">Vendor assessments → Denise</span><span style="font-size:10px;color:#F59E0B;font-weight:600;">48 hr</span></div>
+      </div>`,
+
+    'scene-4': `
+      <div class="sp-topbar"><span class="sp-title">Scene 4 — Denise Executes</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div class="sp-task"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Vendor A — questionnaire uploaded<span style="margin-left:auto;font-size:10px;color:#10B981;">Done</span></div>
+        <div class="sp-task"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Vendor B — questionnaire uploaded<span style="margin-left:auto;font-size:10px;color:#10B981;">Done</span></div>
+        <div class="sp-task"><div class="sp-check pend"></div>Vendor C — AI first-pass draft generated<span style="margin-left:auto;font-size:10px;color:#F59E0B;">In review</span></div>
+        <div class="sp-divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;color:var(--muted);">Atlas ISO 27001 readiness</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;color:var(--faint);text-decoration:line-through;">76%</span><span style="font-size:15px;font-weight:700;color:#10B981;">88%</span></div></div>
+      </div>`,
+
+    'scene-5': `
+      <div class="sp-topbar"><span class="sp-title">Scene 5 — Show My Work</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div class="sp-callout" style="margin-bottom:12px;"><div class="sp-callout-label">Vanta AI — Quarter Summary</div>"Vanta AI handled 34 evidence refreshes this quarter — work that previously took ~4 hours manually."</div>
+        <div class="sp-cols">
+          <div><div class="sp-col-head">Vanta AI</div><div class="sp-task" style="padding:5px 0;"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple);margin-right:6px;"></div>34 evidence refreshes</div><div class="sp-task" style="padding:5px 0;"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple);margin-right:6px;"></div>6 integration health checks</div><div class="sp-task" style="padding:5px 0;border:none;"><div style="width:6px;height:6px;border-radius:50%;background:var(--purple);margin-right:6px;"></div>14 stale alerts flagged</div></div>
+          <div><div class="sp-col-head">Denise</div><div class="sp-task" style="padding:5px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#22D3EE;margin-right:6px;"></div>12 vendor assessments</div><div class="sp-task" style="padding:5px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#22D3EE;margin-right:6px;"></div>3 policy reviews</div><div class="sp-task" style="padding:5px 0;border:none;"><div style="width:6px;height:6px;border-radius:50%;background:#22D3EE;margin-right:6px;"></div>28 evidence uploads</div></div>
+        </div>
+      </div>`,
+
+    'scene-6': `
+      <div class="sp-topbar"><span class="sp-title">Scene 6 — Forecasting</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:12px;font-weight:600;color:var(--text);">Orbit — SOC 2 Readiness Trajectory</span><span style="font-size:11px;color:#F97316;font-weight:600;">At risk</span></div>
+          <div style="height:56px;position:relative;border-left:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:6px;">
+            <svg width="100%" height="56" viewBox="0 0 300 56" preserveAspectRatio="none"><defs><linearGradient id="fcg" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#10B981"/><stop offset="65%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#EF4444"/></linearGradient></defs><path d="M0 10 C50 10 80 15 120 22 C160 30 180 35 220 40 C255 44 280 50 300 56" stroke="url(#fcg)" stroke-width="2" fill="none"/><line x1="0" y1="20" x2="300" y2="20" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4,4"/></svg>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--faint);"><span>Today</span><span style="color:#F59E0B;">Target close</span></div>
+        </div>
+        <div class="sp-alert"><div class="sp-alert-label">⚠ Forward signal</div>"At current velocity, 3 controls will remain open at audit start. Avg remediation time: 18 days."</div>
+      </div>`,
+
+    'scene-7': `
+      <div class="sp-topbar"><span class="sp-title">Scene 7 — End of Quarter</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--purple-light);margin-bottom:8px;">Board Summary</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">1-page narrative · trend charts · risk themes</div><div style="margin-top:10px;" class="sp-pill green">✓ Ready</div></div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#22D3EE;margin-bottom:8px;">Auditor Report</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Control status · evidence log · open items</div><div style="margin-top:10px;" class="sp-pill green">✓ Ready</div></div>
+          <div style="border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#F59E0B;margin-bottom:8px;">BU Scorecard</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Per-product health · wins · milestones</div><div style="margin-top:10px;" class="sp-pill green">✓ Ready</div></div>
+        </div>
+        <div style="margin-top:12px;text-align:center;font-size:11px;color:var(--faint);">All three generated in under 5 minutes from the same underlying data</div>
+      </div>`,
+
+    'scene-8': `
+      <div class="sp-topbar" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);"><span class="sp-title" style="color:#FCA5A5;">Scene 8 — Red Alert</span><span class="sp-badge" style="color:#FCA5A5;border-color:rgba(239,68,68,0.2);">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div class="sp-alert" style="margin-bottom:12px;"><div class="sp-alert-label">⚡ Critical Finding — Orbit</div>"12 user accounts with active credentials are mapped to former employees."</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;font-size:11px;"><div style="flex:1;padding:8px;border:1px solid var(--border);border-radius:7px;color:var(--muted);"><div style="color:var(--faint);margin-bottom:3px;">Control</div>Access Management — AC-3</div><div style="flex:1;padding:8px;border:1px solid var(--border);border-radius:7px;color:var(--muted);"><div style="color:var(--faint);margin-bottom:3px;">Impact</div>SOC 2 Type II finding</div><div style="flex:1;padding:8px;border:1px solid var(--border);border-radius:7px;color:var(--muted);"><div style="color:var(--faint);margin-bottom:3px;">ETA</div>Remediation in 24 hrs</div></div>
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);font-style:italic;">"Stale access issue in Orbit — 12 accounts being revoked now. Remediation ETA 24 hours." → Caesar</div>
+      </div>`,
+
+    'scene-9': `
+      <div class="sp-topbar"><span class="sp-title">Scene 9 — Trust Center</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:8px;"><span style="font-size:12px;color:var(--muted);">Orbit SOC 2 Type II</span><span class="sp-pill">Pending</span></div>
+          <div style="display:flex;justify-content:center;color:var(--purple);font-size:18px;">↓</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid rgba(16,185,129,0.3);border-radius:8px;background:rgba(16,185,129,0.05);"><span style="font-size:12px;color:var(--text);">Orbit SOC 2 Type II</span><span class="sp-pill green">✓ Current</span></div>
+        </div>
+        <div class="sp-callout"><div class="sp-callout-label">Customer notification sent</div>"Got it — this is exactly what our legal team needed. You're good to go."</div>
+      </div>`,
+
+    'scene-10': `
+      <div class="sp-topbar"><span class="sp-title">Scene 10 — Pam's Win</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+          <div class="sp-task"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Forge SOC 2 Type II — Closed on time</div>
+          <div class="sp-task"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Atlas SOC 2 Type II — Closed on time</div>
+          <div class="sp-task"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Orbit SOC 2 Type II — Closed on time</div>
+          <div class="sp-task" style="border:none;"><div class="sp-check done"><svg width="8" height="8" fill="none" stroke="#10B981" stroke-width="2"><path d="M1 4l2 2 4-4"/></svg></div>Atlas ISO 27001 — First Meridian product certified</div>
+        </div>
+        <div class="sp-callout"><div class="sp-callout-label">VP of Sales</div>"Just found out you're a big reason we got that deal across the line. Thank you."</div>
+      </div>`,
+
+    'scene-11': `
+      <div class="sp-topbar"><span class="sp-title">Scene 11 — Outro</span><span class="sp-badge">Flow placeholder</span></div>
+      <div class="sp-body">
+        <div style="margin-bottom:12px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint);">My Program — End of season</div>
+        <div class="sp-row"><span class="sp-label">Forge</span><div class="sp-bar-track"><div class="sp-bar" style="width:96%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">96%</span><span class="sp-note">SOC 2 Type II — Closed</span></div>
+        <div class="sp-row"><span class="sp-label">Atlas</span><div class="sp-bar-track"><div class="sp-bar" style="width:94%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">94%</span><span class="sp-note">SOC 2 + ISO 27001 — Certified</span></div>
+        <div class="sp-row"><span class="sp-label">Orbit</span><div class="sp-bar-track"><div class="sp-bar" style="width:91%;background:#10B981;"></div></div><span class="sp-pct" style="color:#10B981;">91%</span><span class="sp-note">SOC 2 Type II — Closed</span></div>
+        <div style="margin-top:14px;text-align:center;font-size:20px;font-family:'Fraunces',serif;font-weight:300;color:var(--purple-light);letter-spacing:-0.01em;">3 programs. 1 manager. 0 missed deadlines.</div>
+      </div>`
+  }
+
   // ── Scene media slots — inject before each .what-shows ──
   document.querySelectorAll('.scene').forEach(scene => {
     const ws = scene.querySelector('.what-shows')
     if (!ws) return
-    const sceneId = scene.id // e.g. "scene-3"
-    const num = sceneId.replace('scene-', '')
-
+    const sceneId = scene.id
     const wrapper = document.createElement('div')
     wrapper.className = 'scene-media'
     wrapper.id = `media-${sceneId}`
 
     const stored = localStorage.getItem(`scene-media-${sceneId}`)
-
     if (stored) {
-      // restore from localStorage (data URL — works for GIFs and short clips)
       const ext = localStorage.getItem(`scene-media-${sceneId}-ext`) || 'mp4'
-      if (ext === 'gif' || ext === 'png' || ext === 'jpg' || ext === 'webp') {
-        const img = document.createElement('img')
-        img.src = stored
-        wrapper.appendChild(img)
+      if (['gif','png','jpg','webp'].includes(ext)) {
+        const img = document.createElement('img'); img.src = stored; wrapper.appendChild(img)
       } else {
-        const vid = document.createElement('video')
-        vid.src = stored; vid.controls = true
-        wrapper.appendChild(vid)
+        const vid = document.createElement('video'); vid.src = stored; vid.controls = true; wrapper.appendChild(vid)
       }
     } else {
-      wrapper.innerHTML = `
-        <div class="scene-media-empty">
-          <input type="file" accept="video/*,image/gif,image/png,image/webp" class="scene-file-input" data-scene="${sceneId}">
-          <div class="scene-media-icon">
-            <svg width="18" height="18" fill="none" stroke="var(--purple-light)" stroke-width="1.5" stroke-linecap="round">
-              <rect x="2" y="4" width="14" height="11" rx="2"/>
-              <path d="M8 8l4 2.5L8 13V8z" fill="var(--purple-light)" stroke="none"/>
-            </svg>
-          </div>
-          <div class="scene-media-label">Scene ${num} — Flow GIF / Video</div>
-          <div class="scene-media-hint">Drop a GIF or MP4 here</div>
-        </div>`
+      const ph = PLACEHOLDERS[sceneId] || ''
+      wrapper.innerHTML = `<div class="sp-frame">${ph}<div class="sp-drop-overlay"><svg width="28" height="28" fill="none" stroke="var(--purple-light)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 10l4 2.5L10 15V10z" fill="var(--purple-light)" stroke="none"/></svg><span>Drop GIF or video to replace</span><input type="file" accept="video/*,image/gif,image/webp" class="sp-file-input scene-file-input" data-scene="${sceneId}"></div></div>`
     }
-
     scene.insertBefore(wrapper, ws)
   })
 
