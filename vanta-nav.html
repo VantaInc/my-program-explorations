@@ -1685,14 +1685,16 @@ const VIEWS = {
       </div>
 
       <!-- ── Mode tab strip ── -->
-      <div id="home-tab-strip" style="display:flex;align-items:center;gap:4px;margin-bottom:24px;margin-top:4px;position:relative;z-index:40">
-        <button id="tab-overview" onclick="setHomeTab('overview')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;border:1.5px solid rgba(0,0,0,0.1);cursor:pointer;transition:all 0.15s;background:#111827;color:#fff;border-color:#111827">
+      <div id="home-tab-strip" style="display:flex;align-items:center;gap:0;margin-bottom:24px;margin-top:4px;position:relative;z-index:40;border-bottom:1.5px solid rgba(0,0,0,0.07)">
+        <button id="tab-overview" onclick="setHomeTab('overview')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:7px 16px 9px;border:none;background:transparent;cursor:pointer;transition:all 0.15s;color:#111827;position:relative">
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="6.5" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx="1"/></svg>
           Overview
+          <span id="tab-overview-bar" style="position:absolute;bottom:-1.5px;left:0;right:0;height:2px;background:#111827;border-radius:1px"></span>
         </button>
-        <button id="ai-mode-toggle-btn" onclick="setHomeTab('ai')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:6px 14px;border-radius:8px;border:1.5px solid rgba(0,0,0,0.09);cursor:pointer;transition:all 0.15s;background:#fff;color:#6B7280">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.5" fill="#7C3AED"/><circle cx="6" cy="6" r="5" stroke="#7C3AED" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
+        <button id="ai-mode-toggle-btn" onclick="setHomeTab('ai')" style="display:flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:12px;font-weight:500;padding:7px 16px 9px;border:none;background:transparent;cursor:pointer;transition:all 0.15s;color:#9CA3AF;position:relative">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.5" fill="#C4B5FD"/><circle cx="6" cy="6" r="5" stroke="#C4B5FD" stroke-width="1.2" stroke-dasharray="2.5 2"/></svg>
           AI Mode
+          <span id="tab-ai-bar" style="position:absolute;bottom:-1.5px;left:0;right:0;height:2px;background:#7C3AED;border-radius:1px;opacity:0"></span>
         </button>
       </div>
 
@@ -2068,6 +2070,14 @@ const VIEWS = {
 
         <!-- Landing state -->
         <div id="ai-landing" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 200px);padding:40px 32px;">
+
+          <!-- Ilma hero -->
+          <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:24px;gap:14px">
+            <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;animation:ilma-pulse 2.4s ease-in-out infinite">
+              ${ILMA_SVG(72).replace('width="72" height="72"','width="100%" height="100%"')}
+            </div>
+            <h2 style="font-family:var(--font-display);font-size:38px;font-weight:300;color:#111827;letter-spacing:-0.03em;line-height:1;margin:0">Ask Ilma</h2>
+          </div>
 
           <!-- Agent input card -->
           <div style="width:100%;max-width:620px;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:18px;box-shadow:0 4px 32px rgba(0,0,0,0.08);">
@@ -4626,9 +4636,14 @@ function toggleAIMode() {
     if (aiLanding) aiLanding.style.display = 'flex'
     if (aiGen) aiGen.style.display = 'none'
     if (aiResult) aiResult.style.display = 'none'
-    // Update tab active states
-    if (tabOverview) { tabOverview.style.background = '#fff'; tabOverview.style.color = '#6B7280'; tabOverview.style.borderColor = 'rgba(0,0,0,0.09)' }
-    if (btn) { btn.style.background = '#111827'; btn.style.color = '#fff'; btn.style.borderColor = '#111827' }
+    // Update tab underline active states
+    const ovBar = document.getElementById('tab-overview-bar')
+    const aiBar = document.getElementById('tab-ai-bar')
+    if (tabOverview) { tabOverview.style.color = '#9CA3AF' }
+    if (ovBar) ovBar.style.opacity = '0'
+    if (btn) { btn.style.color = '#7C3AED' }
+    if (btn) { const dot = btn.querySelector('circle'); if(dot) dot.setAttribute('fill','#7C3AED') }
+    if (aiBar) aiBar.style.opacity = '1'
     // Focus input
     setTimeout(() => { const inp = document.getElementById('ai-mode-input'); if (inp) inp.focus() }, 350)
   } else {
@@ -4643,9 +4658,13 @@ function toggleAIMode() {
       el.style.transform = 'none'
       el.style.pointerEvents = ''
     })
-    // Reset tab active states
-    if (tabOverview) { tabOverview.style.background = '#111827'; tabOverview.style.color = '#fff'; tabOverview.style.borderColor = '#111827' }
-    if (btn) { btn.style.background = '#fff'; btn.style.color = '#6B7280'; btn.style.borderColor = 'rgba(0,0,0,0.09)' }
+    // Reset tab underline active states
+    const ovBar2 = document.getElementById('tab-overview-bar')
+    const aiBar2 = document.getElementById('tab-ai-bar')
+    if (tabOverview) { tabOverview.style.color = '#111827' }
+    if (ovBar2) ovBar2.style.opacity = '1'
+    if (btn) { btn.style.color = '#9CA3AF' }
+    if (aiBar2) aiBar2.style.opacity = '0'
     _aiModeOn = false
   }
 }
