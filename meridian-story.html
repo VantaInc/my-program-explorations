@@ -882,7 +882,8 @@
   <a class="nav-item" href="#scene-8"><div class="nav-dot"></div>8 — Red Alert</a>
   <a class="nav-item" href="#scene-9"><div class="nav-dot"></div>9 — Trust Center</a>
   <a class="nav-item" href="#scene-10"><div class="nav-dot"></div>10 — Pam's Win</a>
-  <a class="nav-item" href="#scene-11"><div class="nav-dot"></div>11 — Outro</a>
+  <a class="nav-item" href="#scene-11"><div class="nav-dot"></div>11 — Any Surface</a>
+  <a class="nav-item" href="#scene-12"><div class="nav-dot"></div>12 — Outro</a>
 
   <div class="nav-back">
     <a href="/narrative">← Back to snapshot</a>
@@ -1394,8 +1395,71 @@
     </div>
   </section>
 
-  <!-- ──────────────── SCENE 11 — OUTRO ──────────────── -->
-  <section class="scene outro" id="scene-11">
+  <!-- ──────────────── SCENE 11 — ANY SURFACE ──────────────── -->
+  <section class="scene" id="scene-11">
+    <div class="scene-header">
+      <div class="scene-number">11</div>
+      <div class="scene-title-block">
+        <div class="scene-eyebrow">Wherever work happens</div>
+        <h2>Any Surface: The Reporting Agent Goes With You</h2>
+      </div>
+    </div>
+    <div class="scene-body">
+      <p>Caesar doesn't live in Vanta. He lives in Gemini, Slack, and whatever tool is open on his second monitor. And increasingly, he asks questions in those tools — not by switching apps, but by talking to the AI interface in front of him.</p>
+      <p>That's where the reporting agent matters.</p>
+      <p>He types a question in Gemini: <em>"Where does our compliance program stand heading into the audit?"</em> Gemini pulls from Vanta's MCP. But it doesn't return raw JSON — it returns the full Vanta reporting layer. Same health scores, same risk themes, same Ima identity. The viz is Vanta's. The data is Vanta's. The rendering is Vanta's.</p>
+
+      <div class="ai-signal" style="background:rgba(66,133,244,0.06);border-color:rgba(66,133,244,0.2)">
+        <div class="ai-signal-label" style="color:#93C5FD">Gemini — via Vanta MCP</div>
+        <div style="margin-bottom:12px">"Here's Meridian's current program status from Vanta:"</div>
+        <div style="background:rgba(9,5,26,0.4);border:1px solid rgba(108,71,255,0.2);border-radius:8px;padding:14px 16px;margin-bottom:10px">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-light);margin-bottom:10px;display:flex;align-items:center;gap:6px">✦ &nbsp;Vanta — Program Summary</div>
+          <div style="display:flex;gap:24px;margin-bottom:12px">
+            <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--green)">91%</div><div style="font-size:10px;color:var(--faint);margin-top:2px">Forge</div></div>
+            <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:var(--amber)">84%</div><div style="font-size:10px;color:var(--faint);margin-top:2px">Atlas</div></div>
+            <div style="text-align:center"><div style="font-size:22px;font-weight:700;color:#F97316">71%</div><div style="font-size:10px;color:var(--faint);margin-top:2px">Orbit</div></div>
+          </div>
+          <div style="height:1px;background:var(--border);margin-bottom:10px"></div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6">Forge is on track for SOC 2. Atlas has 2 open risk items. <strong style="color:var(--text)">Orbit needs attention — IdP connector offline 47 days, 5 Access Management controls failing.</strong></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <div style="font-size:10px;font-weight:600;background:rgba(108,71,255,0.12);color:var(--purple-light);border:1px solid rgba(108,71,255,0.2);border-radius:100px;padding:3px 10px;cursor:pointer">Open in Vanta →</div>
+            <div style="font-size:10px;font-weight:600;background:rgba(255,255,255,0.04);color:var(--faint);border:1px solid var(--border);border-radius:100px;padding:3px 10px;cursor:pointer">Ask Ima a follow-up</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Orbit is your highest-priority item. Want me to draft an escalation message to the integration team?</div>
+      </div>
+
+      <p>Caesar gets the same picture he'd see if he'd opened Vanta directly. The chart is Vanta's chart. The themes are Vanta's themes. The "Open in Vanta" link drops him into the full agent experience, with context already loaded. One question, one answer, no tab switching.</p>
+      <p>This is what it means for Vanta to own the reporting layer — not just host it. The data viz travels with the data. Any surface that can call the MCP renders the same canonical view. Caesar's question gets a Vanta answer whether he asked in Gemini, in Claude, in a Slack command, or directly in the product.</p>
+
+      <div class="ai-signal">
+        <div class="ai-signal-label">The principle</div>
+        Vanta doesn't just provide data to agents. Vanta provides a rendering layer that surfaces correctly wherever the agent is running — consistent charts, risk themes, health scores, and the ability to go deeper. The reporting agent is owned. The viz is owned. The surface is anywhere.
+      </div>
+
+      <div class="voice caesar">
+        <div class="voice-avatar">C</div>
+        <div>
+          <div class="voice-text">"I asked the question where I was working. I got the answer in the format I trust. I didn't have to go find it."</div>
+          <div class="voice-name">Caesar</div>
+        </div>
+      </div>
+
+      <div class="what-shows">
+        <div class="what-shows-label">What this scene shows</div>
+        <div class="what-shows-pills">
+          <span class="what-pill">Vanta owns the reporting agent — the viz travels with the data</span>
+          <span class="what-pill">MCP makes Vanta's rendering portable across AI surfaces</span>
+          <span class="what-pill">Gemini, Claude, Slack — same canonical view everywhere</span>
+          <span class="what-pill">Data viz is not a dashboard feature — it's a distribution layer</span>
+          <span class="what-pill">"Open in Vanta" hands off to the full agent with context loaded</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────── SCENE 12 — OUTRO ──────────────── -->
+  <section class="scene outro" id="scene-12">
     <div class="outro-bu-row">
       <div class="outro-bu">
         <div class="outro-bu-name">Forge</div>
