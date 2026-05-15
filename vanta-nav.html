@@ -3089,17 +3089,32 @@ const VIEWS = {
           Here's a breakdown of where each program stands today across all control domains.
 
           <!-- ── Inline chart ── -->
-          <div style="margin:16px 0;background:rgba(255,255,255,0.88);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.95);border-radius:16px;padding:22px 24px 18px;font-family:var(--font-ui)">
+          <div style="margin:16px 0;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.96);border-radius:16px;overflow:hidden;font-family:var(--font-ui);box-shadow:0 4px 24px rgba(30,27,75,0.07)">
 
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-              <span style="font-size:10px;font-weight:600;color:#C0BDB8;letter-spacing:0.08em;text-transform:uppercase">Control pass rate by program</span>
-              <button onclick="showGenerating('Cross-BU Control Report')" style="font-size:10px;font-weight:600;color:#7C3AED;background:#F5F3FF;border:1px solid rgba(124,58,237,0.15);border-radius:6px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:4px">
-                <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#7C3AED" stroke-width="1.2"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6" y2="8" stroke="#7C3AED" stroke-width="1.2" stroke-linecap="round"/></svg>
-                Export
-              </button>
+            <!-- Chart header row -->
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;padding:18px 22px 0">
+              <div>
+                <div style="font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#9CA3AF;margin-bottom:5px">Control pass rate · by domain</div>
+                <div style="font-family:'Fraunces',Georgia,serif;font-size:32px;font-weight:300;color:#1E1B4B;letter-spacing:-0.03em;line-height:1">83<span style="font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:#9CA3AF;letter-spacing:0;margin-left:2px">avg%</span></div>
+                <div style="font-family:'Inter',sans-serif;font-size:11px;color:#9CA3AF;margin-top:3px">↓ 3 pts · Orbit Access Mgmt dragging</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;padding-bottom:4px">
+                <!-- BU legend chips -->
+                ${[['Forge','#F97316'],['Atlas','#3B82F6'],['Orbit','#06B6D4']].map(([name,color])=>`
+                  <div style="display:flex;align-items:center;gap:5px">
+                    <div style="width:20px;height:3px;border-radius:2px;background:${color}"></div>
+                    <span style="font-size:11px;font-weight:500;color:#6B7280">${name}</span>
+                  </div>
+                `).join('')}
+                <button onclick="showGenerating('Cross-BU Control Report')" style="margin-left:8px;font-size:10px;font-weight:600;color:#5B21B6;background:rgba(91,33,182,0.06);border:1px solid rgba(91,33,182,0.14);border-radius:6px;padding:5px 11px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.12s" onmouseenter="this.style.background='rgba(91,33,182,0.12)'" onmouseleave="this.style.background='rgba(91,33,182,0.06)'">
+                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="#5B21B6" stroke-width="1.3"/><line x1="3.5" y1="4" x2="8.5" y2="4" stroke="#5B21B6" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="6" x2="8.5" y2="6" stroke="#5B21B6" stroke-width="1.2" stroke-linecap="round"/><line x1="3.5" y1="8" x2="6" y2="8" stroke="#5B21B6" stroke-width="1.2" stroke-linecap="round"/></svg>
+                  Export
+                </button>
+              </div>
             </div>
 
             <!-- Grouped bar chart -->
+            <div style="padding:12px 22px 18px">
             ${(()=>{
               const domains = [
                 { name:'Access Mgmt',   forge:94, atlas:88, orbit:55 },
@@ -3108,11 +3123,20 @@ const VIEWS = {
                 { name:'Vendor Risk',   forge:91, atlas:60, orbit:90 },
                 { name:'Incident Resp', forge:100,atlas:83, orbit:70 },
               ]
-              const barW = 22, gap = 7, groupGap = 36, h = 160, pL = 8, pR = 8, pT = 44, pB = 52
+              const barW = 20, gap = 6, groupGap = 40, h = 148, pL = 44, pR = 16, pT = 32, pB = 48
               const groupW = barW*3 + gap*2
               const totalW = domains.length * (groupW + groupGap) - groupGap + pL + pR
               const vbH = pT + h + pB
-              const colors = { forge:'#5B21B6', atlas:'#D97706', orbit:'#DC2626' }
+              const colors = { forge:'#F97316', atlas:'#3B82F6', orbit:'#06B6D4' }
+
+              const yTicks = [25,50,75,100]
+              const gridLines = yTicks.map(v => {
+                const y = pT + h - Math.round((v/100)*h)
+                return `
+                  <line x1="${pL}" y1="${y}" x2="${totalW - pR}" y2="${y}" stroke="rgba(0,0,0,0.045)" stroke-width="1"/>
+                  <text x="${pL - 7}" y="${y + 4}" text-anchor="end" font-family="'Inter',sans-serif" font-size="10" fill="#D1D5DB">${v}</text>
+                `
+              }).join('')
 
               const bars = domains.map((d, gi) => {
                 const gx = pL + gi * (groupW + groupGap)
@@ -3124,35 +3148,33 @@ const VIEWS = {
                       const x = gx + bi * (barW + gap)
                       const y = pT + (h - barH)
                       const color = colors[bu]
+                      const dim = pct < 70
                       return `
-                        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="5" fill="${color}" opacity="${pct < 75 ? '1' : '0.82'}"/>
-                        <text x="${x + barW/2}" y="${y - 8}" text-anchor="middle" font-family="'Fraunces',serif" font-size="15" fill="${color}" font-weight="300">${pct}</text>
+                        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="4"
+                          fill="${color}" opacity="${dim ? '1' : '0.75'}"/>
+                        ${dim ? `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" rx="4" fill="url(#warn-stripe-${bu})" opacity="0.08"/>` : ''}
+                        <text x="${x + barW/2}" y="${y - 9}" text-anchor="middle"
+                          font-family="'Fraunces',Georgia,serif" font-size="17" fill="${dim ? color : '#374151'}"
+                          font-weight="300" letter-spacing="-0.03em">${pct}</text>
                       `
                     }).join('')}
-                    <text x="${gx + groupW/2}" y="${pT + h + 28}" text-anchor="middle" font-family="var(--font-ui)" font-size="11" fill="#C0BDB8" letter-spacing="0.01em">${d.name}</text>
+                    <text x="${gx + groupW/2}" y="${pT + h + 26}" text-anchor="middle"
+                      font-family="'Inter',sans-serif" font-size="10.5" fill="#9CA3AF"
+                      letter-spacing="0.005em">${d.name}</text>
                   </g>
                 `
               }).join('')
 
-              const gridLines = [25,50,75].map(v => {
-                const y = pT + h - Math.round((v/100)*h)
-                return `<line x1="${pL}" y1="${y}" x2="${totalW - pR}" y2="${y}" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>`
-              }).join('')
-
               return `<svg width="100%" viewBox="0 0 ${totalW} ${vbH}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                <defs>
+                  <pattern id="warn-stripe-orbit" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)">
+                    <rect width="2" height="4" fill="#DC2626"/>
+                  </pattern>
+                </defs>
                 ${gridLines}
                 ${bars}
               </svg>`
             })()}
-
-            <!-- Legend -->
-            <div style="display:flex;gap:18px;margin-top:4px;justify-content:center">
-              ${[['Forge','#5B21B6'],['Atlas','#D97706'],['Orbit','#DC2626']].map(([name,color])=>`
-                <div style="display:flex;align-items:center;gap:5px">
-                  <div style="width:8px;height:8px;border-radius:2px;background:${color}"></div>
-                  <span style="font-family:var(--font-ui);font-size:10px;color:#C0BDB8;font-weight:500">${name}</span>
-                </div>
-              `).join('')}
             </div>
           </div>
 
