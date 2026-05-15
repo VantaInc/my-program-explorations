@@ -856,6 +856,101 @@
     #main { margin-left: 0; }
     .hero, .scene, .characters-band, .scenario-band { padding-left: 24px; padding-right: 24px; }
   }
+
+  /* ── Roadmap section ── */
+  #roadmap {
+    padding: 80px 80px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+  }
+  .roadmap-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--purple-light); margin-bottom: 14px;
+  }
+  .roadmap-heading {
+    font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400;
+    line-height: 1.15; color: var(--text); margin-bottom: 14px;
+  }
+  .roadmap-heading em { font-style: italic; color: var(--purple-light); }
+  .roadmap-intro {
+    font-size: 15px; color: var(--muted); max-width: 580px;
+    line-height: 1.75; margin-bottom: 48px;
+  }
+  .standing-rules {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 48px;
+  }
+  .rule { background: var(--bg2); padding: 26px 30px; }
+  .rule-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--purple-light); margin-bottom: 8px;
+  }
+  .rule h3 { font-size: 14px; font-weight: 600; margin-bottom: 7px; color: var(--text); }
+  .rule p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .milestone-ladder { display: flex; flex-direction: column; gap: 2px; }
+  .ms {
+    border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .ms:hover { border-color: rgba(255,255,255,0.14); }
+  .ms-header {
+    display: flex; align-items: center; gap: 18px;
+    padding: 24px 28px; cursor: pointer; background: var(--bg2);
+    transition: background 0.15s;
+  }
+  .ms-header:hover { background: var(--bg3); }
+  .ms-tag {
+    font-size: 10px; letter-spacing: 0.08em; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px; white-space: nowrap; flex-shrink: 0;
+  }
+  .ms-m1 .ms-tag { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+  .ms-m2 .ms-tag { background: var(--purple-glow); color: var(--purple-light); border: 1px solid rgba(108,71,255,0.2); }
+  .ms-m3 .ms-tag { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+  .ms-m4 .ms-tag { background: var(--teal-glow); color: var(--teal); border: 1px solid rgba(34,211,238,0.2); }
+  .ms-title-group { flex: 1; }
+  .ms-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .ms-subtitle { font-size: 12px; color: var(--muted); }
+  .ms-status {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--faint); flex-shrink: 0;
+  }
+  .ms-m1 .ms-status { color: var(--green); }
+  .ms-chevron {
+    width: 14px; height: 14px; color: var(--faint);
+    flex-shrink: 0; transition: transform 0.2s;
+  }
+  .ms.open .ms-chevron { transform: rotate(180deg); }
+  .ms-body {
+    display: none; padding: 0 28px 28px;
+    background: var(--bg2); border-top: 1px solid var(--border);
+  }
+  .ms.open .ms-body { display: block; }
+  .ms-desc {
+    font-size: 14px; color: var(--muted); line-height: 1.75;
+    padding-top: 22px; margin-bottom: 24px; max-width: 620px;
+  }
+  .ms-items {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px;
+  }
+  .ms-item {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 18px; transition: border-color 0.15s;
+  }
+  .ms-item:hover { border-color: rgba(255,255,255,0.12); }
+  .ms-item-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .ms-item-desc { font-size: 11px; color: var(--muted); line-height: 1.55; }
+  .ms-connector {
+    height: 20px; display: flex; align-items: center; justify-content: center;
+  }
+  .ms-connector-line { width: 1px; height: 20px; background: var(--border); }
+  @media (max-width: 900px) {
+    #roadmap { padding: 48px 24px; }
+    .standing-rules { grid-template-columns: 1fr; }
+    .ms-items { grid-template-columns: 1fr; }
+    .ms-header { padding: 18px 20px; }
+    .ms-body { padding: 0 20px 22px; }
+  }
 </style>
 </head>
 <body>
@@ -885,6 +980,9 @@
   <a class="nav-item" href="#scene-10"><div class="nav-dot"></div>10 — Pam's Win</a>
   <a class="nav-item" href="#scene-11"><div class="nav-dot"></div>11 — Any Surface</a>
   <a class="nav-item" href="#scene-12"><div class="nav-dot"></div>12 — Outro</a>
+
+  <div class="nav-section-label">Roadmap</div>
+  <a class="nav-item" href="#roadmap"><div class="nav-dot"></div>The TLDR</a>
 
   <div class="nav-back">
     <a href="/narrative">← Back to snapshot</a>
@@ -1599,6 +1697,126 @@
     </div>
   </section>
 
+  <!-- ──────────────── ROADMAP — TLDR ──────────────── -->
+  <section id="roadmap">
+
+    <p class="roadmap-eyebrow">The roadmap</p>
+    <h2 class="roadmap-heading">Working backward<br>from the <em>vision</em></h2>
+    <p class="roadmap-intro">M1 shipped. What follows is how we get from here to a product that thinks with you. Each milestone builds on the last — the foundation makes the intelligence possible, and the intelligence makes the vision real.</p>
+
+    <!-- Standing rules -->
+    <div class="standing-rules">
+      <div class="rule">
+        <div class="rule-label">Standing rule 01</div>
+        <h3>ScoSeg is ambient</h3>
+        <p>From M2 onward, every surface is ScoSeg-aware. Health scores, reports, Ima signals, and dataviz all recalculate based on scope and segment context. This isn't a feature — it's a design principle that applies to everything downstream.</p>
+      </div>
+      <div class="rule">
+        <div class="rule-label">Standing rule 02</div>
+        <h3>Dataviz compounds</h3>
+        <p>The dataviz kit debuts in M2 inside My Program, raising the visual bar for the entire product. It expands with each milestone — more components, more surfaces, more reach. Build it once. Show up everywhere.</p>
+      </div>
+    </div>
+
+    <!-- Milestone ladder -->
+    <div class="milestone-ladder">
+
+      <!-- M1 -->
+      <div class="ms ms-m1 open">
+        <div class="ms-header" onclick="toggleMs(this)">
+          <span class="ms-tag">M1</span>
+          <div class="ms-title-group">
+            <div class="ms-title">Program home</div>
+            <div class="ms-subtitle">The foundation — one place for the full program picture</div>
+          </div>
+          <span class="ms-status">Shipped</span>
+          <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Program Managers operating across multiple Business Units and frameworks now have a single place to see the health of their entire compliance program, prioritize what matters, and take action — without rebuilding the picture manually every Monday.</p>
+          <div class="ms-items">
+            <div class="ms-item"><div class="ms-item-name">Cross-BU health view</div><div class="ms-item-desc">Program health across all Business Units and frameworks in one surface</div></div>
+            <div class="ms-item"><div class="ms-item-name">Program home</div><div class="ms-item-desc">The new entry point for program managers — opinionated about what matters</div></div>
+            <div class="ms-item"><div class="ms-item-name">Health scoring</div><div class="ms-item-desc">A consistent signal for program posture that Pam can defend to Caesar</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ms-connector"><div class="ms-connector-line"></div></div>
+
+      <!-- M2 -->
+      <div class="ms ms-m2">
+        <div class="ms-header" onclick="toggleMs(this)">
+          <span class="ms-tag">M2</span>
+          <div class="ms-title-group">
+            <div class="ms-title">The foundation layer</div>
+            <div class="ms-subtitle">Data always ready. Visual bar raised. Reports that assemble themselves.</div>
+          </div>
+          <span class="ms-status">Next</span>
+          <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">Before program intelligence can exist, the data infrastructure has to be right. M2 puts the program data on ice — always structured, always current — and builds the visual language and reporting agent that everything downstream runs on.</p>
+          <div class="ms-items">
+            <div class="ms-item"><div class="ms-item-name">Reporting — data on ice</div><div class="ms-item-desc">Program data is always structured and ready. No manual pulls, no stale exports. The foundation for every report downstream.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Help you make reports</div><div class="ms-item-desc">Audience-aware report assembly from live data. QBR deck, board update, audit package — generated, not assembled by hand.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Dataviz kit v1</div><div class="ms-item-desc">The visual language debuts inside My Program. Trend lines, health rings, comparison bars. Sets the bar for the whole product.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Reporting agent</div><div class="ms-item-desc">The AI agent that pulls from the dataviz kit inside Vanta AI. Answers "where do we stand" with structured, data-grounded responses.</div></div>
+            <div class="ms-item"><div class="ms-item-name">MCP integration</div><div class="ms-item-desc">Vanta data travels outside Vanta. Pam gets her brief in Slack. Caesar gets the board summary in Slides. Value delivered where people actually work.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ms-connector"><div class="ms-connector-line"></div></div>
+
+      <!-- M3 -->
+      <div class="ms ms-m3">
+        <div class="ms-header" onclick="toggleMs(this)">
+          <span class="ms-tag">M3</span>
+          <div class="ms-title-group">
+            <div class="ms-title">The intelligence layer</div>
+            <div class="ms-subtitle">Proactive signals. The program briefs you before you ask.</div>
+          </div>
+          <span class="ms-status">Planned</span>
+          <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">With the data foundation in place, Ima becomes proactive. Not just a chat interface — a layer that watches your program, surfaces what's changing, and tells you what it means before you think to ask.</p>
+          <div class="ms-items">
+            <div class="ms-item"><div class="ms-item-name">Weekly digest</div><div class="ms-item-desc">What changed, what needs you, what to tell Caesar — assembled automatically every Monday before Pam sits down.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Ima as proactive presence</div><div class="ms-item-desc">Ima surfaces signals before you ask. A control trending wrong. A deadline the team hasn't prepped for. The pattern you didn't know to look for.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Cross-BU pattern detection</div><div class="ms-item-desc">The same issue appearing across three programs isn't a coincidence. Ima names the pattern and connects the dots.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Agent visibility</div><div class="ms-item-desc">Everything agents do is logged and attributable. Denise knows what got handled. Pam can defend it to Caesar.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Dataviz kit expanded</div><div class="ms-item-desc">Richer components, more surfaces. The visual language reaches Hub pages and AI chat. Same system, broader reach.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ms-connector"><div class="ms-connector-line"></div></div>
+
+      <!-- M4+ -->
+      <div class="ms ms-m4">
+        <div class="ms-header" onclick="toggleMs(this)">
+          <span class="ms-tag">M4+</span>
+          <div class="ms-title-group">
+            <div class="ms-title">The vision</div>
+            <div class="ms-subtitle">Rituals. Forecasting. Caesar never logs in.</div>
+          </div>
+          <span class="ms-status">North star</span>
+          <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+        </div>
+        <div class="ms-body">
+          <p class="ms-desc">The full Meridian story. A system that knows your rhythms, plans ahead, and delivers value to people who will never open a browser tab. Vanta stops being a compliance recorder and becomes a program partner.</p>
+          <div class="ms-items">
+            <div class="ms-item"><div class="ms-item-name">Rituals</div><div class="ms-item-desc">The system learns your cadences. Tuesday sync with Caesar? It already has the brief ready before you open the meeting.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Forecasting</div><div class="ms-item-desc">Where is the program headed at audit time? Trajectory views, scenario modeling, audit readiness projections.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Delivery everywhere</div><div class="ms-item-desc">Slack. Slides. PDF. Email. Vanta delivers to wherever the stakeholder actually is. Caesar never has to log in.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Dataviz at full scale</div><div class="ms-item-desc">The visual system reaches every surface — MCPs, external reports, 3P tools. One language, everywhere Vanta goes.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Dynamic home</div><div class="ms-item-desc">Home knows who you are. New user, contributor, program lead, executive — each gets the right surface without configuration.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ──────────────── SCENE 12 — OUTRO ──────────────── -->
   <section class="scene outro" id="scene-12">
     <div class="outro-bu-row">
@@ -1742,6 +1960,10 @@
 
   window.addEventListener('scroll', onScroll, { passive: true })
   onScroll()
+
+  function toggleMs(header) {
+    header.closest('.ms').classList.toggle('open')
+  }
 </script>
 </body>
 </html>
