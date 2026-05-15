@@ -877,7 +877,7 @@
     line-height: 1.75; margin-bottom: 48px;
   }
   .standing-rules {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
     background: var(--border); border: 1px solid var(--border);
     border-radius: 12px; overflow: hidden; margin-bottom: 48px;
   }
@@ -944,6 +944,9 @@
     height: 20px; display: flex; align-items: center; justify-content: center;
   }
   .ms-connector-line { width: 1px; height: 20px; background: var(--border); }
+  @media (max-width: 1100px) {
+    .standing-rules { grid-template-columns: 1fr 1fr; }
+  }
   @media (max-width: 900px) {
     #roadmap { padding: 48px 24px; }
     .standing-rules { grid-template-columns: 1fr; }
@@ -1702,7 +1705,7 @@
 
     <p class="roadmap-eyebrow">The roadmap</p>
     <h2 class="roadmap-heading">Working backward<br>from the <em>vision</em></h2>
-    <p class="roadmap-intro">M1 shipped. What follows is how we get from here to a product that thinks with you. Each milestone builds on the last — the foundation makes the intelligence possible, and the intelligence makes the vision real.</p>
+    <p class="roadmap-intro">M1 shipped. What follows is how we get from here to a product that thinks with you. Each milestone builds on the last — the foundation makes the intelligence possible, and the intelligence makes the vision real. The model throughout: specific views for specific users, not a generic home.</p>
 
     <!-- Standing rules -->
     <div class="standing-rules">
@@ -1716,6 +1719,11 @@
         <h3>Dataviz compounds</h3>
         <p>The dataviz kit debuts in M2 inside My Program, raising the visual bar for the entire product. It expands with each milestone — more components, more surfaces, more reach. Build it once. Show up everywhere.</p>
       </div>
+      <div class="rule">
+        <div class="rule-label">Standing rule 03</div>
+        <h3>Views, not home</h3>
+        <p>There is no generic home. There's My Program for program managers, My Work for contributors, the SOC-2 guide for new users. Each view is purpose-built. Program users land in My Program — that's their home. But it's a view, not a dashboard built around them.</p>
+      </div>
     </div>
 
     <!-- Milestone ladder -->
@@ -1726,17 +1734,18 @@
         <div class="ms-header" onclick="toggleMs(this)">
           <span class="ms-tag">M1</span>
           <div class="ms-title-group">
-            <div class="ms-title">Program home</div>
-            <div class="ms-subtitle">The foundation — one place for the full program picture</div>
+            <div class="ms-title">My Program</div>
+            <div class="ms-subtitle">Where program managers land — the full picture in one view</div>
           </div>
           <span class="ms-status">Shipped</span>
           <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="ms-body">
-          <p class="ms-desc">Program Managers operating across multiple Business Units and frameworks now have a single place to see the health of their entire compliance program, prioritize what matters, and take action — without rebuilding the picture manually every Monday.</p>
+          <p class="ms-desc">Program managers now have a purpose-built view that shows the health of their entire compliance program across all business units and frameworks. My Program is where they land — not a personalized home, but the right surface for the job. Health scores, Ima signals, upcoming deadlines, and the ability to act without rebuilding the picture manually every Monday.</p>
           <div class="ms-items">
-            <div class="ms-item"><div class="ms-item-name">Cross-BU health view</div><div class="ms-item-desc">Program health across all Business Units and frameworks in one surface</div></div>
-            <div class="ms-item"><div class="ms-item-name">Program home</div><div class="ms-item-desc">The new entry point for program managers — opinionated about what matters</div></div>
+            <div class="ms-item"><div class="ms-item-name">Cross-BU health view</div><div class="ms-item-desc">Program health across all Business Units and frameworks in one purpose-built surface</div></div>
+            <div class="ms-item"><div class="ms-item-name">My Program as default landing</div><div class="ms-item-desc">Program users land here. Not a generic home — a view designed specifically for program managers</div></div>
+            <div class="ms-item"><div class="ms-item-name">My Work alongside it</div><div class="ms-item-desc">The companion feed for daily work items — what needs action, what Ima flagged, what she's already handling</div></div>
             <div class="ms-item"><div class="ms-item-name">Health scoring</div><div class="ms-item-desc">A consistent signal for program posture that Pam can defend to Caesar</div></div>
           </div>
         </div>
@@ -1803,13 +1812,13 @@
           <svg class="ms-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
         </div>
         <div class="ms-body">
-          <p class="ms-desc">The full Meridian story. A system that knows your rhythms, plans ahead, and delivers value to people who will never open a browser tab. Vanta stops being a compliance recorder and becomes a program partner.</p>
+          <p class="ms-desc">The full Meridian story. A system that knows your rhythms, plans ahead, and delivers value across every view and every surface — including to people who will never open a browser tab. Each user type gets the view built for them. Vanta stops being a compliance recorder and becomes a program partner.</p>
           <div class="ms-items">
             <div class="ms-item"><div class="ms-item-name">Rituals</div><div class="ms-item-desc">The system learns your cadences. Tuesday sync with Caesar? It already has the brief ready before you open the meeting.</div></div>
             <div class="ms-item"><div class="ms-item-name">Forecasting</div><div class="ms-item-desc">Where is the program headed at audit time? Trajectory views, scenario modeling, audit readiness projections.</div></div>
             <div class="ms-item"><div class="ms-item-name">Delivery everywhere</div><div class="ms-item-desc">Slack. Slides. PDF. Email. Vanta delivers to wherever the stakeholder actually is. Caesar never has to log in.</div></div>
             <div class="ms-item"><div class="ms-item-name">Dataviz at full scale</div><div class="ms-item-desc">The visual system reaches every surface — MCPs, external reports, 3P tools. One language, everywhere Vanta goes.</div></div>
-            <div class="ms-item"><div class="ms-item-name">Dynamic home</div><div class="ms-item-desc">Home knows who you are. New user, contributor, program lead, executive — each gets the right surface without configuration.</div></div>
+            <div class="ms-item"><div class="ms-item-name">Views at scale</div><div class="ms-item-desc">My Program, My Work, SOC-2 guide, executive digest — each view fully realized for its user. Right surface, right depth, no configuration required.</div></div>
           </div>
         </div>
       </div>
